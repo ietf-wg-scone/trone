@@ -1,9 +1,9 @@
 ---
-title: "Transparent Rate Adaptation Indications for Networks (TRAIN) Protocol"
-abbrev: "TRAIN Protocol"
+title: "Transparent Rate Optimization for Network Endpoints (TRONE) Protocol"
+abbrev: "TRONE Protocol"
 category: info
 
-docname: draft-thomson-scone-train-protocol-latest
+docname: draft-thoji-scone-trone-protocol-latest
 submissiontype: IETF
 number:
 date:
@@ -12,15 +12,15 @@ v: 3
 area: "Web and Internet Transport"
 workgroup: SCONE
 keyword:
- - chugga chugga chugga chugga
- - mitm
+ - locomotive
+ - pastry
 venue:
   group: "SCONE"
   type: "Working Group"
   mail: "scone@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/scone/"
   github: "ietf-wg-scone/trone"
-  latest: "https://ietf-wg-scone/trone/draft-thomson-train-protocol.html"
+  latest: "https://ietf-wg-scone.github.io/trone/draft-thoji-scone-trone-protocol.html"
 
 author:
  -
@@ -58,8 +58,7 @@ informative:
 
 On-path network elements can sometimes be configured to apply rate limits to
 flows that pass them.  This document describes a method for signaling to
-endpoints that rate limiting policies are in force and approximately what that
-rate limit is.
+endpoints that rate limiting policies are in force and  what that rate limit is.
 
 
 --- middle
@@ -76,7 +75,7 @@ Having the network indicate what its rate limiting policy is, in a way that is
 accessible to endpoints, might allow applications to use this information when
 adapting their send rate.
 
-The Transparent Rate Adaptation Indications for Networks (TRAIN) protocol is
+The Transparent Rate Optimization for Network Endpoints (TRONE) protocol is
 negotiated by QUIC endpoints.  This protocol provides a means for network
 elements to signal the maximum available sustained throughput, or rate limits,
 for flows of UDP datagrams that transit that network element to a QUIC endpoint.
@@ -84,13 +83,13 @@ for flows of UDP datagrams that transit that network element to a QUIC endpoint.
 
 # Overview
 
-QUIC endpoints can negotiate the use of TRAIN by including a transport parameter
-({{tp}}) in the QUIC handshake.  Endpoints then occasionally coalesce a TRAIN
+QUIC endpoints can negotiate the use of TRONE by including a transport parameter
+({{tp}}) in the QUIC handshake.  Endpoints then occasionally coalesce a TRONE
 packet with ordinary QUIC packets that they send.
 
 Network elements that have rate limiting policies can detect flows that include
-TRAIN packets.  The network element can indicate a maximum sustained throughput
-by modifying the TRAIN packet as it transits the network element.
+TRONE packets.  The network element can indicate a maximum sustained throughput
+by modifying the TRONE packet as it transits the network element.
 
 ~~~ aasvg
 +--------+    +---------+     +----------+
@@ -98,14 +97,14 @@ by modifying the TRAIN packet as it transits the network element.
 | Sender |    | Element |     | Receiver |
 +---+----+    +----+----+     +----+-----+
     |              |               |
-    +--- TRAIN --->|   TRAIN+rate  |
+    +--- TRONE --->|   TRONE+rate  |
     |    +QUIC     +---- +QUIC --->|
     |              |               |  Validate QUIC packet
     |              |               |  and record rate
     |              |               |
 ~~~
 
-QUIC endpoints that receive modified TRAIN packets observe the indicated
+QUIC endpoints that receive modified TRONE packets observe the indicated
 version, process the QUIC packet, and then record the indicated rate.
 
 Indicated rate limits apply only in a single direction.  Separate indications
@@ -119,7 +118,7 @@ cannot assume that rate limit indications from one path apply to new paths.
 
 # Applicability
 
-This protocol only works for flows that use the TRAIN packet ({{packet}}).
+This protocol only works for flows that use the TRONE packet ({{packet}}).
 
 The protocol requires that packets are modified as they transit a
 network element, which provides endpoints strong evidence that the network
@@ -204,35 +203,34 @@ separate signal can be sent for each flow.
 {::boilerplate bcp14-tagged-bcp}
 
 
-# TRAIN Packet {#packet}
+# TRONE Packet {#packet}
 
-A TRAIN packet is a QUIC long header packet that follows the QUIC invariants;
+A TRONE packet is a QUIC long header packet that follows the QUIC invariants;
 see {{Section 5.1 of INVARIANTS}}.
 
-{{fig-train-packet}} shows the format of the train packet using the conventions
+{{fig-trone-packet}} shows the format of the TRONE packet using the conventions
 from {{Section 4 of INVARIANTS}}.
 
 ~~~ artwork
-TRAIN Packet {
+TRONE Packet {
   Header Form (1) = 1,
   Reserved (1),
-  Rate Signal (6),
+  Reserved (6),
   Version (32) = 0xTBD,
   Destination Connection ID Length (8),
   Destination Connection ID (0..2040),
   Source Connection ID Length (8),
   Source Connection ID (0..2040),
+  Rate Signal (64)
 }
 ~~~
-{: #fig-train-packet title="TRAIN Packet Format"}
+{: #fig-trone-packet title="TRONE Packet Format"}
 
 The most significant bit (0x80) of the packet indicates that this is a QUIC long
 header packet.  The next bit (0x40) is reserved and can be set according to
 {{!QUIC-BIT=RFC9287}}.
 
-The entire payload of the TRAIN packet is carried in the Rate Signal field that
-forms the low 6 bits (0x3f) of the first byte.  Values for this field are
-described in {{rate-signal}}.
+The low 6 bits (0x3f) of the first byte are reserved.
 
 This packet includes a Destination Connection ID field that is set to the same
 value as other packets in the same datagram; see {{Section 12.2 of QUIC}}.
@@ -242,64 +240,59 @@ any packet that follows.  If the next packet in the datagram does not have a
 Source Connection ID field, which is the case for packets with a short header
 ({{Section 5.2 of INVARIANTS}}), the Source Connection ID field is empty.
 
-TRAIN packets SHOULD be included as the first packet in a datagram.  This is
+TRONE packets SHOULD be included as the first packet in a datagram.  This is
 necessary in many cases for QUIC versions 1 and 2 because packets with a short
 header cannot precede any other packets.
 
+The payload of a TRONE packet consists of a single Rate Signal field, described
+in {{rate-signal}}.
 
 ## Rate Signals {#rate-signal}
 
 {:aside}
-> Note: The exact set of rates that are included is subject to negotiation.
-> We should aim to find typical rate limits that are used in real networks
-> and by real applications.
+> The structure and location of the Rate Signal may change in future revisions of
+> this document.
 
-The Rate Signal field of a TRAIN packet is set to 0xTBD when sent by a QUIC
-endpoint.  Receiving value indicates that there is no rate limit in place or
-that the TRAIN protocol is not supported by network elements on the path.
+{{fig-rate-signal}} shows the format of the Rate Signal field.
 
-The values from {{table-rates}} are specified to carry a the corresponding rate
-limit signal.
+~~~ artwork
+Rate Signal {
+  Rate Limit (32)
+  Average Window (32)
+}
+~~~
+{: #fig-rate-signal title="Rate Signal Format"}
 
-| Rate Signal | Rate Limit |
-|:------------|:-----------|
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-| 0xTBD       | X Mbps     |
-{: #table-rates title="Table of Rate Signals and Rate Limits"
+Rate Limit is a 32-bit unsigned integer that indicates the maximum sustainable
+throughput provided by the network element setting it, expressed in kilobits per
+second. A value of 0 indicates no rate limit. A QUIC endpoint sets this value to
+0 when sending a TRONE packet.
 
-All other values are reserved.
+Average Window is a 32-bit unsigned integer representing the period, in
+milliseconds, over which a bitrate may be enforced. A value of 0 indicates that
+no averaging period is specified.
 
-{:aside}
-> TODO: Work out how reserved values can be used, if at all.
+## Endpoint Processing of TRONE Packets
 
-
-## Processing TRAIN Packets
-
-Processing a TRAIN packet involves reading the value from the Rate Signal field.
+Processing a TRONE packet involves reading the value from the Rate Signal field.
 However, this value MUST NOT be used unless another packet from the same
-datagram is successfully processed.  Therefore, a TRAIN packet always needs to
+datagram is successfully processed.  Therefore, a TRONE packet always needs to
 be coalesced with other QUIC packets.
 
-A TRAIN packet is defined by the use of the longer header bit (0x80 in the first
-byte) and the TRAIN protocol version (0xTBD in the next four bytes).  A TRAIN
+A TRONE packet is defined by the use of the longer header bit (0x80 in the first
+byte) and the TRONE protocol version (0xTBD in the next four bytes).  A TRONE
 packet MAY be discarded, along with any packets that come after it in the same
 datagram, if the Source Connection ID is not consistent with those coalesced
 packets, as specified in {{packet}}.
 
-A TRAIN packet MUST be discarded if the Destination Connection ID does not match
+A TRONE packet MUST be discarded if the Destination Connection ID does not match
 one recognized by the receiving endpoint.
 
 
-# Negotiating TRAIN {#tp}
+# Negotiating TRONE {#tp}
 
-A QUIC endpoint indicates that it is willing to receive TRAIN packets by
-including the train_supported transport parameter (0xTBD).
+A QUIC endpoint indicates that it is willing to receive TRONE packets by
+including the trone_supported transport parameter (0xTBD).
 
 This transport parameter is valid for QUIC versions 1 {{QUIC}} and 2
 {{!QUICv2=RFC9369}} and any other version that recognizes the versions,
@@ -309,58 +302,72 @@ transport parameters, and frame types registries established in {{Sections 22.2,
 
 # Deployment
 
-QUIC endpoints can enable the use of the TRAIN protocol by sending TRAIN packets
+QUIC endpoints can enable the use of the TRONE protocol by sending TRONE packets
 {{packet}}.  Network elements then apply or replace the Rate Signal field
 ({{apply}}) according to their policies.
 
 
 ## Applying Rate Limit Signals {#apply}
 
-A network element detects a TRAIN packet by observing that a packet has a QUIC
-long header and the TRAIN protocol version of 0xTBD.
+A network element detects a TRONE packet by observing that a packet has a QUIC
+long header and the TRONE protocol version of 0xTBD.
 
-A network element then conditionally replaces the six bits of the Rate Signal
-field with a value of its choosing.
+A network element then conditionally replaces the Rate Signal field with
+values of its choosing.
 
-A network element might receive a packet that already includes a rate limit
-signal.  If the network element wishes to signal a lower rate limit, they can
-replace the Rate Signal field with a different value that indicates the lower
-limit.  If the network element wishes to signal a higher rate limit, they leave
-the Rate Signal field alone, preserving the signal from the network element that
-has a lower rate limit policy.
+A network element might receive a packet that already includes a rate signal,
+consisting of a rate limit and an average window. The network element replaces
+these fields if it wishes to signal a lower rate limit; otherwise, the original
+values are retained, preserving the signal from the network element with the
+lower policy. A network element that replaces the rate limit SHOULD also replace
+the average window.
 
-The following pseudocode indicates how a TRAIN packet might be detected and
-replaced.  This assumes a target rate that is preconfigured and a means of
-comparing the rate signal in the packet to the target rate signal.
+The following pseudocode indicates how a network element might detect a TRONE
+packet and replace an existing rate signal.
 
 ~~~ pseudocode
-target_rate_signal = rate_signal_for(target_rate)
-
 is_long = packet[0] & 0x80 == 0x80
-is_train = compare(packet[1..5], TRAIN_VERSION)
-if is_long and is_train:
-  packet_rate_signal = packet[0] & 0x3f
-  if target_rate_signal.is_lower_than(packet_rate_signal):
-    packet[0] = packet[0] & 0xc0 | target_rate_signal
+is_trone = compare(packet[1..5], TRONE_VERSION)
+if is_long and is_trone:
+  dcid_len = packet[5]
+  offset = 6 + dcid_len
+  scid_len = packet[offset]
+  offset = offset + 1 + scid_len
+
+  packet_rate = read_uint32(packet[offset : offset + 4])
+  if packet_rate == 0 or target_rate < packet_rate:
+    write_uint32(packet[offset : offset + 4], target_rate)
+    write_uint32(packet[offset + 4 : offset + 8], target_aw)
 ~~~
-
-{:aside}
-> TODO: When defining the signal values, make this comparison easy.
-
 
 ## Providing Opportunities to Apply Rate Limit Signals {#extra-packets}
 
 Endpoints that wish to offer network elements the option to add rate limit
-markings can send TRAIN packets at any time.  This is a decision that a sender
-makes when constructing datagrams, so TRAIN packets can be sent as frequently as
-the application requires.
+signals can send TRONE packets at any time.  This is a decision that a sender
+makes when constructing datagrams. It is recommended that endpoints promptly
+send an initial TRONE packet once the peer confirms its willingness to receive
+them.
 
-Endpoints MUST send any TRAIN packet they send as the first packet of a
+An endpoint that has not recently sent a TRONE packet MAY treat receipt of one
+from its peer as a trigger to send a TRONE packet in the reverse direction. This
+way a peer that is receiving downlink data can influence the frequency of
+receiving rate signals.
+
+Endpoints MUST send any TRONE packet they send as the first packet of a
 datagram, coalesced with additional packets.  An endpoint that receives and
-discards a TRAIN without also successfully processing another packets from the
-same datagram SHOULD ignore any rate limit signal.  Such a datagram might be
-entirely spoofed.
+discards a TRONE packet without also successfully processing another packet
+from the same datagram SHOULD ignore any rate limit signal. Such a datagram
+might be entirely spoofed.
 
+A network element that wishes to signal an updated rate limit waits for the
+next TRONE packet in the desired direction. However, if no TRONE packet
+arrives within a reasonable time, the network element MAY construct its own
+TRONE packet and prepend it to a QUIC packet before forwarding. This process
+requires expanding the UDP datagram containing the original QUIC packet, which
+might cause the datagram to exceed the path MTU. Therefore, a network element
+SHOULD NOT expand UDP datagrams if the combined payload of the TRONE packet and
+the subsequent packets exceeds 1200 bytes, the smallest maximum datagram size
+supported by QUIC versions 1 and 2 (see {{Section 14 of QUIC}}).
 
 ## Feedback To Sender About Signals {#feedback}
 
@@ -379,13 +386,13 @@ in an application where a receiver drives rate adaptation, it might
 not be necessary to define additional signaling.
 
 A sender can use any acknowledgment mechanism provided by the QUIC version in
-use to learn whether datagrams containing TRAIN packets were likely received.
-This might help inform whether to send additional TRAIN packets in the event
+use to learn whether datagrams containing TRONE packets were likely received.
+This might help inform whether to send additional TRONE packets in the event
 that a datagram is lost. However, rather than relying on transport signals, an
 application might be better able to indicate what has been received and
 processed.
 
-TRAIN packets could be stripped from datagrams in the network, which cannot be
+TRONE packets could be stripped from datagrams in the network, which cannot be
 reliably detected.  This could result in a sender falsely believing that no
 network element applied a rate limit signal.
 
@@ -401,11 +408,11 @@ spurious rate limit signals.
 Some off-path attackers may be able to both
 observe traffic and inject packets. Attackers with such capabilities could
 observe packets sent by an endpoint, create datagrams coalescing an
-arbitrary TRAIN packet and the observed packet, and send these datagrams
+arbitrary TRONE packet and the observed packet, and send these datagrams
 such that they arrive at the peer endpoint before the original
 packet. Spoofed packets that seek to advertise a higher limit
 than might otherwise be permitted also need to bypass any
-rate limiters. The attacker will thus get arbitrary TRAIN packets accepted by
+rate limiters. The attacker will thus get arbitrary TRONE packets accepted by
 the peer, with the result being that the endpoint receives a false
 or misleading rate limit.
 
@@ -427,7 +434,7 @@ endpoints.
 
 # Privacy Considerations {#privacy}
 
-The focus of this analysis is the extent to which observing TRAIN
+The focus of this analysis is the extent to which observing TRONE
 packets could be used to gain information about endpoints.
 This might be leaking details of how applications using QUIC
 operate or leaks of endpoint identity when using additional
@@ -436,46 +443,46 @@ privacy protection, such as a VPN.
 Any network element that can observe the content of that packet can read the
 rate limit that was applied.  Any signal is visible on the path, from the point
 at which it is applied to the point at which it is consumed at an endpoint.
-On path elements can also alter the TRAIN signal to try trigger specific
+On path elements can also alter the TRONE signal to try trigger specific
 reactions and gain further knowledge.
 
 In the general case of a client connected to a server through the
-Internet, we believe that TRAIN does not provide much advantage to attackers.
+Internet, we believe that TRONE does not provide much advantage to attackers.
 The identities of the clients and servers are already visible through their
 IP addresses. Traffic analysis tools already provide more information than
-the data rate limits set by TRAIN.
+the data rate limits set by TRONE.
 
 There are two avenues of attack that require more analysis:
 
-* that the passive observation of TRAIN packets might help identify or
+* that the passive observation of TRONE packets might help identify or
   distinguish endpoints; and
-* that active manipulation of TRAIN signals might help reveal the
+* that active manipulation of TRONE signals might help reveal the
   identity of endpoints that are otherwise hidden behind VPNs or proxies.
 
 ## Passive Attacks
 
-If only few clients and server pairs negotiate the usage of TRAIN, the
-occasional observation of TRAIN packets will "stick out". That observation,
+If only few clients and server pairs negotiate the usage of TRONE, the
+occasional observation of TRONE packets will "stick out". That observation,
 could be combined with observation of timing and volume of traffic to
 help identify the endpoint or categorize the application that they
 are using.
 
-A variation of this issue occurs if TRAIN is widely implemented, but
+A variation of this issue occurs if TRONE is widely implemented, but
 only used in some specific circumstances. In that case, observation of
-TRAIN packets reveals information about the state of the endpoint.
+TRONE packets reveals information about the state of the endpoint.
 
 If multiple servers are accessed through the same front facing server,
 Encrypted Client Hello (ECH) may be used to prevent outside parties to
 identify which specific server a client is using. However, if only
-a few of these servers use TRAIN, any TRAIN packets
+a few of these servers use TRONE, any TRONE packets
 will help identify which specific server a client is using.
 
-This issue will be mitigated if TRAIN becomes widely implemented, and
-if the usage of TRAIN is not limited to the type of applications
+This issue will be mitigated if TRONE becomes widely implemented, and
+if the usage of TRONE is not limited to the type of applications
 that make active use of the signal.
 
 QUIC implementations are therefore encouraged to make the feature available
-unconditionally.  Endpoints might send TRAIN packets whenever a peer can accept
+unconditionally.  Endpoints might send TRONE packets whenever a peer can accept
 them.
 
 ## Active Attacks
@@ -486,7 +493,7 @@ in the packets behind VPN and proxy and also between the users and the VPN,
 but it does not know which VPN address corresponds to what user address.
 
 Suppose now that the attacker selects a flow on the link between the
-VPN/proxy and server. The attacker applies rate limit signals to TRAIN packets
+VPN/proxy and server. The attacker applies rate limit signals to TRONE packets
 in that flow. The attacker chooses a bandwidth that is
 lower than the "natural" bandwidth of the connection. A reduction
 in the rate of flows between client and VPN/proxy might allow
@@ -509,12 +516,12 @@ the attacker to link the altered flow to the client.
                Observe change
 ~~~
 
-An attacker that can manipulate TRAIN headers can also simulate
+An attacker that can manipulate TRONE headers can also simulate
 congestion signals by dropping packets or by setting the ECN CE bit.
 That will also likely result in changes in the congestion response by
 the affected client.
 
-A VPN or proxy could defend against this style of attack by removing TRAIN (and
+A VPN or proxy could defend against this style of attack by removing TRONE (and
 ECN) signals. There are few reasons to provide per-flow rate limit signals in
 that situation.  Endpoints might also either disable this feature or ignore any
 signals when they are aware of the use of a VPN or proxy.
@@ -525,7 +532,7 @@ This document registers a new QUIC version ({{iana-version}}) and a QUIC
 transport parameter ({{iana-tp}}).
 
 
-## TRAIN Version {#iana-version}
+## TRONE Version {#iana-version}
 
 This document registers the following entry to the "QUIC Versions" registry
 maintained at <https://www.iana.org/assignments/quic>, following the guidance
@@ -547,13 +554,13 @@ Contact:
 : QUIC Working Group (quic@ietf.org)
 
 Notes:
-: TRAIN Protocol
+: TRONE Protocol
 {: spacing="compact"}
 
 
-## train_supported Transport Parameter {#iana-tp}
+## trone_supported Transport Parameter {#iana-tp}
 
-This document registers the train_supported transport parameter in the "QUIC
+This document registers the trone_supported transport parameter in the "QUIC
 Transport Parameters" registry maintained at
 <https://www.iana.org/assignments/quic>, following the guidance from {{Section
 22.3 of QUIC}}.
@@ -562,7 +569,7 @@ Value:
 : 0xTBD
 
 Parameter Name:
-: train_supported
+: trone_supported
 
 Status:
 : Permanent
@@ -588,4 +595,5 @@ Notes:
 # Acknowledgments
 {:numbered="false"}
 
-Jana Iyengar has made significant contributions to the original TRAIN specification.
+Jana Iyengar has made significant contributions to the original TRAIN
+specification that forms the basis for a large part of this document.
