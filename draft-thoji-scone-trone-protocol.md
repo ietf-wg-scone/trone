@@ -252,7 +252,8 @@ defined by the TRONE protocol version.
 
 The Rate Signal field is set to 0x3F (63) when sent by a QUIC endpoint,
 indicating no rate limit is in place or that the TRONE protocol is not supported
-by network elements on the path.
+by network elements on the path. Vales 0x00 through 0x3E (62) represent the ceiling
+of rate being advised by the network element(s) on the path.
 
 For TRONE protocol version 0xTRONE1, the rate limits use a logarithmic scale with:
 * Base rate (b_min) = 100 Kbps
