@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-23T01:40:46.720665+00:00",
+  "timestamp": "2025-03-25T01:36:54.248028+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -405,6 +405,159 @@
               "body": "To be clear, I did not approve this document.",
               "createdAt": "2025-03-05T13:18:41Z",
               "updatedAt": "2025-03-05T13:18:41Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDON1dwo86P8JWx",
+      "title": "Initial attempt at adding version-dependent logarithmic rates",
+      "url": "https://github.com/ietf-wg-scone/trone/pull/12",
+      "state": "OPEN",
+      "author": "mjoras",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "First pass, expecting there will be further changes needed. There seemed to be general consensus around this approach, which we believe we need to take before an adoption call.",
+      "createdAt": "2025-03-24T22:03:34Z",
+      "updatedAt": "2025-03-25T01:21:17Z",
+      "baseRepository": "ietf-wg-scone/trone",
+      "baseRefName": "main",
+      "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
+      "headRepository": "mjoras/trone",
+      "headRefName": "main",
+      "headRefOid": "ad1f5972492fccf779c7684e85b5a52c5931353b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDON1dwo86ho3fT",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "Thank you for the PR. Looks good overall.",
+          "createdAt": "2025-03-24T22:45:22Z",
+          "updatedAt": "2025-03-24T23:06:41Z",
+          "comments": [
+            {
+              "originalPosition": 64,
+              "body": "```suggestion\r\n| 10 | 316 Kbps | 31.6 Mbps |\r\n```",
+              "createdAt": "2025-03-24T22:45:22Z",
+              "updatedAt": "2025-03-24T23:06:41Z"
+            },
+            {
+              "originalPosition": 75,
+              "body": "I think we do not have these in the proposed encoding? (and IMO we probably do not need them)",
+              "createdAt": "2025-03-24T22:46:27Z",
+              "updatedAt": "2025-03-24T23:06:41Z"
+            },
+            {
+              "originalPosition": 89,
+              "body": "Do we need this change? Not that it is incorrect, but seems a bit verbose, as the Rate Signal field is defined to be six bits.",
+              "createdAt": "2025-03-24T22:48:01Z",
+              "updatedAt": "2025-03-24T23:06:41Z"
+            },
+            {
+              "originalPosition": 98,
+              "body": "```suggestion\r\n```\r\nAs we read `version` from the packet later (see `packet[1..5]`), maybe it makes sense to delay the invocation of `convert_rate_to_signal` after that. Something like below.",
+              "createdAt": "2025-03-24T22:51:30Z",
+              "updatedAt": "2025-03-24T23:06:41Z"
+            },
+            {
+              "originalPosition": 112,
+              "body": "```suggestion\r\npacket_version = packet[1..5]\r\nif is_long and (packet_version == TRONE1_VERSION or packet_version == TRONE2_VERSION):\r\n  target_rate_value = convert_rate_to_signal(target_rate, packet_version)\r\n```",
+              "createdAt": "2025-03-24T22:54:25Z",
+              "updatedAt": "2025-03-24T23:06:41Z"
+            },
+            {
+              "originalPosition": 124,
+              "body": "```suggestion\r\nshould signal the minimum value (0) for rates below the range and preserve the\r\noriginal value for rates above the range.\r\n```\r\nWhen there are multiple network elements, the Rate Signal field might convey a value other than 63.",
+              "createdAt": "2025-03-24T23:02:53Z",
+              "updatedAt": "2025-03-24T23:06:41Z"
+            },
+            {
+              "originalPosition": 132,
+              "body": "```suggestion\r\n```",
+              "createdAt": "2025-03-24T23:03:14Z",
+              "updatedAt": "2025-03-24T23:06:41Z"
+            },
+            {
+              "originalPosition": 43,
+              "body": "Do we want to state that values 0 to 62 represents the ceiling values?",
+              "createdAt": "2025-03-24T23:05:53Z",
+              "updatedAt": "2025-03-24T23:06:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86hpc5V",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-25T00:58:13Z",
+          "updatedAt": "2025-03-25T00:58:13Z",
+          "comments": [
+            {
+              "originalPosition": 75,
+              "body": "You're right I got my wires crossed from my notes.",
+              "createdAt": "2025-03-25T00:58:13Z",
+              "updatedAt": "2025-03-25T00:58:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86hpT6C",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-25T00:29:04Z",
+          "updatedAt": "2025-03-25T01:21:17Z",
+          "comments": [
+            {
+              "originalPosition": 112,
+              "body": "I would not do it this way.  Instead, I would set the target rate value for each version as follows:\r\n\r\n```python\r\nversions = [TRONE_VERSION1, TRONE_VERSION2]\r\ntarget = [63, 63]\r\nfor i in 1..len(versions):\r\n    target[i] = convert_rate(target_rate, versions[i])\r\n\r\n# then when a packet arrives\r\nif packet[0] & 0x80 != 0x80:\r\n    skip\r\ni = find(versions, packet[1..5])\r\nif i is not None and packet[0] & 0x3f > target[i]:\r\n    packet[0] = packet[0] & 0xc0 | target[i]",
+              "createdAt": "2025-03-25T00:29:04Z",
+              "updatedAt": "2025-03-25T01:21:17Z"
+            },
+            {
+              "originalPosition": 136,
+              "body": "```suggestion\r\n* Support for both very low bitrates (down to 100 Kbps) and very high bitrates\r\n  (up to 12.5 Gbps)\r\n* Graceful handling of network elements that might only recognize one version\r\n  or some subset of future versions.\r\n```\r\n\r\nThis is unordered.",
+              "createdAt": "2025-03-25T00:29:47Z",
+              "updatedAt": "2025-03-25T01:21:17Z"
+            },
+            {
+              "originalPosition": 152,
+              "body": "```suggestion\r\n* When sending TRONE packets, endpoints SHOULD alternate between versions\r\n```\r\nUnordered",
+              "createdAt": "2025-03-25T00:30:41Z",
+              "updatedAt": "2025-03-25T01:21:17Z"
+            },
+            {
+              "originalPosition": 164,
+              "body": "```suggestion\r\n* Network elements SHOULD apply appropriate rate signals to all packets that\r\n   include a TRONE version they support.\r\n```",
+              "createdAt": "2025-03-25T00:31:45Z",
+              "updatedAt": "2025-03-25T01:21:17Z"
+            },
+            {
+              "originalPosition": 170,
+              "body": "We need to talk about rounding.\r\n\r\nIn practice, if the bitrate formula is $r=b * 10^{\\frac{n}{20}}$, the inverse is $n=\\left\\lceil 20 * \\log_{10}(\\frac{r}{b})\\right\\rceil$  or $n=\\left\\lfloor 20 * \\log_{10}(\\frac{r}{b})\\right\\rfloor$ but we should offer guidance on which to choose.",
+              "createdAt": "2025-03-25T00:36:56Z",
+              "updatedAt": "2025-03-25T01:21:17Z"
             }
           ]
         }
