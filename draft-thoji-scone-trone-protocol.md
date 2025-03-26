@@ -372,6 +372,63 @@ TRONE packets could be stripped from datagrams in the network, which cannot be
 reliably detected.  This could result in a sender falsely believing that no
 network element applied a rate limit signal.
 
+## Interactions with congestion control
+
+TRONE and congestion control both provide the application with estimates
+of a path capacity. They are complementary. Congestion control algorithms
+are typically designed to quickly detect and react to congestion, i.e., to
+the "minimum" capacity of a path. TRONE informs the endpoint
+of the maximum capacity of a path.
+
+Consider for example a path in which the bottleneck router implements Early
+Congestion Notification as specified in the L4S architecture {{?RFC9330}}.
+If the path capacity diminishes, queues will build up and the router
+will immediately start increasing the rate at which packets are marked
+as "Congestion Experienced". The receiving endpoint will notice these marks,
+and inform its peer. The incoming congestion will be detected within
+1 round trip time (RTT). This scenario will play out whatever the reason
+for the change in capacity, whether due to increased competition between
+multiple applications or, for example, to a change in capacity of a wireless
+channel.
+
+Consider then a condition in which congestion eases, either because the
+competing connections end or because the wireless transmission capacity
+improves. The endpoints will notice that the rate of ECN marking rate has
+become low enough, and that the path is not congested anymore. However,
+they don't know by how much they can increase their sending rate. Most
+congestion control algorithms will proceed cautiously, allowing the
+application to increase its sending rate step by step and verifying at each
+step that they are not causing congestion. In these cases, a TRONE
+signal can inform them about the changed capacity of the path and allow
+them to increase capacity faster.
+
+The TRONE signal can be particularly useful at the very beginning of a
+connection. Congestion control algorithms typically start with a
+slow start process in which the application is allowed to double
+its sending rate after each RTT, until congestion is notified. This
+results in a burst of excess transmission during the last RTT,
+creating queues and possibly causing packet losses. Queues and
+losses will affect not just the new connection that is testing the
+capacity of the path, but also all established connections that
+share the bottleneck. If the endpoints are using TRONE and learned the
+maximum capacity of the path, they can exit the slow start process
+as soon as the maximum capacity has been tested, and avoid creating
+queues or causing packet losses.
+
+The TRONE signal can also be useful if the applications remembers the
+congestion control parameters of previous connections, and uses a
+"careful resume" process to quickly ramp up capacity as specified
+in  ({{?I-D.ietf-tsvwg-careful-resume}}). The endpoints could use
+TRONE to verify that the path characteristics have not changed
+since the last connection before applying the careful resume
+process.
+
+In all cases, the endpoints should consider that the TRONE signal could
+have been spoofed (see {{security}}). The congestion controller can use
+the maximum capacity indicated by TRONE as a guide, but it
+can also cautiously probe for available
+capacity beyond the limit until receiving congestion signals.
+
 
 # Security Considerations {#security}
 
