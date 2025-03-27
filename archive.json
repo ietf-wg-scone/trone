@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-25T01:36:54.248028+00:00",
+  "timestamp": "2025-03-27T01:36:13.751606+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -214,9 +214,17 @@
       "labels": [],
       "body": "This came on repeatedly during the Bangkok IETF session. Congestion control and Trone are complementary, but we need to explain how that complementing works.",
       "createdAt": "2025-03-21T04:53:23Z",
-      "updatedAt": "2025-03-21T04:53:23Z",
+      "updatedAt": "2025-03-26T15:48:43Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "atiwariphd",
+          "authorAssociation": "NONE",
+          "body": "Totally agreed @huitema . We tried to describe the distinction between SCONE and ECN in an [earlier draft](https://datatracker.ietf.org/doc/draft-tomar-scone-ecn/) but I am glad you are owning up to describe the complementarity of Trone and congestion control wholistically.",
+          "createdAt": "2025-03-26T15:48:42Z",
+          "updatedAt": "2025-03-26T15:48:42Z"
+        }
+      ]
     },
     {
       "number": 9,
@@ -230,9 +238,24 @@
       "labels": [],
       "body": "There is a bit of ambiguity in the specification of \"who uses TRONE\". The original Scone WG appears to have focused on adaptive bit rate video. If we strictly kept that focus, we have a privacy issue. Third parties could observe the presence of Trone headers, and infer that the end to end QUIC connection is engaged in video streaming.\n\nTo reduce the privacy issue, we could adopt a combined strategy, and ask more applications to support Trone, thus weakening the correlation between Trone and video.\n\nWe could also envisage greasing, with applications sending datagrams composed of a Trone packet, followed by a short header and random content. If the peer is not Trone capable, such greasing packets will be discarded because they do done decrypt correctly. But the third parties cannot check the encryption, so they will not be able to distinguish such packets from \"real\" Trone -- i.e., successful greasing.",
       "createdAt": "2025-03-21T05:04:11Z",
-      "updatedAt": "2025-03-21T05:04:11Z",
+      "updatedAt": "2025-03-26T17:43:15Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "atiwariphd",
+          "authorAssociation": "NONE",
+          "body": "> But the third parties cannot check the encryption, so they will not be able to distinguish such packets from \"real\" Trone -- i.e., successful greasing.\n\nI am assuming you are referring to the network element as the \"third party\" here. If you prevent the network element from distinguishing the \"real\" Trone packets from the Greased packets, then how will the network element decide which packet to add the rate advisory to?",
+          "createdAt": "2025-03-26T08:32:29Z",
+          "updatedAt": "2025-03-26T08:32:29Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "@atiwariphd the network element cannot distinguish between grease and real TRONE packet. I documented that as an attack in a separate PR #13 ",
+          "createdAt": "2025-03-26T17:43:14Z",
+          "updatedAt": "2025-03-26T17:43:14Z"
+        }
+      ]
     },
     {
       "number": 10,
@@ -265,6 +288,74 @@
       "updatedAt": "2025-03-21T05:38:19Z",
       "closedAt": null,
       "comments": []
+    },
+    {
+      "number": 14,
+      "id": "I_kwDON1dwo86vv_gA",
+      "title": "Is the \"version=range\" paradigm appropriate?",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/14",
+      "state": "OPEN",
+      "author": "alvestrand",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "As presented at IETF 122, we define a \"version\" field that is used to choose between possible ranges.\nThis seems strange both from a cleanliness standpoint and from a greasing standpoint.\n\nWhen there are only two versions, the version field amounts to an extra bit in the range specifier - by including it directly in the range specifier (making it 0-127 rather than 0-63), we gain an unified range with a larger span (or a finer resolution, if we choose to reduce the multiplier in the exponential spacing).\n\nIf we desire to ensure that we can introduce more versions of the TRONE signal later, two versions with near-identical semantics are not enough.\n",
+      "createdAt": "2025-03-26T07:03:56Z",
+      "updatedAt": "2025-03-26T07:03:56Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 15,
+      "id": "I_kwDON1dwo86v0U91",
+      "title": "TRONE with other protocols - ICE in particular?",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/15",
+      "state": "OPEN",
+      "author": "alvestrand",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "As specified, the TRONE protocol only works with QUIC. And given that it can prepend data to a datagram, it is not a drop-in with anything but QUIC.\n\nThis form of signalling is interesting to other use cases. Would it be reasonable/possible/hard/impossible to carry a TRONE packet as an ICE extension?\n",
+      "createdAt": "2025-03-26T14:02:31Z",
+      "updatedAt": "2025-03-26T23:29:29Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "atiwariphd",
+          "authorAssociation": "NONE",
+          "body": "@alvestrand \n\n> This form of signalling is interesting to other use cases.\n\nCan you please articulate the use case?",
+          "createdAt": "2025-03-26T15:43:02Z",
+          "updatedAt": "2025-03-26T15:43:02Z"
+        },
+        {
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "body": "The classical WebRTC VC use case is one where we set up a video call (usually between the user and a datacenter), and we want to adapt the codec configuration to the available bandwidth.\nToday we do that using congestion control only.\n",
+          "createdAt": "2025-03-26T16:30:28Z",
+          "updatedAt": "2025-03-26T16:30:28Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "See issue #9 about greasing. The intermediaries do not know that a TRONE packet is in fact a QUIC packet. They merely see a TRONE packet followed by a QUIC like byte, a repeat of the connection identifier bytes, and a bunch of random looking bytes. If you want to add more complexity to ICE, your ICE implementation could certainly send UDP packets that match that format. QUIC enpoints use the \"random bytes\" for verifying that the packet is legit; you could use this random bytes to carry some kind of verifier in your ICE/TRONE packets.",
+          "createdAt": "2025-03-26T17:54:06Z",
+          "updatedAt": "2025-03-26T17:54:06Z"
+        },
+        {
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "body": "ICE packets are distinguished from other packets by looking at the first byte. TRONE packets, as specified, would put a different value in the first byte. See https://datatracker.ietf.org/doc/html/rfc7983#section-7\nIt would be trivial to specify a TRONE packet as an ICE attribute, and ICE even has support for protecting only some of the attributes in an ICE packet (it uses a hash over the message + a shared secret), but it's a non-trivial job for the router to find the TRONE packet inside the ICE message.\n",
+          "createdAt": "2025-03-26T21:00:02Z",
+          "updatedAt": "2025-03-26T21:00:02Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "@alvestrand that's why I suggested sending two messages, the ICE message proper, and a separate \"TRONE\" message on the same 4-tuple.",
+          "createdAt": "2025-03-26T23:29:28Z",
+          "updatedAt": "2025-03-26T23:29:28Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -422,7 +513,7 @@
       "labels": [],
       "body": "First pass, expecting there will be further changes needed. There seemed to be general consensus around this approach, which we believe we need to take before an adoption call.",
       "createdAt": "2025-03-24T22:03:34Z",
-      "updatedAt": "2025-03-25T01:21:17Z",
+      "updatedAt": "2025-03-26T05:58:47Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
@@ -560,8 +651,332 @@
               "updatedAt": "2025-03-25T01:21:17Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86hqTg8",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-25T03:24:09Z",
+          "updatedAt": "2025-03-25T03:25:23Z",
+          "comments": [
+            {
+              "originalPosition": 192,
+              "body": "We should talk about the privacy trade-offs with respect to sending each.  I think that it is reasonable to send both unconditionally, but it might be better to only send these when the estimated bandwidth availability enters the range covered by each.\r\n\r\nAn application that is currently operating in the TRONE1 range could decide that it only needs to send TRONE1 packets.  That limits the number of markings that are needed and does not reveal anything extra.  The challenge being in ensuring that the network element is aware that TRONE markings are available.  For that, I would recommend always sending one packet at least once, even when the active usage is well outside of the protocol-defined ranges.\r\n\r\n\r\nHowever, an application that MIGHT operate in just the TRONE2 range reveals information that the network does not otherwise obtain if it sends the TRONE2 signal.",
+              "createdAt": "2025-03-25T03:24:09Z",
+              "updatedAt": "2025-03-25T03:25:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86hqVP1",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-25T03:28:07Z",
+          "updatedAt": "2025-03-25T03:28:07Z",
+          "comments": [
+            {
+              "originalPosition": 112,
+              "body": "Or more clever:\r\n\r\n```python\r\ni = find(versions, packet[1..5]) if packet[0] & 0x80 == 0x80 else None\r\nif i is not None and ...\r\n```",
+              "createdAt": "2025-03-25T03:28:07Z",
+              "updatedAt": "2025-03-25T03:28:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86hrFXa",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-25T05:31:29Z",
+          "updatedAt": "2025-03-25T05:31:30Z",
+          "comments": [
+            {
+              "originalPosition": 192,
+              "body": "Agreed. Should I leave the text here while we work through this nuance or do you think there's something better to put in its place for now?",
+              "createdAt": "2025-03-25T05:31:30Z",
+              "updatedAt": "2025-03-25T05:31:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86hrGof",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-25T05:34:29Z",
+          "updatedAt": "2025-03-25T05:34:29Z",
+          "comments": [
+            {
+              "originalPosition": 192,
+              "body": "An issue for followup is fine.",
+              "createdAt": "2025-03-25T05:34:29Z",
+              "updatedAt": "2025-03-25T05:34:29Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86htdY0",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-25T09:38:15Z",
+          "updatedAt": "2025-03-25T09:38:15Z",
+          "comments": [
+            {
+              "originalPosition": 170,
+              "body": "In the current state, I do not think we need to talk about rounding.\r\n\r\nWe state that the code points represent the ceiling. That means code points 0, 20, 40, 60 represent `<= 100Kbps`, `<= 1Mbps`, `<=10Mbps`, `<=100Mbps`, as they are divisible. OTOH, other values are indivisible. For example, 10<sup>1/20</sup> is 112201.84..., meaning that code point 1 represents bit rate up to 112,201bps.\r\n\r\nMaybe all we need to provide is these examples.\r\n\r\nOf course, we could go the other way and state that the 3 (or 4) most significant digits of the log function represents the bit rate...",
+              "createdAt": "2025-03-25T09:38:15Z",
+              "updatedAt": "2025-03-25T09:38:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h2MB3",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "I think this is fine, except for the confusion between \"no TRONE on this path\" and \"no limit\".",
+          "createdAt": "2025-03-25T22:21:17Z",
+          "updatedAt": "2025-03-25T22:27:26Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I think saying \"63 = No limit\" conflates two separate notions:\r\n\r\n* the TRONE protocol is not supported by network elements on the path (definition of 0x3F above)\r\n* the limit is higher that either 126Mbps or 12.6 Gbps.\r\n\r\nWe could remove that issue by defining the last lines of the table as:\r\n\r\n| 60 | 100 Mbps | 10 Gbps |\r\n| 62 | No limit | No limit |\r\n| 63 |  TRONE not supported on path |  TRONE not supported on path |\r\n\r\n\r\n",
+              "createdAt": "2025-03-25T22:21:17Z",
+              "updatedAt": "2025-03-25T22:27:26Z"
+            },
+            {
+              "originalPosition": 122,
+              "body": "Would be \"up to 10Gbps\" if we use only 62 actual ranges.",
+              "createdAt": "2025-03-25T22:22:38Z",
+              "updatedAt": "2025-03-25T22:27:26Z"
+            },
+            {
+              "originalPosition": 170,
+              "body": "I think it is fine to base the rounding on the table. I think we should say \"pick the highest rate signal that correspond to a value lower or equal to the rate\", but it might be a local decision.",
+              "createdAt": "2025-03-25T22:25:20Z",
+              "updatedAt": "2025-03-25T22:27:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h2_U7",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T00:54:09Z",
+          "updatedAt": "2025-03-26T00:54:10Z",
+          "comments": [
+            {
+              "originalPosition": 170,
+              "body": "We should offer advice to network operators on the consequences of different choices.  Rounding down has the effect of guaranteeing that the used capacity is lower than the target.  However, given that applications that employ rate adaptation will rarely be able to completely use the given bandwidth, it might be better to pick a higher number.  Especially given that any excess is never more than about 11% higher than the previous step.",
+              "createdAt": "2025-03-26T00:54:10Z",
+              "updatedAt": "2025-03-26T00:54:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h4Khj",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T04:16:12Z",
+          "updatedAt": "2025-03-26T04:16:12Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I'm not convinced that we need that feature.  What would  you do with that information?",
+              "createdAt": "2025-03-26T04:16:12Z",
+              "updatedAt": "2025-03-26T04:16:12Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h4UB0",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T04:47:48Z",
+          "updatedAt": "2025-03-26T04:47:48Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I think there is a difference between \"more than 10Gbps\" and \"don't know\". In one case, the app has the go ahead to use a vast amount of bandwidth. In the other, the app has to proceed cautiously and rely on congestion control for a bandwidth estimate.",
+              "createdAt": "2025-03-26T04:47:48Z",
+              "updatedAt": "2025-03-26T04:48:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h4Ymh",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T05:04:16Z",
+          "updatedAt": "2025-03-26T05:04:16Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "`10M*10^{62/20}` = 12.589G; `10M*10^{61/20}` = 11.220G.  We only get 10G if we decide to use 61 ranges.",
+              "createdAt": "2025-03-26T05:04:16Z",
+              "updatedAt": "2025-03-26T05:04:16Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h4Zl7",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T05:07:16Z",
+          "updatedAt": "2025-03-26T05:07:16Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I can't conceive of a scenario where an app would see an \"uncapped\" signal and decide that it can switch to sending at line rate.  You are taking the word of one path element and extrapolating to the entire path.\r\n\r\nLet's say that you get a 1Mbps signal.  You are currently at ~30kbps.  It might be reasonable to skip a few steps in your capacity probing to get closer to 1Mbps.  But that might be based on an assumption about the relative availability of bandwidth in modern networks and maybe past experience with the same network; I doubt you would make the same guess at 1Tbps (if that were a possible signal, that is).\r\n\r\nI conclude that while the congestion controller might be nudged a little, senders still need to have one and use that to probe the actual path availability.  The network still has queues and other users.  Expressions of policy limitations don't necessary entail guarantees, even at the node that is making that assertion.",
+              "createdAt": "2025-03-26T05:07:16Z",
+              "updatedAt": "2025-03-26T05:07:17Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h4m8S",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T05:51:58Z",
+          "updatedAt": "2025-03-26T05:51:58Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "Sorry, I didn't do the math. But yes, that's the crux of the debate. We have 64 code points, from 0 to 63. If we reserve one to say \"don't know\", that means using only 62 code points, the last one marking the unbounded range.",
+              "createdAt": "2025-03-26T05:51:58Z",
+              "updatedAt": "2025-03-26T05:51:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86h4pOz",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-26T05:58:46Z",
+          "updatedAt": "2025-03-26T05:58:47Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "I really need to get going on writing the congestion control part. There are a couple of ways to use a \"bandwidth cap\". It could solve one specific problem, stop the \"slow start\" exponential growth early. It could fit with the \"careful resume\" mechanism -- very that the new connection has the same cap as the previous one before reusing values learned before. It could inform of bandwidth drop, controlling the building of queues when the congestion controller discovers the new capacity. It could inform \"resume after congestion\" mechanisms, to grow sending rate quicker after transient congestion stops. At the application level, it can inform choice of codecs...",
+              "createdAt": "2025-03-26T05:58:46Z",
+              "updatedAt": "2025-03-26T05:58:47Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 13,
+      "id": "PR_kwDON1dwo86QF6Tw",
+      "title": "Description of DOS attack against intermediaries",
+      "url": "https://github.com/ietf-wg-scone/trone/pull/13",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Adding a description of the attack listed in #11.\r\n\r\nClose #11",
+      "createdAt": "2025-03-25T18:25:44Z",
+      "updatedAt": "2025-03-25T18:26:27Z",
+      "baseRepository": "ietf-wg-scone/trone",
+      "baseRefName": "main",
+      "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
+      "headRepository": "ietf-wg-scone/trone",
+      "headRefName": "sec-rec-inter",
+      "headRefOid": "7433288acc0264684fdadc14630f56fbdae4cabe",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 16,
+      "id": "PR_kwDON1dwo86QQjgP",
+      "title": "First cut for congestion and TRONE interaction",
+      "url": "https://github.com/ietf-wg-scone/trone/pull/16",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I think that we need to explicitly describe the interaction between congestion control and TRONE, if only to dispel any notion that TRONE replaces congestion control, as stated in issue #8. This is a first cut for describing such interactions. ",
+      "createdAt": "2025-03-26T18:51:48Z",
+      "updatedAt": "2025-03-26T18:51:48Z",
+      "baseRepository": "ietf-wg-scone/trone",
+      "baseRefName": "main",
+      "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
+      "headRepository": "ietf-wg-scone/trone",
+      "headRefName": "first-congestion",
+      "headRefOid": "05c4968e3fef1ddfe29c6b0f017f16f798e02bc6",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
