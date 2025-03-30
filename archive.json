@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-27T01:36:13.751606+00:00",
+  "timestamp": "2025-03-30T01:42:52.369404+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -317,7 +317,7 @@
       "labels": [],
       "body": "As specified, the TRONE protocol only works with QUIC. And given that it can prepend data to a datagram, it is not a drop-in with anything but QUIC.\n\nThis form of signalling is interesting to other use cases. Would it be reasonable/possible/hard/impossible to carry a TRONE packet as an ICE extension?\n",
       "createdAt": "2025-03-26T14:02:31Z",
-      "updatedAt": "2025-03-26T23:29:29Z",
+      "updatedAt": "2025-03-27T08:22:09Z",
       "closedAt": null,
       "comments": [
         {
@@ -354,8 +354,71 @@
           "body": "@alvestrand that's why I suggested sending two messages, the ICE message proper, and a separate \"TRONE\" message on the same 4-tuple.",
           "createdAt": "2025-03-26T23:29:28Z",
           "updatedAt": "2025-03-26T23:29:28Z"
+        },
+        {
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "body": "Thanks for the clarification - I imagined that you were suggesting sending a single UDP packet with a TRONE message followed by the ICE message, but sending two UDP makes much more sense. Specifying a payload that would pass the TRONE inspector and be verifiable with the ICE credentials shouldn't take much more than a page.",
+          "createdAt": "2025-03-27T08:22:08Z",
+          "updatedAt": "2025-03-27T08:22:08Z"
         }
       ]
+    },
+    {
+      "number": 17,
+      "id": "I_kwDON1dwo86wCKw4",
+      "title": "Clarify rounding behavior for bitrate-to-signal value conversion",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/17",
+      "state": "OPEN",
+      "author": "mjoras",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "See discussion on #12 \n\nThe draft needs clear guidance on rounding when converting between bitrates and signal values.\n\n- Should implementers round up or down when converting from bitrates to signal values?\n- What are the practical implications of each choice? (rounding down ensures staying under capacity limits; rounding up maximizes bandwidth utilization when rate adaptation algorithms rarely use full capacity)\n- Recommend specific approach with rationale, noting the logarithmic scale means adjacent steps differ by at most ~11%\n- Include example calculations demonstrating the recommended approach\n\n\n\n",
+      "createdAt": "2025-03-27T15:07:00Z",
+      "updatedAt": "2025-03-27T15:07:00Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 18,
+      "id": "I_kwDON1dwo86wCPkw",
+      "title": "Confusion between \"No limit\" and \"TRONE not supported on path\"",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/18",
+      "state": "OPEN",
+      "author": "mjoras",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "See discussion on #12 \n\nThe draft currently conflates two distinct conditions in signal value 63 to mean either:\n- The network can support unlimited bandwidth (higher than max range)\n- TRONE is not supported by network elements on path\n\nThis creates ambiguity for applications interpreting signal 63 - should they assume unlimited bandwidth or cautiously rely on congestion control? We could disambiguate this by using different signal values:\n\n- 62: No limit (bandwidth exceeds maximum range)\n- 63: TRONE not supported on path\n\nOr clearly specify how applications should interpret signal 63, acknowledging its dual meaning requires caution.",
+      "createdAt": "2025-03-27T15:11:45Z",
+      "updatedAt": "2025-03-27T15:12:49Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "body": "My personal opinion is that we don't really need a distinction here. No signal and \"unlimited\" basically means that the application and CCA aren't going to get much hinting. In practice if a network wants to hint \"YUGGGEEEE\" as a limit it could set the max one in the higher range, for example.",
+          "createdAt": "2025-03-27T15:12:48Z",
+          "updatedAt": "2025-03-27T15:12:48Z"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "id": "I_kwDON1dwo86wDn_2",
+      "title": "Privacy considerations when sending different TRONE protocol versions",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/19",
+      "state": "OPEN",
+      "author": "mjoras",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "See discussion on #12 \n\nThe draft currently recommends alternating between TRONE1 and TRONE2 versions without addressing the privacy implications. We should think about this more and at least add some considerations to the text.\n\nTo ensure network elements know TRONE is supported while minimizing information disclosure, one idea would be:\n\n- Send at least one packet of each version initially even if the application only operates in one range.\n- Subsequently prioritize sending the version most relevant to current bandwidth usage\n",
+      "createdAt": "2025-03-27T16:50:15Z",
+      "updatedAt": "2025-03-27T16:50:15Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -513,7 +576,7 @@
       "labels": [],
       "body": "First pass, expecting there will be further changes needed. There seemed to be general consensus around this approach, which we believe we need to take before an adoption call.",
       "createdAt": "2025-03-24T22:03:34Z",
-      "updatedAt": "2025-03-26T05:58:47Z",
+      "updatedAt": "2025-03-28T04:28:22Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
@@ -524,7 +587,22 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "body": "Took all the suggestions and punted some things to issues. Are we okay with this now?",
+          "createdAt": "2025-03-27T16:51:01Z",
+          "updatedAt": "2025-03-27T16:51:01Z"
+        },
+        {
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "body": "Note the question in #14 - not an objection to merging this PR, but a heads-up that we may want to revisit this.\r\n",
+          "createdAt": "2025-03-28T04:28:21Z",
+          "updatedAt": "2025-03-28T04:28:21Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDON1dwo86ho3fT",
@@ -921,6 +999,66 @@
               "body": "I really need to get going on writing the congestion control part. There are a couple of ways to use a \"bandwidth cap\". It could solve one specific problem, stop the \"slow start\" exponential growth early. It could fit with the \"careful resume\" mechanism -- very that the new connection has the same cap as the previous one before reusing values learned before. It could inform of bandwidth drop, controlling the building of queues when the congestion controller discovers the new capacity. It could inform \"resume after congestion\" mechanisms, to grow sending rate quicker after transient congestion stops. At the application level, it can inform choice of codecs...",
               "createdAt": "2025-03-26T05:58:46Z",
               "updatedAt": "2025-03-26T05:58:47Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86iP_c_",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T15:07:14Z",
+          "updatedAt": "2025-03-27T15:07:14Z",
+          "comments": [
+            {
+              "originalPosition": 170,
+              "body": "Filed #17 ",
+              "createdAt": "2025-03-27T15:07:14Z",
+              "updatedAt": "2025-03-27T15:07:21Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86iQGWk",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T15:13:34Z",
+          "updatedAt": "2025-03-27T15:13:34Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "Filed #18 for followup though I'm largely in agreement with @martinthomson on this.",
+              "createdAt": "2025-03-27T15:13:34Z",
+              "updatedAt": "2025-03-27T15:13:34Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86iSFuB",
+          "commit": {
+            "abbreviatedOid": "1b73bf9"
+          },
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-03-27T16:50:24Z",
+          "updatedAt": "2025-03-27T16:50:24Z",
+          "comments": [
+            {
+              "originalPosition": 192,
+              "body": "Filed #19 ",
+              "createdAt": "2025-03-27T16:50:24Z",
+              "updatedAt": "2025-03-27T16:50:24Z"
             }
           ]
         }
