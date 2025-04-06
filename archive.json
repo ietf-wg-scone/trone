@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-03T01:36:52.796653+00:00",
+  "timestamp": "2025-04-06T01:41:46.036305+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -583,7 +583,7 @@
       "labels": [],
       "body": "First pass, expecting there will be further changes needed. There seemed to be general consensus around this approach, which we believe we need to take before an adoption call.",
       "createdAt": "2025-03-24T22:03:34Z",
-      "updatedAt": "2025-03-28T04:28:22Z",
+      "updatedAt": "2025-04-03T22:22:55Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
@@ -608,6 +608,13 @@
           "body": "Note the question in #14 - not an objection to merging this PR, but a heads-up that we may want to revisit this.\r\n",
           "createdAt": "2025-03-28T04:28:21Z",
           "updatedAt": "2025-03-28T04:28:21Z"
+        },
+        {
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "body": "@huitema @kazuho @martinthomson any further thoughts or are we okay to merge this and iterate?",
+          "createdAt": "2025-04-03T15:35:36Z",
+          "updatedAt": "2025-04-03T15:35:36Z"
         }
       ],
       "reviews": [
@@ -1068,6 +1075,39 @@
               "updatedAt": "2025-03-27T16:50:24Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86jZV-N",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-04-03T22:21:54Z",
+          "updatedAt": "2025-04-03T22:21:54Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "We can come back to that after merging this PR.",
+              "createdAt": "2025-04-03T22:21:54Z",
+              "updatedAt": "2025-04-03T22:21:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86jZWRw",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Let's merge this. We can iterate later.",
+          "createdAt": "2025-04-03T22:22:55Z",
+          "updatedAt": "2025-04-03T22:22:55Z",
+          "comments": []
         }
       ]
     },
