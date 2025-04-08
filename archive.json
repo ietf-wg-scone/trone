@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-06T01:41:46.036305+00:00",
+  "timestamp": "2025-04-08T01:37:42.221335+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -583,7 +583,7 @@
       "labels": [],
       "body": "First pass, expecting there will be further changes needed. There seemed to be general consensus around this approach, which we believe we need to take before an adoption call.",
       "createdAt": "2025-03-24T22:03:34Z",
-      "updatedAt": "2025-04-03T22:22:55Z",
+      "updatedAt": "2025-04-07T20:12:53Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
@@ -615,6 +615,13 @@
           "body": "@huitema @kazuho @martinthomson any further thoughts or are we okay to merge this and iterate?",
           "createdAt": "2025-04-03T15:35:36Z",
           "updatedAt": "2025-04-03T15:35:36Z"
+        },
+        {
+          "author": "mjoras",
+          "authorAssociation": "NONE",
+          "body": "Who actually has merge approval perms? @britram could I get it provisionally just to h it the button? \ud83d\ude42 ",
+          "createdAt": "2025-04-07T20:12:52Z",
+          "updatedAt": "2025-04-07T20:12:52Z"
         }
       ],
       "reviews": [
