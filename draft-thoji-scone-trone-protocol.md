@@ -344,8 +344,8 @@ if is_long and (packet_version == TRONE1_VERSION or packet_version == TRONE2_VER
     packet[0] = packet[0] & 0xc0 | target_rate_value
 ~~~
 
-For TRONE packets with two versions, a network element applies the same rate
-policy to both, accounting for the different scales of each version. When a
+A network element applies the same rate policy to TRONE packets of both
+versions, accounting for the different scales of each version. When a
 network element signals a rate limit that falls within the range of both
 versions, it should signal appropriate values in each version. When the target
 rate limit is outside the range of a particular version, the network element
@@ -357,9 +357,9 @@ original value for rates above the range.
 The TRONE protocol defines two versions (0xTRONE1 and 0xTRONE2) that cover
 different but overlapping ranges of bitrates. This design allows for:
 
-1. Support for both very low bitrates (down to 100 Kbps) and very high bitrates
+*  Support for both very low bitrates (down to 100 Kbps) and very high bitrates
    (up to 12.5 Gbps)
-2. Graceful handling of network elements that might only recognize one version
+*  Graceful handling of network elements that might only recognize one version
    or some subset of future versions.
 
 ## Converting Between Versions
@@ -376,19 +376,18 @@ The formulas for conversion are:
 Endpoints should observe the following guidelines when sending and processing
 TRONE packets:
 
-1. When sending TRONE packets, endpoints SHOULD alternate between versions
+*  When sending TRONE packets, endpoints SHOULD alternate between versions
    0xTRONE1 and 0xTRONE2 to ensure network elements can signal rate limits across
    the entire supported range.
 
-2. When receiving TRONE packets with different versions, endpoints SHOULD:
+*  When receiving TRONE packets with different versions, endpoints SHOULD:
    * Convert all signals to their corresponding bitrates
    * Use the most restrictive (lowest) effective rate limit
    * If one version's signal indicates "no limit" (value 63) but the other
      indicates a limit, use the specified limit
 
-3. Network elements SHOULD apply appropriate rate signals to both versions when
-   they observe them, translating the target rate limit to the appropriate signal
-   value for each version's scale.
+*  Network elements SHOULD apply appropriate rate signals to all packets that
+   include a TRONE version they support.
 
 ## Example Conversions
 
