@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-08T01:37:42.221335+00:00",
+  "timestamp": "2025-04-10T01:37:21.476162+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -60,15 +60,15 @@
       "id": "I_kwDON1dwo86qsnWm",
       "title": "Throughput advice format",
       "url": "https://github.com/ietf-wg-scone/trone/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "While we're figuring out how to agree on a throughput advice format we could initially include both options:\n\n- A TRAIN Packet always includes a payload field of size N after the SCID. \n- The third most significant bit is set to 1 when a network element updates the payload field. \n- If the bit is not set, the low 5 bits are used to signal a preset rate.",
       "createdAt": "2025-02-19T16:20:44Z",
-      "updatedAt": "2025-02-20T10:26:30Z",
-      "closedAt": null,
+      "updatedAt": "2025-04-08T11:32:27Z",
+      "closedAt": "2025-04-08T11:32:26Z",
       "comments": [
         {
           "author": "huitema",
@@ -83,6 +83,13 @@
           "body": "I think it's fine if we eventually converge on a single format / location for the advice (I have my bias already).  \nIn order to get there it might be useful to have both options on the table so we can do some early implementations and measurements.\n\nAlso, with regards to composability. I agree that there are possible cases, but they are probably not that common. A network element that only considers the top bits could simply not send throughput advice if it sees the \"check the payload\" bit. ",
           "createdAt": "2025-02-20T10:26:28Z",
           "updatedAt": "2025-02-20T10:26:28Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Based on the agreed design this issue is no longer relevant. ",
+          "createdAt": "2025-04-08T11:32:26Z",
+          "updatedAt": "2025-04-08T11:32:26Z"
         }
       ]
     },
@@ -188,7 +195,7 @@
       "labels": [],
       "body": "7.3.  Feedback To Sender About Signals \n\nSuggest that the TRONE draft consider a use case for client to send an explicit ACK to the \"network element\" upon receiving a TRONE packet. Without an explicit ACK, a NE may not know if the client has received the latest Throughput advisory bit-rate. This may help the scenario where a client may not self regulate due to loss of TRONE packet with the most recent Throughput advisory bit-rate.\n\nAdding a requirement that support the ACK from client to the network element. \n\nI-D mishra-scone-usecase-00 listed the following requirement: \n\nClient-application endpoint SHOULD send acknowledgement receipt of throughput advisory signal from the network element using the SCONE (TRONE) signal\n\nhttps://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.3.1",
       "createdAt": "2025-03-20T06:50:46Z",
-      "updatedAt": "2025-04-01T23:21:42Z",
+      "updatedAt": "2025-04-09T06:32:15Z",
       "closedAt": null,
       "comments": [
         {
@@ -204,6 +211,13 @@
           "body": "Hi Marcus, I'm cross referring a comment posted on my GitHub RE client ACK. Please see below:\n\nhttps://github.com/smishra1200/SCONE-Use-Case/issues/1",
           "createdAt": "2025-04-01T23:21:41Z",
           "updatedAt": "2025-04-01T23:21:41Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "The clients use TRONE because they seek the advice. You have to assume that they will heed that advice, largely because of self interest. Nobody want application data thrown out randomly and causing terrible UI artefacts.\n\nAs @ihlar says, if the network wants to enforce something, it has to implement it using some kind of active queue management. Preferably signalling to the client using ECN/L4S. ",
+          "createdAt": "2025-04-09T06:32:15Z",
+          "updatedAt": "2025-04-09T06:32:15Z"
         }
       ]
     },
@@ -276,9 +290,17 @@
       "labels": [],
       "body": "This is already discussed in the [TRAIN issue 32](https://github.com/martinthomson/train-protocol/issues/32). A Trone intermediary can mistake packets of some other applications for Trone packets. If it reqrite 6 bits, that will cause the packet to be eithre dropped or misinterpreted.\n\nAs explained by @ihlar during the IETF meeting in Bangkok, we need to distinguish:\n\n1. random collision: the end to end application issues some random first bytes that happen to mimic Trone. It will happen at low frequency.\n2. systematic collision: the end to end collision had negotiated some header that happens to Mimic Trone. All packets with that header will be mangled.\n\nThe proposed solution is for intermediaries to keep flow state and stop marking if too many packets of a flow match Trone. We need to develop that.\n",
       "createdAt": "2025-03-21T05:11:54Z",
-      "updatedAt": "2025-03-21T05:11:54Z",
+      "updatedAt": "2025-04-08T09:29:06Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Agree we should document this and give some guidance on when to stop marking.\n\nThe use of two versions could help here as well. If the protocol mandates that endpoints send packets of both versions, only  observing packets of a single version could be an indication that these packets are mimicked and not real TRONE.\n\nSo, something like - stop marking if:\n\n1. After observing N packets, the ratio of TRONE to non-TRONE packets is close to 1.\n2. After observing M TRONE packets, the ratio of TRONE-1 to TRONE-2 (or vice versa) is close to 1.  ",
+          "createdAt": "2025-04-08T09:29:05Z",
+          "updatedAt": "2025-04-08T09:29:05Z"
+        }
+      ]
     },
     {
       "number": 11,
@@ -394,20 +416,27 @@
       "url": "https://github.com/ietf-wg-scone/trone/issues/18",
       "state": "OPEN",
       "author": "mjoras",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See discussion on #12 \n\nThe draft currently conflates two distinct conditions in signal value 63 to mean either:\n- The network can support unlimited bandwidth (higher than max range)\n- TRONE is not supported by network elements on path\n\nThis creates ambiguity for applications interpreting signal 63 - should they assume unlimited bandwidth or cautiously rely on congestion control? We could disambiguate this by using different signal values:\n\n- 62: No limit (bandwidth exceeds maximum range)\n- 63: TRONE not supported on path\n\nOr clearly specify how applications should interpret signal 63, acknowledging its dual meaning requires caution.",
       "createdAt": "2025-03-27T15:11:45Z",
-      "updatedAt": "2025-03-27T15:12:49Z",
+      "updatedAt": "2025-04-08T11:28:47Z",
       "closedAt": null,
       "comments": [
         {
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "My personal opinion is that we don't really need a distinction here. No signal and \"unlimited\" basically means that the application and CCA aren't going to get much hinting. In practice if a network wants to hint \"YUGGGEEEE\" as a limit it could set the max one in the higher range, for example.",
           "createdAt": "2025-03-27T15:12:48Z",
           "updatedAt": "2025-03-27T15:12:48Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> My personal opinion is that we don't really need a distinction here. No signal and \"unlimited\" basically means that the application and CCA aren't going to get much hinting. In practice if a network wants to hint \"YUGGGEEEE\" as a limit it could set the max one in the higher range, for example.\n\nI agree, there is no need to distinguish between these. I take 63 to mean there is no limit in this range, whether that is due to an active policy or absence thereof makes no difference. ",
+          "createdAt": "2025-04-08T11:28:45Z",
+          "updatedAt": "2025-04-08T11:28:45Z"
         }
       ]
     },
@@ -418,14 +447,74 @@
       "url": "https://github.com/ietf-wg-scone/trone/issues/19",
       "state": "OPEN",
       "author": "mjoras",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See discussion on #12 \n\nThe draft currently recommends alternating between TRONE1 and TRONE2 versions without addressing the privacy implications. We should think about this more and at least add some considerations to the text.\n\nTo ensure network elements know TRONE is supported while minimizing information disclosure, one idea would be:\n\n- Send at least one packet of each version initially even if the application only operates in one range.\n- Subsequently prioritize sending the version most relevant to current bandwidth usage\n",
       "createdAt": "2025-03-27T16:50:15Z",
-      "updatedAt": "2025-03-27T16:50:15Z",
+      "updatedAt": "2025-04-09T05:32:07Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think it would be fine to keep alternating the versions at all times, just use two datagrams to send TRONE probes. I suppose that would be the best solution from a privacy perspective (unless I'm missing something). The additional cost of alternating should be low, and there are other potential benefits as discussed in #10 .",
+          "createdAt": "2025-04-08T11:58:15Z",
+          "updatedAt": "2025-04-08T11:58:15Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "To be precise, will it be:\r\na) for the first burst send TRONE1 and for the next burst send TRONE 2, or\r\nb) for each burst send both TRONE 1 and TRONE2?\r\n\r\nI assume it'd be _b\", but trying to confirm.\r\n\r\nRegarding the overhead, I agree that it'd be negligible. The lowest bitrate being proposed is 100Kbps which is ~10pps assuming 1200 byte packets. That'd mean that, if endpoints are to receive updated TRONE signals one per every 10 seconds (see #20), the difference is sending one or two QUIC packets with TRONE headers for every 100 UDP datagrams.",
+          "createdAt": "2025-04-09T04:50:22Z",
+          "updatedAt": "2025-04-09T04:50:22Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Yes agree that it should be _b_.",
+          "createdAt": "2025-04-09T05:32:05Z",
+          "updatedAt": "2025-04-09T05:32:05Z"
+        }
+      ]
+    },
+    {
+      "number": 20,
+      "id": "I_kwDON1dwo86xr5d8",
+      "title": "Time window for suggested bitrate",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/20",
+      "state": "OPEN",
+      "author": "rjt-ietf",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This issue is mostly in regard to  slide 11 of https://datatracker.ietf.org/meeting/122/materials/slides-122-scone-trone-questions-01, which was discussed at IETF 122.\n\nThe current draft doesn't mention this perspective so I want to open up the discussion.\n\nIn general, I think that a fixed window length specified by SCONE is preferable as it simplifies works for network elements. But meanwhile, we need to find a window that works for all users of SCONE.\n\nDifferent video applications choose to buffer different lengths of videos during playbacks. For example, App A may buffer 10s while App B buffers 20s. A 10-second window will work for app A but not work for app B. A 20-second window will work for both.\n\nA flow that complies with a short window will also comply with a longer one.\n\nThis means we should probably specify a longer window to accommodate different applications, but not too long that exceeds the average duration of a video connection. ",
+      "createdAt": "2025-04-08T22:27:05Z",
+      "updatedAt": "2025-04-09T23:48:35Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "> This means we should probably specify a longer window to accommodate different applications, but not too long that exceeds the average duration of a video connection.\r\n\r\nAgreed.\r\n\r\nSince network devices cannot identify the actual application protocol being used (e.g., HLS, WebRTC, MOQ), the responsiveness to TRONE signals they can expect corresponds to that of the least responsive application protocol.\r\n\r\nAssuming that HLS would use chunks as large as 10 seconds, and assuming that each chunk would be sent at full speed, window of 20 seconds is a good ball-park figure, IMO.",
+          "createdAt": "2025-04-09T04:42:48Z",
+          "updatedAt": "2025-04-09T04:42:48Z"
+        },
+        {
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "body": "For realtime video, the interesting timeframe  is the next 20 ms - we don't buffer on the HLS timescale.\nPermitted burst size is of interest, but mainly because we don't want the L4S problem of sending a keyframe and having the last packet of the frame be marked as congestion-experienced because the whole keyframe was sent at line rate.\n\n",
+          "createdAt": "2025-04-09T06:20:51Z",
+          "updatedAt": "2025-04-09T06:20:51Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "I think there are two separate questions:\n* time window of the signals being emitted by network elements (which would be the window that they would use for detecting abuse)\n* how frequent endpoints request / receive updates\n\nFor the first question, unless endpoints agree to expose what type of application they are, the time window has to be that of the application that takes the longest time to adopt to the SCONE signal. My guess is that that application would be HLS, and that therefore the time window should be in the order of 10 seconds.\n\nFor the second question, I think there is no need to forbid endpoints requesting SCONE signals more frequently, e.g., by sending TRONE packets.",
+          "createdAt": "2025-04-09T23:47:54Z",
+          "updatedAt": "2025-04-09T23:48:34Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -576,28 +665,30 @@
       "id": "PR_kwDON1dwo86P8JWx",
       "title": "Initial attempt at adding version-dependent logarithmic rates",
       "url": "https://github.com/ietf-wg-scone/trone/pull/12",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "mjoras",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "First pass, expecting there will be further changes needed. There seemed to be general consensus around this approach, which we believe we need to take before an adoption call.",
       "createdAt": "2025-03-24T22:03:34Z",
-      "updatedAt": "2025-04-07T20:12:53Z",
+      "updatedAt": "2025-04-09T05:30:13Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
       "headRepository": "mjoras/trone",
       "headRefName": "main",
-      "headRefOid": "ad1f5972492fccf779c7684e85b5a52c5931353b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "5764ba5c4c979069d5c841889845133a61fae8c7",
+      "closedAt": "2025-04-09T05:30:13Z",
+      "mergedAt": "2025-04-09T05:30:13Z",
+      "mergedBy": "ihlar",
+      "mergeCommit": {
+        "oid": "a4f79332ca9e716f7c255932d800191385ef33f4"
+      },
       "comments": [
         {
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Took all the suggestions and punted some things to issues. Are we okay with this now?",
           "createdAt": "2025-03-27T16:51:01Z",
           "updatedAt": "2025-03-27T16:51:01Z"
@@ -611,14 +702,14 @@
         },
         {
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@huitema @kazuho @martinthomson any further thoughts or are we okay to merge this and iterate?",
           "createdAt": "2025-04-03T15:35:36Z",
           "updatedAt": "2025-04-03T15:35:36Z"
         },
         {
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Who actually has merge approval perms? @britram could I get it provisionally just to h it the button? \ud83d\ude42 ",
           "createdAt": "2025-04-07T20:12:52Z",
           "updatedAt": "2025-04-07T20:12:52Z"
@@ -693,7 +784,7 @@
             "abbreviatedOid": "1b73bf9"
           },
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-25T00:58:13Z",
@@ -797,7 +888,7 @@
             "abbreviatedOid": "1b73bf9"
           },
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-25T05:31:29Z",
@@ -1029,7 +1120,7 @@
             "abbreviatedOid": "1b73bf9"
           },
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-27T15:07:14Z",
@@ -1049,7 +1140,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-27T15:13:34Z",
@@ -1069,7 +1160,7 @@
             "abbreviatedOid": "1b73bf9"
           },
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-27T16:50:24Z",
@@ -1114,6 +1205,39 @@
           "body": "Let's merge this. We can iterate later.",
           "createdAt": "2025-04-03T22:22:55Z",
           "updatedAt": "2025-04-03T22:22:55Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDON1dwo86j3Gwz",
+          "commit": {
+            "abbreviatedOid": "ad1f597"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Looks good to merge, one small editorial nit that we can fix now or later.",
+          "createdAt": "2025-04-08T08:29:54Z",
+          "updatedAt": "2025-04-08T08:31:08Z",
+          "comments": [
+            {
+              "originalPosition": 107,
+              "body": "This reads a bit like a single TRONE packet can have two versions, perhaps rewrite as:\r\n``````suggestion\r\nA network element applies the same rate policy to TRONE packets of both \r\nversions, accounting for the different scales of each version. When a\r\n",
+              "createdAt": "2025-04-08T08:29:54Z",
+              "updatedAt": "2025-04-08T19:19:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86kCEii",
+          "commit": {
+            "abbreviatedOid": "5764ba5"
+          },
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "+1 to merging.",
+          "createdAt": "2025-04-09T04:34:16Z",
+          "updatedAt": "2025-04-09T04:34:16Z",
           "comments": []
         }
       ]
