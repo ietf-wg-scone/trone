@@ -5,14 +5,14 @@
 SCONE                                                         M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Informational                                C. Huitema
-Expires: 11 October 2025                            Private Octopus Inc.
+Expires: 18 October 2025                            Private Octopus Inc.
                                                         奥 一穂 (K. Oku)
                                                                   Fastly
                                                                 M. Joras
                                                                     Meta
                                                                 M. Ihlar
                                                                 Ericsson
-                                                            9 April 2025
+                                                           16 April 2025
 
 
   Transparent Rate Optimization for Network Endpoints (TRONE) Protocol
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 October 2025.
+   This Internet-Draft will expire on 18 October 2025.
 
 Copyright Notice
 
@@ -502,16 +502,7 @@ Table of Contents
    rate limit signal.  Such a datagram might be entirely spoofed.
 
    A network element that wishes to signal an updated rate limit waits
-   for the next TRONE packet in the desired direction.  However, if no
-   TRONE packet arrives within a reasonable time, the network element
-   MAY construct its own TRONE packet and prepend it to a QUIC packet
-   before forwarding.  This process requires expanding the UDP datagram
-   containing the original QUIC packet, which might cause the datagram
-   to exceed the path MTU.  Therefore, a network element SHOULD NOT
-   expand UDP datagrams if the combined payload of the TRONE packet and
-   the subsequent packets exceeds 1200 bytes, the smallest maximum
-   datagram size supported by QUIC versions 1 and 2 (see Section 14 of
-   [QUIC]).
+   for the next TRONE packet in the desired direction.
 
 8.5.  Feedback To Sender About Signals
 
