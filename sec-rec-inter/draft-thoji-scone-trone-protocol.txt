@@ -487,11 +487,11 @@ Table of Contents
    Attackers could send a high volume of these "fake" TRONE packets in a
    denial of service (DOS) attempt against network elements.  The attack
    will force the intermediaries to process the fake packets.  If
-   intermediaries are keeping state for ongoing TRONE flows, the attack
-   can cause the excessive allocation of memory resource.  The
+   network elements are keeping state for ongoing TRONE flows, the
+   attack can cause the excessive allocation of memory resource.  The
    mitigation there will be the same as mitigation of other distributed
-   DOS attacks: limit the rate of TRONE packets that an intermediary is
-   willing to process; possibly, implement logic to distinguish valid
+   DOS attacks: limit the rate of TRONE packets that a network element
+   is willing to process; possibly, implement logic to distinguish valid
    TRONE packets from fake packets; or, use generic protection against
    Distributed DOS attacks.
 
