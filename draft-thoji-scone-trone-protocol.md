@@ -426,7 +426,7 @@ and will have to process the packets. All the network elements between the injec
 point and the destination will have to process these packets.
 
 Attackers could send a high volume of these "fake" TRONE packets in
-a denial of service (DOS) attempt against intermediaries. The attack will
+a denial of service (DOS) attempt against network elements. The attack will
 force the intermediaries to process the fake packets. If intermediaries
 are keeping state for ongoing TRONE flows, the attack can cause the
 excessive allocation of memory resource. The mitigation there
