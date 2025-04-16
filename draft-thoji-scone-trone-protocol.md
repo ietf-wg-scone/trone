@@ -425,14 +425,7 @@ from the same datagram SHOULD ignore any rate limit signal. Such a datagram
 might be entirely spoofed.
 
 A network element that wishes to signal an updated rate limit waits for the
-next TRONE packet in the desired direction. However, if no TRONE packet
-arrives within a reasonable time, the network element MAY construct its own
-TRONE packet and prepend it to a QUIC packet before forwarding. This process
-requires expanding the UDP datagram containing the original QUIC packet, which
-might cause the datagram to exceed the path MTU. Therefore, a network element
-SHOULD NOT expand UDP datagrams if the combined payload of the TRONE packet and
-the subsequent packets exceeds 1200 bytes, the smallest maximum datagram size
-supported by QUIC versions 1 and 2 (see {{Section 14 of QUIC}}).
+next TRONE packet in the desired direction.
 
 ## Feedback To Sender About Signals {#feedback}
 
