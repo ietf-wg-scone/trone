@@ -421,7 +421,7 @@ content of an encrypted packets.
 
 The injected packets will travel towards the destination.
 The final destination will reject such packets because the destination ID
-is invalid or because decryption fail, but intermediaries cannot do these checks,
+is invalid or because decryption fail, but network elements cannot do these checks,
 and will have to process the packets. All the intermediaries between the injection
 point and the destination will have to process these packets.
 
