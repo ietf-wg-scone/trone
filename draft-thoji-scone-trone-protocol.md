@@ -431,7 +431,7 @@ force the intermediaries to process the fake packets. If network elements
 are keeping state for ongoing TRONE flows, the attack can cause the
 excessive allocation of memory resource. The mitigation there
 will be the same as mitigation of other distributed DOS attacks: limit
-the rate of TRONE packets that an intermediary is willing to process;
+the rate of TRONE packets that a network element is willing to process;
 possibly, implement logic to distinguish valid TRONE packets from
 fake packets; or, use generic protection against Distributed DOS attacks.
 
