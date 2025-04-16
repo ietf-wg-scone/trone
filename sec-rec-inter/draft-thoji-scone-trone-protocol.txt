@@ -5,14 +5,14 @@
 SCONE                                                         M. Thomson
 Internet-Draft                                                   Mozilla
 Intended status: Informational                                C. Huitema
-Expires: 26 September 2025                          Private Octopus Inc.
+Expires: 18 October 2025                            Private Octopus Inc.
                                                         奥 一穂 (K. Oku)
                                                                   Fastly
                                                                 M. Joras
                                                                     Meta
                                                                 M. Ihlar
                                                                 Ericsson
-                                                           25 March 2025
+                                                           16 April 2025
 
 
   Transparent Rate Optimization for Network Endpoints (TRONE) Protocol
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 September 2025.
+   This Internet-Draft will expire on 18 October 2025.
 
 Copyright Notice
 
@@ -479,7 +479,7 @@ Table of Contents
 
    The injected packets will travel towards the destination.  The final
    destination will reject such packets because the destination ID is
-   invalid or because decryption fail, but intermediaries cannot do
+   invalid or because decryption fail, but network elements cannot do
    these checks, and will have to process the packets.  All the
    intermediaries between the injection point and the destination will
    have to process these packets.
