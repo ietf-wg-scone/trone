@@ -422,7 +422,7 @@ content of an encrypted packets.
 The injected packets will travel towards the destination.
 The final destination will reject such packets because the destination ID
 is invalid or because decryption fail, but network elements cannot do these checks,
-and will have to process the packets. All the intermediaries between the injection
+and will have to process the packets. All the network elements between the injection
 point and the destination will have to process these packets.
 
 Attackers could send a high volume of these "fake" TRONE packets in
