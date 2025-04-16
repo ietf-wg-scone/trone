@@ -436,8 +436,8 @@ possibly, implement logic to distinguish valid TRONE packets from
 fake packets; or, use generic protection against Distributed DOS attacks.
 
 Attackers could also try to craft the fake TRONE packets in ways that trigger
-a processing error at intermediaries. For example, they might pick connection
-identifiers of arbitrary length. Intermediaries can mitigate these attacks
+a processing error at network elements. For example, they might pick connection
+identifiers of arbitrary length. Network elements can mitigate these attacks
 with implementations that fully conform to the specification of {{packet}}.
 
 
