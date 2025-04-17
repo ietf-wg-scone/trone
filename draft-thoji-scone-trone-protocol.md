@@ -250,38 +250,44 @@ The Rate Signal field in TRONE uses the low 6 bits (0x3f) of the first byte.
 This field is encoded as a logarithmically spaced distribution over a range
 defined by the TRONE protocol version.
 
-The Rate Signal field is set to 0x3F (63) when sent by a QUIC endpoint,
-indicating no rate limit is in place or that the TRONE protocol is not supported
-by network elements on the path. Vales 0x00 through 0x3E (62) represent the ceiling
-of rate being advised by the network element(s) on the path.
+When sent by a QUIC endpoint, the Version field of a TRONE packet is set to
+0xTRONE2 and the Rate Signal field is set to 0x3F (63), indicating no rate limit
+is in place or that the TRONE protocol is not supported by network elements on
+the path. All other values (0x00 through 0x3F of protocol version 0xTRONE1 and
+0x00 through 0x3E of protocol version 0xTRONE2) represent the ceiling of rates
+being advised by the network element(s) on the path.
 
 For TRONE protocol version 0xTRONE1, the rate limits use a logarithmic scale with:
+
 * Base rate (b_min) = 100 Kbps
-* Maximum rate ≈ 125 Mbps
 * Bitrate at value n = b_min * 10^(n/20)
 
 For TRONE protocol version 0xTRONE2, the rate limits use a logarithmic scale with:
-* Base rate (b_min) = 10000 Kbps (10 Mbps)
-* Maximum rate ≈ 12.5 Gbps
-* Bitrate at value n = b_min * 10^(n/20)
 
-This creates two overlapping ranges:
-* Version 0xTRONE1: 100 Kbps to 125 Mbps
-* Version 0xTRONE2: 10 Mbps to 12.5 Gbps
+* Bitrate at value n = b_min * 10^((n + 64)/20)
+
+With two versions combined, bitrates between 100 Kbps and 178 Gbps can be
+expressed.
 
 Some notable values in these ranges include:
 
-| Rate Signal | Version 0xTRONE1 Rate | Version 0xTRONE2 Rate |
-|:------------|:----------------------|:----------------------|
-| 0  | 100 Kbps | 10 Mbps |
-| 10 | 316 Kbps | 31.6 Mbps |
-| 20 | 1 Mbps | 100 Mbps |
-| 30 | 3.16 Mbps | 316 Mbps |
-| 40 | 10 Mbps | 1 Gbps |
-| 50 | 31.6 Mbps | 3.16 Gbps |
-| 60 | 100 Mbps | 10 Gbps |
-| 62 | 126 Mbps | 12.6 Gbps |
-| 63 | No limit | No limit |
+| Version  | Rate Signal |  Bitrate  |
+|:---------|:------------|:----------|
+| 0xTRONE1 | 0           | 100 Kbps  |
+| 0xTRONE1 | 10          | 316 Kbps  |
+| 0xTRONE1 | 20          | 1 Mbps    |
+| 0xTRONE1 | 30          | 3.16 Mbps |
+| 0xTRONE1 | 40          | 10 Mbps   |
+| 0xTRONE1 | 50          | 31.6 Mbps |
+| 0xTRONE1 | 60          | 100 Mbps  |
+| 0xTRONE2 | 6           | 316 Mbps  |
+| 0xTRONE2 | 16          | 1 Gbps    |
+| 0xTRONE2 | 26          | 3.16 Gbps |
+| 0xTRONE2 | 36          | 10 Gbps   |
+| 0xTRONE2 | 46          | 31.6 Gbps |
+| 0xTRONE2 | 56          | 100 Gbps  |
+| 0xTRONE2 | 62          | 178 Gbps  |
+| 0xTRONE2 | 63          | No limit  |
 
 ## Endpoint Processing of TRONE Packets
 
@@ -612,7 +618,7 @@ Contact:
 : QUIC Working Group (quic@ietf.org)
 
 Notes:
-: TRONE Protocol - Low Range (100 Kbps - 125 Mbps)
+: TRONE Protocol - Low Range
 {: spacing="compact"}
 
 Value:
@@ -631,7 +637,7 @@ Contact:
 : QUIC Working Group (quic@ietf.org)
 
 Notes:
-: TRONE Protocol - High Range (10 Mbps - 12.5 Gbps)
+: TRONE Protocol - High Range
 {: spacing="compact"}
 
 
