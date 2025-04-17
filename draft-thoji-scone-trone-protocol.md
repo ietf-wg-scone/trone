@@ -286,7 +286,7 @@ Some notable values in these ranges include:
 | 0xTRONE2 | 36          | 10 Gbps   |
 | 0xTRONE2 | 46          | 31.6 Gbps |
 | 0xTRONE2 | 56          | 100 Gbps  |
-| 0xTRONE2 | 62          | 178 Gbps  |
+| 0xTRONE2 | 62          | 199.5 Gbps  |
 | 0xTRONE2 | 63          | No limit  |
 
 ## Endpoint Processing of TRONE Packets
