@@ -266,7 +266,7 @@ For TRONE protocol version 0xTRONE2, the rate limits use a logarithmic scale wit
 
 * Bitrate at value n = b_min * 10^((n + 64)/20)
 
-With two versions combined, bitrates between 100 Kbps and 178 Gbps can be
+With two versions combined, bitrates between 100 Kbps and 199.5 Gbps can be
 expressed.
 
 Some notable values in these ranges include:
