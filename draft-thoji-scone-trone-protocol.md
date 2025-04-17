@@ -253,8 +253,8 @@ defined by the TRONE protocol version.
 When sent by a QUIC endpoint, the Version field of a TRONE packet is set to
 0xTRONE2 and the Rate Signal field is set to 0x3F (63), indicating no rate limit
 is in place or that the TRONE protocol is not supported by network elements on
-the path. All other values (0x00 through 0x3F of protocol version 0xTRONE1 and
-0x00 through 0x3E of protocol version 0xTRONE2) represent the ceiling of rates
+the path. All other values (0x00 through 0x3F for protocol version 0xTRONE1 and
+0x00 through 0x3E for protocol version 0xTRONE2) represent the ceiling of rates
 being advised by the network element(s) on the path.
 
 For TRONE protocol version 0xTRONE1, the rate limits use a logarithmic scale with:
@@ -329,8 +329,8 @@ QUIC endpoints can enable the use of the TRONE protocol by sending TRONE packets
 A network element detects a TRONE packet by observing that a packet has a QUIC
 long header and one of the TRONE protocol versions (0xTRONE1 or 0xTRONE2).
 
-A network element then conditionally replaces the Rate Signal field with
-values of its choosing.
+A network element then conditionally replaces the Version field and the Rate
+Signal field with values of its choosing.
 
 A network element might receive a packet that already includes a rate signal.
 The network element replaces the rate signal if it wishes to signal a lower
@@ -344,68 +344,23 @@ packet and replace an existing rate signal.
 is_long = packet[0] & 0x80 == 0x80
 packet_version = packet[1..5]
 if is_long and (packet_version == TRONE1_VERSION or packet_version == TRONE2_VERSION):
-  target_rate_value = convert_rate_to_signal(target_rate, packet_version)
   packet_rate_value = packet[0] & 0x3f
-  if packet_rate_value == 0x3f or target_rate_value < packet_rate_value:
+  (target_rate_version, target_rate_value) = convert_rate_to_signal(target_rate)
+  if target_rate_version < packet_version or target_rate_value < packet_rate_value
+    packet[1..5] = target_rate_version
     packet[0] = packet[0] & 0xc0 | target_rate_value
 ~~~
 
-A network element applies the same rate policy to TRONE packets of both
-versions, accounting for the different scales of each version. When a
-network element signals a rate limit that falls within the range of both
-versions, it should signal appropriate values in each version. When the target
-rate limit is outside the range of a particular version, the network element
-should signal the minimum value (0) for rates below the range and preserve the
-original value for rates above the range.
 
 # Version Interaction {#version-interaction}
 
 The TRONE protocol defines two versions (0xTRONE1 and 0xTRONE2) that cover
-different but overlapping ranges of bitrates. This design allows for:
+different ranges of bitrates. This design allows for:
 
 *  Support for both very low bitrates (down to 100 Kbps) and very high bitrates
-   (up to 12.5 Gbps)
-*  Graceful handling of network elements that might only recognize one version
-   or some subset of future versions.
+   (up to 178 Gbps)
+*  Graceful handling of network elements that might only recognize one version.
 
-## Converting Between Versions
-
-When network elements or endpoints need to compare rate signals from different
-versions, they must first convert the signals to their corresponding bitrates.
-The formulas for conversion are:
-
-* For version 0xTRONE1: bitrate = 100 Kbps * 10^(signal/20)
-* For version 0xTRONE2: bitrate = 10 Mbps * 10^(signal/20)
-
-## Handling Multiple Versions
-
-Endpoints should observe the following guidelines when sending and processing
-TRONE packets:
-
-*  When sending TRONE packets, endpoints SHOULD alternate between versions
-   0xTRONE1 and 0xTRONE2 to ensure network elements can signal rate limits across
-   the entire supported range.
-
-*  When receiving TRONE packets with different versions, endpoints SHOULD:
-   * Convert all signals to their corresponding bitrates
-   * Use the most restrictive (lowest) effective rate limit
-   * If one version's signal indicates "no limit" (value 63) but the other
-     indicates a limit, use the specified limit
-
-*  Network elements SHOULD apply appropriate rate signals to all packets that
-   include a TRONE version they support.
-
-## Example Conversions
-
-For a target rate limit of 30 Mbps:
-* In version 0xTRONE1, this corresponds to a signal value of approximately 49
-* In version 0xTRONE2, this corresponds to a signal value of approximately 9
-
-For a target rate limit of 5 Gbps:
-* In version 0xTRONE1, this exceeds the range, so the signal would remain at 63
-  (no limit)
-* In version 0xTRONE2, this corresponds to a signal value of
-  approximately 57
 
 ## Providing Opportunities to Apply Rate Limit Signals {#extra-packets}
 
@@ -414,15 +369,6 @@ signals can send TRONE packets at any time.  This is a decision that a sender
 makes when constructing datagrams. It is recommended that endpoints promptly
 send an initial TRONE packet once the peer confirms its willingness to receive
 them.
-
-To support the full range of possible rate limits, endpoints SHOULD alternate
-between sending TRONE packets with version 0xTRONE1 and version 0xTRONE2. This
-allows network elements to signal rate limits across the entire supported range
-with appropriate granularity.
-
-When a receiver receives TRONE packets with different versions and different
-rate signals, it SHOULD use the most restrictive (lowest) effective rate limit
-after converting the signal values to their corresponding bitrates.
 
 Endpoints MUST send any TRONE packet they send as the first packet in a
 datagram, coalesced with additional packets. An endpoint that receives and
