@@ -1,6 +1,6 @@
 # Transparent Rate Optimization for Network Endpoints (TRONE) Protocol
 
-This is the working area for the IRTF NMRG Internet-Draft, "Transparent Rate Optimization for Network Endpoints (TRONE) Protocol".
+This is the working area for the IETF SCONE Internet-Draft, "Transparent Rate Optimization for Network Endpoints (TRONE) Protocol".
 
 * [Editor's Copy](https://ietf-wg-scone.github.io/trone/#go.draft-thoji-scone-trone-protocol.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-thoji-scone-trone-protocol)
