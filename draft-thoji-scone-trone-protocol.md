@@ -358,7 +358,7 @@ The TRONE protocol defines two versions (0xTRONE1 and 0xTRONE2) that cover
 different ranges of bitrates. This design allows for:
 
 *  Support for both very low bitrates (down to 100 Kbps) and very high bitrates
-   (up to 178 Gbps)
+   (up to 199.5 Gbps)
 *  Graceful handling of network elements that might only recognize one version.
 
 
