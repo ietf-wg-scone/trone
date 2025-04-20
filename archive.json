@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-17T01:38:46.316265+00:00",
+  "timestamp": "2025-04-20T01:44:27.752009+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -373,7 +373,7 @@
       "labels": [],
       "body": "As presented at IETF 122, we define a \"version\" field that is used to choose between possible ranges.\nThis seems strange both from a cleanliness standpoint and from a greasing standpoint.\n\nWhen there are only two versions, the version field amounts to an extra bit in the range specifier - by including it directly in the range specifier (making it 0-127 rather than 0-63), we gain an unified range with a larger span (or a finer resolution, if we choose to reduce the multiplier in the exponential spacing).\n\nIf we desire to ensure that we can introduce more versions of the TRONE signal later, two versions with near-identical semantics are not enough.\n",
       "createdAt": "2025-03-26T07:03:56Z",
-      "updatedAt": "2025-04-16T15:57:10Z",
+      "updatedAt": "2025-04-17T18:12:29Z",
       "closedAt": null,
       "comments": [
         {
@@ -389,6 +389,13 @@
           "body": "I think the idea of rewriting is an good one. The one thing we have to be careful about, in my opinion, is that not _every_ future version of TRONE can be rewritten.\n\nSo for example, suppose the initial protocol has 0xTRONE1 and 0xTRONE2 and a network element can rewrite 0xTRONE1 <->0xTRONE2. Suppose subsequently we figure out we need a 0xTRONE3 for some purpose. I think any network element that only understands 0xTRONE1/2 should not rewrite 0xTRONE3 packets, and simply ignore them.",
           "createdAt": "2025-04-16T15:57:09Z",
           "updatedAt": "2025-04-16T15:57:09Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "The idea of version rewriting is in line with the general design of using 2 version numbers to get an extra bit for the range of values.",
+          "createdAt": "2025-04-17T18:12:28Z",
+          "updatedAt": "2025-04-17T18:12:28Z"
         }
       ]
     },
@@ -1380,7 +1387,7 @@
       "labels": [],
       "body": "Adding a description of the attack listed in #11.\r\n\r\nClose #11",
       "createdAt": "2025-03-25T18:25:44Z",
-      "updatedAt": "2025-04-16T15:52:45Z",
+      "updatedAt": "2025-04-17T10:04:02Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
@@ -1455,6 +1462,19 @@
           "createdAt": "2025-04-16T15:52:45Z",
           "updatedAt": "2025-04-16T15:52:45Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDON1dwo86lasB9",
+          "commit": {
+            "abbreviatedOid": "2ab4aaf"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-04-17T10:04:02Z",
+          "updatedAt": "2025-04-17T10:04:02Z",
+          "comments": []
         }
       ]
     },
@@ -1470,7 +1490,7 @@
       "labels": [],
       "body": "I think that we need to explicitly describe the interaction between congestion control and TRONE, if only to dispel any notion that TRONE replaces congestion control, as stated in issue #8. This is a first cut for describing such interactions. ",
       "createdAt": "2025-03-26T18:51:48Z",
-      "updatedAt": "2025-04-16T17:28:03Z",
+      "updatedAt": "2025-04-17T10:02:40Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
@@ -1522,6 +1542,32 @@
               "updatedAt": "2025-04-16T17:28:03Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86lXf23",
+          "commit": {
+            "abbreviatedOid": "37699bd"
+          },
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Thank you for the updates! LG",
+          "createdAt": "2025-04-17T03:08:54Z",
+          "updatedAt": "2025-04-17T03:08:54Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDON1dwo86larO4",
+          "commit": {
+            "abbreviatedOid": "37699bd"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-04-17T10:02:40Z",
+          "updatedAt": "2025-04-17T10:02:40Z",
+          "comments": []
         }
       ]
     },
@@ -1592,7 +1638,7 @@
       "labels": [],
       "body": "As discussed in the meeting, and mentioned in #5, it is useful for an endpoint to signal its potential usage of TRONE to a network element. This initial pass uses a \"TRONE Indication\" packet which is probably excessive but is a fully reversed TRONE packet that's meant to go at the end of a datagram. This allows for the network element to first detect a QUIC initial, and then check the end of the packet for TRONE.\r\n\r\nAn alternative would be a more bespoke indicating like a concatenation of versions, or something like that.",
       "createdAt": "2025-04-15T16:23:30Z",
-      "updatedAt": "2025-04-16T16:34:53Z",
+      "updatedAt": "2025-04-18T04:41:27Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "a4f79332ca9e716f7c255932d800191385ef33f4",
@@ -1610,6 +1656,13 @@
           "body": "@huitema @martinthomson thoughts on this?\r\n\r\nWe can merge as-is and remove fields later, or if we think it's important enough to cut them now I can change it to just be a QUIC version field.",
           "createdAt": "2025-04-16T16:34:53Z",
           "updatedAt": "2025-04-16T16:34:53Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "I think we can merge this pull request (it'd be good to have all features being written down before the adoption call, but we can fix issues after adoption).\r\n\r\nHowever, I realize that indications cannot be designed based solely on Invariants, because packet coalescing is a version-specific concept defined in RFC 9000. So the text has to reflect that at some point at least, and the fact might have an affect on what we append.\r\n\r\nPS. Please see \u2193 for what I mean exactly.",
+          "createdAt": "2025-04-18T00:45:20Z",
+          "updatedAt": "2025-04-18T04:41:26Z"
         }
       ],
       "reviews": [
@@ -1675,6 +1728,100 @@
               "body": "Agreed, I think all the fields here are likely excessive, but kept them in for now so we can discuss further. A new version is probably fine in terms of avoiding false positives.",
               "createdAt": "2025-04-16T15:24:25Z",
               "updatedAt": "2025-04-16T15:24:25Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 25,
+      "id": "PR_kwDON1dwo86S8gIt",
+      "title": "allow network elements rewrite the version field",
+      "url": "https://github.com/ietf-wg-scone/trone/pull/25",
+      "state": "OPEN",
+      "author": "kazuho",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "As discussed in https://github.com/ietf-wg-scone/trone/issues/14#issuecomment-2809099526 and during yesterday's interim, we can simplify the design by allowing network elements rewrite the version field.\r\n\r\nNow, senders need to send only one packet (0xTRONE2 with rate=0x3f) instead of sending one for each of the two versions, and receivers no longer need to calculate the minimum of two values.\r\n\r\nMaybe closes #14 and #19.",
+      "createdAt": "2025-04-17T07:09:13Z",
+      "updatedAt": "2025-04-18T01:57:48Z",
+      "baseRepository": "ietf-wg-scone/trone",
+      "baseRefName": "main",
+      "baseRefOid": "d3cb3cd31bfcb6f51783734d7b552bec5de09663",
+      "headRepository": "kazuho/i-d-trone",
+      "headRefName": "kazuho/changing-versions",
+      "headRefOid": "6cd6dac6489a78922f2b3b2b653c47a2b8bc014c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "mjoras",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thanks for this! Was writing up something basically the same.\r\n\r\nDo we think we need any language stipulating that network elements should explicitly ignore any version that is not 0xTRONE1/2? It is sort of implied by QUIC long header semantics, but it might be worth noting explicitly that an element shouldn't stomp on a potential protocol it doesn't understand.",
+          "createdAt": "2025-04-18T00:26:09Z",
+          "updatedAt": "2025-04-18T00:26:09Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "Thank you for checking!\r\n\r\n> Do we think we need any language stipulating that network elements should explicitly ignore any version that is not 0xTRONE1/2? It is sort of implied by QUIC long header semantics, but it might be worth noting explicitly that an element shouldn't stomp on a potential protocol it doesn't understand.\r\n\r\nMaybe raise as a different issue?\r\n\r\nBut FWIW, I do not think we want to neither allow or prohibit endpoints from mangling other versions of QUIC. It is not our business, and in the future, we might see another version of QUIC that recommends endpoints doing such a thing (example: a super-ECN signal that changes the bits in UDP payload). I think what we might need to add is a pointer to RFC 8999 regarding the topic.",
+          "createdAt": "2025-04-18T01:57:46Z",
+          "updatedAt": "2025-04-18T01:57:46Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDON1dwo86lakq6",
+          "commit": {
+            "abbreviatedOid": "d40d68e"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "Thanks for this PR. \r\nLooks really good, small nit commented below. ",
+          "createdAt": "2025-04-17T09:52:01Z",
+          "updatedAt": "2025-04-17T09:58:59Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "178 is at n = 61 \r\nn = 62 should be ~199.53. \r\n\r\n```suggestion\r\nWith two versions combined, bitrates between 100 Kbps and 199.5 Gbps can be\r\n```",
+              "createdAt": "2025-04-17T09:52:01Z",
+              "updatedAt": "2025-04-17T09:58:59Z"
+            },
+            {
+              "originalPosition": 62,
+              "body": "```suggestion\r\n| 0xTRONE2 | 62          | 199.5 Gbps  |\r\n```",
+              "createdAt": "2025-04-17T09:53:17Z",
+              "updatedAt": "2025-04-17T09:58:59Z"
+            },
+            {
+              "originalPosition": 123,
+              "body": "```suggestion\r\n   (up to 199.5 Gbps)\r\n```",
+              "createdAt": "2025-04-17T09:53:57Z",
+              "updatedAt": "2025-04-17T09:58:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86lbbuP",
+          "commit": {
+            "abbreviatedOid": "d40d68e"
+          },
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-04-17T11:34:12Z",
+          "updatedAt": "2025-04-17T11:34:12Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "Thank you!",
+              "createdAt": "2025-04-17T11:34:12Z",
+              "updatedAt": "2025-04-17T11:34:12Z"
             }
           ]
         }
