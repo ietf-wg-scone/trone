@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-20T01:44:27.752009+00:00",
+  "timestamp": "2025-04-24T01:40:06.502623+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -107,7 +107,7 @@
       ],
       "body": "We have a few options:\n\n1. Keep TRAIN\n2. Find something that fits TRONE\n3. Completely new name, e.g., Throughput Advice Signaling Protocol (TASP)\n\nI'd be fine with any of the above. ",
       "createdAt": "2025-02-19T16:24:24Z",
-      "updatedAt": "2025-04-16T16:04:55Z",
+      "updatedAt": "2025-04-23T07:00:08Z",
       "closedAt": null,
       "comments": [
         {
@@ -116,6 +116,13 @@
           "body": "We could also call it SCONE.\n",
           "createdAt": "2025-04-16T16:04:53Z",
           "updatedAt": "2025-04-16T16:04:53Z"
+        },
+        {
+          "author": "billwuqin",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Please implement the naming change in the draft.",
+          "createdAt": "2025-04-23T07:00:07Z",
+          "updatedAt": "2025-04-23T07:00:07Z"
         }
       ]
     },
@@ -645,9 +652,107 @@
       "labels": [],
       "body": "This has been discussed extensively both privately, at IETF 122, and in the latest interim. We should give guidance to endpoints on how often and under what circumstances they should send TRONE packets to give an opportunity to generate new advice.",
       "createdAt": "2025-04-16T15:38:18Z",
-      "updatedAt": "2025-04-16T15:38:18Z",
+      "updatedAt": "2025-04-22T04:14:16Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "If I were to propose an answer, I think the frequency should reflect how fast the application can adopt.\n\nTo give an example, in the case of HLS, it'd make sense to obtain one TRONE signal for each chunk but no more, because clients can switch between different bandwidths only once per chunk.\n\nIn case of applications that can adopt more rapidly, I think there is no need to constrain them from asking for an update every RTT.\n\nThe remaining question would be if sending one TRONE packet is sufficient for obtaining one signal, considering packet loss. I think the strategy can be different between the applications; some can send two packets, others can send one but use an ACK to see if the datagram that has the TRONE packet attached reached the peer. Absent ACKs, such endpoints can resend a TRONE packet.",
+          "createdAt": "2025-04-22T03:54:40Z",
+          "updatedAt": "2025-04-22T03:54:40Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "Not only how fast they *can* adapt, but how fast the application might need to learn about changes.  Streaming applications might be OK with several chunks of lag if their buffers are deep enough to absorb a network fluctuation.  Per-chunk might be faster than an HLS app needs, which provides it with a degree of redundancy.\n\nApps will know when marked packets are lost -- in exactly the same way that ECN markings are accounted for in QUIC -- so they can account for that in their sending, so I don't think we need anything special, other than a note about that.",
+          "createdAt": "2025-04-22T04:14:15Z",
+          "updatedAt": "2025-04-22T04:14:15Z"
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "id": "I_kwDON1dwo86zZ_iG",
+      "title": "Multipath and Trone",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/26",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The multipath extension allows sending data on multiple paths, including multiple paths bound to the same 4 tuple. I think that a QUIC application could split its traffic along multiple paths, all identified by different connection IDs. Applications could request some of these paths to announce Trone support, other not, and maybe others still to advertise the Non-Queue-Building type.\n\nDo we fill the need to say anything about that?",
+      "createdAt": "2025-04-22T05:40:54Z",
+      "updatedAt": "2025-04-23T09:54:58Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "Not that much.  We can point out that this is information that applies to a single path, not the entire connection.",
+          "createdAt": "2025-04-22T07:19:55Z",
+          "updatedAt": "2025-04-22T07:19:55Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "Maybe. Mostly, I am worried that network elements will combine Trone signalling and per-flow enforcement. This begs the question: what is the unit of enforcement? Four tuple? Four tuple plus CID? Address pair? Network subscription? ",
+          "createdAt": "2025-04-22T18:06:02Z",
+          "updatedAt": "2025-04-22T18:06:02Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "The unit of enforcement is unclear.  All that the network is saying is that **at some scope that includes this flow** (and it might only be this flow, but probably not) there is a policy in place to limit throughput.  It's pretty useless, except when you only have one flow that is consuming most of that limit.  The reason it works is that there is often just one active flow from a home or mobile subscription.",
+          "createdAt": "2025-04-23T01:42:53Z",
+          "updatedAt": "2025-04-23T01:42:53Z"
+        },
+        {
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "body": "Unit of enforcement seems like a different issue; my impression from initial discussions was that the incremental improvement desired was to handle the situation of one dominant flow and one policer that enforced per \"customer\" (typically 6G handset or cable subscriber), and that choosing how to guide the end system to distribute the available bandwidth between multiple flows was left \"for further study\".\n",
+          "createdAt": "2025-04-23T09:54:56Z",
+          "updatedAt": "2025-04-23T09:54:56Z"
+        }
+      ]
+    },
+    {
+      "number": 27,
+      "id": "I_kwDON1dwo86zaAay",
+      "title": "CID rotation and Trone",
+      "url": "https://github.com/ietf-wg-scone/trone/issues/27",
+      "state": "OPEN",
+      "author": "huitema",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "QUIC stacks will commonly \"rotate\" the connection identifiers used on a given path. Assume a connection obtained Trone information with the old connection ID. Is it still valid with the new one?",
+      "createdAt": "2025-04-22T05:43:10Z",
+      "updatedAt": "2025-04-23T01:44:55Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "If the endpoint that received the signal considers the path to be the same, then it still applies.  Worth noting, but not particularly difficult to reason about.",
+          "createdAt": "2025-04-22T07:21:04Z",
+          "updatedAt": "2025-04-22T07:21:04Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "That's again really a question about expectation and enforcement. Per 4-tuple, or per combination of 4-tuple and CID? What about DS marks? ",
+          "createdAt": "2025-04-22T18:08:24Z",
+          "updatedAt": "2025-04-22T18:08:24Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "I wouldn't expect different DS markings to be applied to the same flow, but it's worth a note.  Maybe one that says \"if you use multiple DSCP markings, the throughput advice you receive from packets with one marking might not apply if packets are marked differently\".",
+          "createdAt": "2025-04-23T01:44:54Z",
+          "updatedAt": "2025-04-23T01:44:54Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -1638,7 +1743,7 @@
       "labels": [],
       "body": "As discussed in the meeting, and mentioned in #5, it is useful for an endpoint to signal its potential usage of TRONE to a network element. This initial pass uses a \"TRONE Indication\" packet which is probably excessive but is a fully reversed TRONE packet that's meant to go at the end of a datagram. This allows for the network element to first detect a QUIC initial, and then check the end of the packet for TRONE.\r\n\r\nAn alternative would be a more bespoke indicating like a concatenation of versions, or something like that.",
       "createdAt": "2025-04-15T16:23:30Z",
-      "updatedAt": "2025-04-18T04:41:27Z",
+      "updatedAt": "2025-04-23T01:49:50Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "a4f79332ca9e716f7c255932d800191385ef33f4",
@@ -1663,6 +1768,76 @@
           "body": "I think we can merge this pull request (it'd be good to have all features being written down before the adoption call, but we can fix issues after adoption).\r\n\r\nHowever, I realize that indications cannot be designed based solely on Invariants, because packet coalescing is a version-specific concept defined in RFC 9000. So the text has to reflect that at some point at least, and the fact might have an affect on what we append.\r\n\r\nPS. Please see \u2193 for what I mean exactly.",
           "createdAt": "2025-04-18T00:45:20Z",
           "updatedAt": "2025-04-18T04:41:26Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "I'm still unconvinced about the utility of this indication.  I know that we talked about it, but after thinking about it more, I don't think that it helps as much as you think it does.  Can we talk about this at the interim?",
+          "createdAt": "2025-04-22T02:25:27Z",
+          "updatedAt": "2025-04-22T02:25:27Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "Whatever we decide, we have to document what the concatenation of multiple Trone packets means, and whether it should be allowed. The draft assumes that a trone packet will be composed as:\r\n~~~\r\nTronePacket [*LongHeaderPacket] { LongHeaderPacket | ShortHeaderPacket }\r\n~~~\r\nThis PR proposes to assign a meaning to:\r\n~~~\r\nLongHeaderPacket *LongHeaderPacket TronePacket \r\n~~~\r\nI am not a great fan of that, and in particular not a great fan of encoding something at the tail of initial packets that must be padded to a fixed length. Implementation is a bit more complicated than it appears, and I am not really convince of the utility. But in any case, if we do that, we need to say something about potential combinations like:\r\n~~~\r\nTronePacket  InitialPacket TronePacket  \r\nInitialPacket TronePacket_Vx TronePacket_Vy\r\nInitialPacket TronePacket  0RTTPacket\r\nInitialPacket TronePacket  HandshakePacket\r\nTronePacket_Vx TronePacket_Vy ShortHeaderPacket \r\netc.\r\n~~~",
+          "createdAt": "2025-04-22T05:32:01Z",
+          "updatedAt": "2025-04-22T05:34:08Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "If this is just a regular SCONE(TM) packet, then I would expect that it doesn't matter which one is used or where it appears.  At least to the network element.  But safe negotiation of QUIC depends on this being *after* QUIC packets.  Otherwise, a QUIC implementation that doesn't implement SCONE will be forced to throw out the rest of the datagram.  That's no good.\r\n\r\nI'm more concerned that this doesn't help a network element much.  Even after this signal appears, the network element still doesn't know if the *server* is going to use the protocol.  So it still needs to put itself in a \"SCONE-pending state\", until it sees a SCONE(TM) packet.",
+          "createdAt": "2025-04-22T06:05:01Z",
+          "updatedAt": "2025-04-22T06:05:01Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "@huitema Based on my understanding that we want to build SCONE (TRONE) on top of QUIC Invariants, I do not think think we should be considering how coalescing affects TRONE.\r\n\r\nInvariants does not have the concept of coalesced packets.\r\n\r\nIf the version is TRONE, it is a TRONE packet. If it is not, then it is not.\r\n\r\nIf we are to have an indication, I think it has to be some junk being attached at the end of the datagram; please see https://github.com/mjoras/trone/pull/1. Regardless, it is not a coalesced packet.",
+          "createdAt": "2025-04-22T06:22:58Z",
+          "updatedAt": "2025-04-22T06:22:58Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "NONE",
+          "body": "@kazuho I think that your [PR 1](https://github.com/mjoras/trone/pull/1) has the advantage of not muddying the concept of Trone packet, i.e., that they can only be found at the beginning of a datagram. We should say so.",
+          "createdAt": "2025-04-22T06:33:03Z",
+          "updatedAt": "2025-04-22T06:33:03Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "Quoting MT from https://github.com/mjoras/trone/pull/1#discussion_r2053501602:\r\n> (Indication at the end of the datagram) only works if all packets are understood enough to ignore them AND know their length. We have an existence proof of that not working in QUIC v1 (the short header packets) and there is no guarantee that other QUIC versions will retain a usable length.\r\n\r\nI agree that this is the concern.\r\n\r\nIf some feel strongly about having the indication, we could look for an alternative design.\r\n\r\nOne way forward would be to prepend TRONE Indication packets before QUIC v1 Initials (or any other version of QUIC that works end-to-end), and use SvcParamKey to advertise support of TRONE. If we take this path, the only case in which we would see an additional delay would be when the client does not have out-of-band knowledge and the name resolution uses A/AAAA records. How much do we need to care about such deployments?",
+          "createdAt": "2025-04-22T08:25:30Z",
+          "updatedAt": "2025-04-22T08:25:30Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> Quoting MT from [mjoras#1 (comment)](https://github.com/mjoras/trone/pull/1#discussion_r2053501602):\r\n> \r\n> > (Indication at the end of the datagram) only works if all packets are understood enough to ignore them AND know their length. We have an existence proof of that not working in QUIC v1 (the short header packets) and there is no guarantee that other QUIC versions will retain a usable length.\r\n> \r\n> I agree that this is the concern.\r\n\r\nHow much of a concern is this? \r\nSending a TRONE indication packet is optional, a sender will know whether it is possible or not to append an indication. \r\n \r\n> If some feel strongly about having the indication, we could look for an alternative design.\r\n> \r\n> One way forward would be to prepend TRONE Indication packets before QUIC v1 Initials (or any other version of QUIC that works end-to-end), and use SvcParamKey to advertise support of TRONE. If we take this path, the only case in which we would see an additional delay would be when the client does not have out-of-band knowledge and the name resolution uses A/AAAA records. How much do we need to care about such deployments?\r\n\r\nThis would be a cleaner solution though.  \r\n\r\n",
+          "createdAt": "2025-04-22T14:54:51Z",
+          "updatedAt": "2025-04-22T14:54:51Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> I'm more concerned that this doesn't help a network element much. Even after this signal appears, the network element still doesn't know if the _server_ is going to use the protocol. So it still needs to put itself in a \"SCONE-pending state\", until it sees a SCONE(TM) packet.\r\n\r\nYou're right, this is all the network element knows until it sees a downlink SCONE packet.\r\nHowever, current networks perform heavy DPI to determine whether flows are candidates for rate\u2011limiting policies. Early SCONE indications allow operators to omit that step.\r\nEven in a \u201cSCONE\u2011pending state,\u201d a network element can initiate rate monitoring and potentially revert to throttling at some point, regardless of whether SCONE packets are observed in the downlink.",
+          "createdAt": "2025-04-22T15:12:32Z",
+          "updatedAt": "2025-04-22T15:12:32Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "NONE",
+          "body": "@ihlar \r\n> How much of a concern is this?\r\n> Sending a TRONE indication packet is optional, a sender will know whether it is possible or not to append an indication.\r\n\r\nI think the concern is that protocols other than QUIC v1 might not support TRONE, or that TRONE would become a constraint to the protocol designers, as it requires having a packet format that allows ignoring junk at the end. The strawman has issues even with QUIC v1 itself, QUIC v1 does not allow indications to be appended to packets sent on new paths after the handshake (as they would be short header packets).",
+          "createdAt": "2025-04-22T23:33:27Z",
+          "updatedAt": "2025-04-23T00:15:34Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": ">  Even in a \u201cSCONE\u2011pending state,\u201d a network element can initiate rate monitoring and potentially revert to throttling at some point, regardless of whether SCONE packets are observed in the downlink.\r\n\r\nThis seems to be key.  If you think that this state is distinct from a \"SCONE-pending\" state where you don't get an indicator, why would you not do that for all QUIC flows once you hit a certain adoption threshold?",
+          "createdAt": "2025-04-23T01:49:49Z",
+          "updatedAt": "2025-04-23T01:49:49Z"
         }
       ],
       "reviews": [
@@ -1745,7 +1920,7 @@
       "labels": [],
       "body": "As discussed in https://github.com/ietf-wg-scone/trone/issues/14#issuecomment-2809099526 and during yesterday's interim, we can simplify the design by allowing network elements rewrite the version field.\r\n\r\nNow, senders need to send only one packet (0xTRONE2 with rate=0x3f) instead of sending one for each of the two versions, and receivers no longer need to calculate the minimum of two values.\r\n\r\nMaybe closes #14 and #19.",
       "createdAt": "2025-04-17T07:09:13Z",
-      "updatedAt": "2025-04-18T01:57:48Z",
+      "updatedAt": "2025-04-22T09:34:11Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "d3cb3cd31bfcb6f51783734d7b552bec5de09663",
@@ -1770,6 +1945,13 @@
           "body": "Thank you for checking!\r\n\r\n> Do we think we need any language stipulating that network elements should explicitly ignore any version that is not 0xTRONE1/2? It is sort of implied by QUIC long header semantics, but it might be worth noting explicitly that an element shouldn't stomp on a potential protocol it doesn't understand.\r\n\r\nMaybe raise as a different issue?\r\n\r\nBut FWIW, I do not think we want to neither allow or prohibit endpoints from mangling other versions of QUIC. It is not our business, and in the future, we might see another version of QUIC that recommends endpoints doing such a thing (example: a super-ECN signal that changes the bits in UDP payload). I think what we might need to add is a pointer to RFC 8999 regarding the topic.",
           "createdAt": "2025-04-18T01:57:46Z",
           "updatedAt": "2025-04-18T01:57:46Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> > Do we think we need any language stipulating that network elements should explicitly ignore any version that is not 0xTRONE1/2? It is sort of implied by QUIC long header semantics, but it might be worth noting explicitly that an element shouldn't stomp on a potential protocol it doesn't understand.\r\n> \r\n> Maybe raise as a different issue?\r\n\r\nAgree to handling this in a separate issue. The way the design is described is good enough for a document to get adopted. We can decide on additional guidance later on. \r\n",
+          "createdAt": "2025-04-22T09:34:10Z",
+          "updatedAt": "2025-04-22T09:34:10Z"
         }
       ],
       "reviews": [
