@@ -1,11 +1,11 @@
-# Transparent Rate Optimization for Network Endpoints (TRONE) Protocol
+# Standard Communication with Network Elements (SCONE) Protocol
 
-This is the working area for the IETF SCONE Internet-Draft, "Transparent Rate Optimization for Network Endpoints (TRONE) Protocol".
+This is the working area for the IETF SCONE Internet-Draft, "Standard Communication with Network Elements (SCONE) Protocol".
 
-* [Editor's Copy](https://ietf-wg-scone.github.io/trone/#go.draft-thoji-scone-trone-protocol.html)
-* [Datatracker Page](https://datatracker.ietf.org/doc/draft-thoji-scone-trone-protocol)
-* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-thoji-scone-trone-protocol)
-* [Compare Editor's Copy to Individual Draft](https://ietf-wg-scone.github.io/trone/#go.draft-thoji-scone-trone-protocol.diff)
+* [Editor's Copy](https://ietf-wg-scone.github.io/trone/#go.draft-thoji-scone-protocol.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-thoji-scone-protocol)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-thoji-scone-protocol)
+* [Compare Editor's Copy to Individual Draft](https://ietf-wg-scone.github.io/trone/#go.draft-thoji-scone-protocol.diff)
 
 
 ## Contributing
