@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-24T01:40:06.502623+00:00",
+  "timestamp": "2025-04-29T01:41:30.611525+00:00",
   "repo": "ietf-wg-scone/trone",
   "labels": [
     {
@@ -1743,7 +1743,7 @@
       "labels": [],
       "body": "As discussed in the meeting, and mentioned in #5, it is useful for an endpoint to signal its potential usage of TRONE to a network element. This initial pass uses a \"TRONE Indication\" packet which is probably excessive but is a fully reversed TRONE packet that's meant to go at the end of a datagram. This allows for the network element to first detect a QUIC initial, and then check the end of the packet for TRONE.\r\n\r\nAn alternative would be a more bespoke indicating like a concatenation of versions, or something like that.",
       "createdAt": "2025-04-15T16:23:30Z",
-      "updatedAt": "2025-04-23T01:49:50Z",
+      "updatedAt": "2025-04-28T14:48:05Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "a4f79332ca9e716f7c255932d800191385ef33f4",
@@ -1838,6 +1838,13 @@
           "body": ">  Even in a \u201cSCONE\u2011pending state,\u201d a network element can initiate rate monitoring and potentially revert to throttling at some point, regardless of whether SCONE packets are observed in the downlink.\r\n\r\nThis seems to be key.  If you think that this state is distinct from a \"SCONE-pending\" state where you don't get an indicator, why would you not do that for all QUIC flows once you hit a certain adoption threshold?",
           "createdAt": "2025-04-23T01:49:49Z",
           "updatedAt": "2025-04-23T01:49:49Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> I think the concern is that protocols other than QUIC v1 might not support TRONE, or that TRONE would become a constraint to the protocol designers, as it requires having a packet format that allows ignoring junk at the end. \r\n\r\nMakes sense, thanks.\r\n\r\n> The strawman has issues even with QUIC v1 itself, QUIC v1 does not allow indications to be appended to packets sent on new paths after the handshake (as they would be short header packets).\r\n\r\noth we should be able to send \"real\" SCONE packets at that point though?\r\n",
+          "createdAt": "2025-04-28T14:48:04Z",
+          "updatedAt": "2025-04-28T14:48:04Z"
         }
       ],
       "reviews": [
@@ -1920,7 +1927,7 @@
       "labels": [],
       "body": "As discussed in https://github.com/ietf-wg-scone/trone/issues/14#issuecomment-2809099526 and during yesterday's interim, we can simplify the design by allowing network elements rewrite the version field.\r\n\r\nNow, senders need to send only one packet (0xTRONE2 with rate=0x3f) instead of sending one for each of the two versions, and receivers no longer need to calculate the minimum of two values.\r\n\r\nMaybe closes #14 and #19.",
       "createdAt": "2025-04-17T07:09:13Z",
-      "updatedAt": "2025-04-22T09:34:11Z",
+      "updatedAt": "2025-04-28T14:44:55Z",
       "baseRepository": "ietf-wg-scone/trone",
       "baseRefName": "main",
       "baseRefOid": "d3cb3cd31bfcb6f51783734d7b552bec5de09663",
@@ -2006,8 +2013,47 @@
               "updatedAt": "2025-04-17T11:34:12Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86m3hiF",
+          "commit": {
+            "abbreviatedOid": "6cd6dac"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-04-28T14:44:55Z",
+          "updatedAt": "2025-04-28T14:44:55Z",
+          "comments": []
         }
       ]
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDON1dwo86ULi6t",
+      "title": "trone -> scone",
+      "url": "https://github.com/ietf-wg-scone/trone/pull/28",
+      "state": "OPEN",
+      "author": "ihlar",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "As agreed at interim and confirmed with authors, let's use SCONE as the protocol name. ",
+      "createdAt": "2025-04-28T14:43:02Z",
+      "updatedAt": "2025-04-28T14:43:02Z",
+      "baseRepository": "ietf-wg-scone/trone",
+      "baseRefName": "main",
+      "baseRefOid": "be442cb19397df85f2d0bf6a4fae608e5d053aab",
+      "headRepository": "ietf-wg-scone/trone",
+      "headRefName": "trone-to-scone",
+      "headRefOid": "8e97da6cac6aece0de4df2add5a06a56dbc62827",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
