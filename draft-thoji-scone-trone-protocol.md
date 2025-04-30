@@ -406,6 +406,24 @@ TRONE packets could be stripped from datagrams in the network, which cannot be
 reliably detected.  This could result in a sender falsely believing that no
 network element applied a rate limit signal.
 
+## Interactions with congestion control
+
+TRONE and congestion control both provide the application with estimates
+of a path capacity. They are complementary. Congestion control algorithms
+are typically designed to quickly detect and react to congestion, i.e., to
+the "minimum" capacity of a path. TRONE informs the endpoint
+of the maximum capacity of a path.
+
+Consider for example a path in which the bottleneck router implements Early
+Congestion Notification as specified in the L4S architecture {{?RFC9330}}.
+If the path capacity diminishes, queues will build up and the router
+will immediately start increasing the rate at which packets are marked
+as "Congestion Experienced". The receiving endpoint will notice these marks,
+and inform its peer. The incoming congestion will be detected within
+1 round trip time (RTT). This scenario will play out whatever the reason
+for the change in capacity, whether due to increased competition between
+multiple applications or, for example, to a change in capacity of a wireless
+channel.
 
 # Security Considerations {#security}
 
