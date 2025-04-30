@@ -316,6 +316,109 @@ This transport parameter is valid for QUIC versions 1 {{QUIC}} and 2
 transport parameters, and frame types registries established in {{Sections 22.2,
 22.3, and 22.4 of QUIC}}.
 
+# TRONE Indication {#trone-indication}
+
+QUIC endpoints can signal potential support for TRONE before the completion of
+the QUIC handshake by attaching a TRONE indication packet after the last QUIC
+long header packet in the first UDP datagram. The TRONE indication provides an
+opportunistic signal to network elements that the client might support TRONE.
+Network elements can use this as an early hint, but must await confirmation of
+TRONE support by observing a full TRONE packet after the handshake completes.
+
+When sending QUIC short header packets in the first flight, endpoints SHOULD
+send them separately from the first datagram carrying the TRONE indication
+packet, to avoid receivers incapable of decoding TRONE packets from dropping
+the short header packet.
+
+## TRONE Indication Packet
+
+A TRONE indication packet has a format with fully reversed field order compared
+to TRONE packets to facilitate detection by parsing from the end of the packet.
+
+{{fig-trone-indication-packet}} shows the format of the TRONE indication packet:
+
+~~~ artwork
+TRONE Indication Packet {
+  Source Connection ID (0..2040),
+  Source Connection ID Length (8),
+  Destination Connection ID (0..2040),
+  Destination Connection ID Length (8),
+  Version (32) = 0xTRONE1 or 0xTRONE2,
+  Rate Signal (6) = 0x3F,
+  Reserved (1),
+  Header Form (1) = 1
+}
+~~~
+{: #fig-trone-indication-packet title="TRONE Indication Packet Format"}
+
+A TRONE indication packet is attached directly after a QUIC Initial packet in
+the first UDP datagram. The Rate Signal field MUST be set to 0x3F (63) when
+sent as a TRONE indication packet.
+
+## Sending TRONE Indication
+
+A QUIC endpoint that supports TRONE MAY attach a TRONE indication packet after
+a QUIC Initial packet in the first UDP datagram. This is an opportunistic
+signal that is not guaranteed to be processed by the receiver, as the receiver
+has not yet confirmed its willingness to receive TRONE packets.
+
+When attaching a TRONE indication, the endpoint SHOULD:
+* Place it immediately after the QUIC Initial packet in the datagram
+* Construct the packet with reversed field order as shown in
+  {{fig-trone-indication-packet}}
+* Set the Source Connection ID and Destination Connection ID fields to match
+  those of the QUIC Initial packet
+* Set the Version field to either 0xTRONE1 or 0xTRONE2
+* Set the Header Form bit to 1 (maintaining QUIC invariants)
+* Set the Rate Signal field to 0x3F (63)
+
+QUIC endpoints MUST NOT rely on TRONE indications for correct operation of the
+QUIC protocol or the TRONE protocol. The indication is purely advisory for
+network elements.
+
+## Processing TRONE Indications
+
+Network elements can detect TRONE indication packets using a reverse parsing
+approach, without requiring full parsing of the Initial packet:
+
+1. Identify a UDP datagram containing a QUIC version 1 or 2 packet.
+2. Check if the datagram length exceeds the minimum expected size of a QUIC
+   Initial packet
+3. Examine the last byte of the datagram to see if it has the Header Form bit
+   set to 1
+4. If set, read backward to verify the Version field matches 0xTRONE1 or
+   0xTRONE2
+5. Optionally read the Connection ID fields and match them to the QUIC packet.
+
+The following pseudocode shows how a network element might detect a TRONE
+indication:
+
+~~~ pseudocode
+is_quic = is_quic_datagram(datagram)
+if is_quic and datagram_length > MIN_INITIAL_SIZE:
+  last_byte = datagram[datagram_length - 1]
+
+  if (last_byte & 0x80) == 0x80:
+    version_start = datagram_length - 8
+    version_end = datagram_length - 4
+    potential_version = datagram[version_start:version_end]
+
+    if potential_version == TRONE1_VERSION or potential_version == TRONE2_VERSION:
+      note_potential_trone_support(flow_tuple)
+~~~
+
+This approach allows network elements to detect TRONE support without needing
+to parse the full QUIC Initial packet structure or perform deep packet
+inspection of the TLS handshake.
+
+Network elements that observe TRONE indication packets MAY:
+* Note the UDP 4-tuple for potential future TRONE handling
+* NOT modify the TRONE indication packet (keep Rate Signal at 0x3F)
+
+Network elements MUST NOT rely solely on the presence of a TRONE indication to
+confirm that a flow supports TRONE. A flow should only be confirmed as
+supporting TRONE when a regular TRONE packet ({{packet}}) is observed after the
+QUIC handshake has completed.
 
 # Deployment
 
@@ -405,6 +508,13 @@ processed.
 TRONE packets could be stripped from datagrams in the network, which cannot be
 reliably detected.  This could result in a sender falsely believing that no
 network element applied a rate limit signal.
+
+## Early Detection of TRONE Support
+
+Network elements can detect potential TRONE support early in a connection by
+looking for TRONE indication packets attached to Initial packets, as described
+in {{trone-indication}}. This avoids the need for deep packet inspection of the
+TLS handshake.
 
 
 # Security Considerations {#security}
@@ -535,6 +645,18 @@ A VPN or proxy could defend against this style of attack by removing TRONE (and
 ECN) signals. There are few reasons to provide per-flow rate limit signals in
 that situation.  Endpoints might also either disable this feature or ignore any
 signals when they are aware of the use of a VPN or proxy.
+
+## TRONE Indication Privacy
+
+Consistently sending TRONE indications with specific version values and
+patterns could create a fingerprinting vector that helps identify particular
+client implementations. This consideration is similar to those already
+discussed for the primary TRONE protocol.
+
+To mitigate fingerprinting concerns, clients might choose to:
+* Randomize whether they send TRONE indications on each connection
+* Alternate between version 0xTRONE1 and 0xTRONE2 for TRONE indications
+* Only send TRONE indications for certain application types or server destinations
 
 # IANA Considerations {#iana}
 
