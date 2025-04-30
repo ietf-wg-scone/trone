@@ -93,6 +93,7 @@ Table of Contents
    8.  Version Interaction
      8.1.  Providing Opportunities to Apply Rate Limit Signals
      8.2.  Feedback To Sender About Signals
+     8.3.  Interactions with congestion control
    9.  Security Considerations
    10. Privacy Considerations
      10.1.  Passive Attacks
@@ -486,6 +487,26 @@ Table of Contents
    cannot be reliably detected.  This could result in a sender falsely
    believing that no network element applied a rate limit signal.
 
+8.3.  Interactions with congestion control
+
+   TRONE and congestion control both provide the application with
+   estimates of a path capacity.  They are complementary.  Congestion
+   control algorithms are typically designed to quickly detect and react
+   to congestion, i.e., to the "minimum" capacity of a path.  TRONE
+   informs the endpoint of the maximum capacity of a path.
+
+   Consider for example a path in which the bottleneck router implements
+   Early Congestion Notification as specified in the L4S architecture
+   [RFC9330].  If the path capacity diminishes, queues will build up and
+   the router will immediately start increasing the rate at which
+   packets are marked as "Congestion Experienced".  The receiving
+   endpoint will notice these marks, and inform its peer.  The incoming
+   congestion will be detected within 1 round trip time (RTT).  This
+   scenario will play out whatever the reason for the change in
+   capacity, whether due to increased competition between multiple
+   applications or, for example, to a change in capacity of a wireless
+   channel.
+
 9.  Security Considerations
 
    The modification of packets provides endpoints proof that a network
@@ -708,6 +729,12 @@ Table of Contents
               in Progress, Internet-Draft, draft-ietf-quic-multipath-14,
               23 April 2025, <https://datatracker.ietf.org/doc/html/
               draft-ietf-quic-multipath-14>.
+
+   [RFC9330]  Briscoe, B., Ed., De Schepper, K., Bagnulo, M., and G.
+              White, "Low Latency, Low Loss, and Scalable Throughput
+              (L4S) Internet Service: Architecture", RFC 9330,
+              DOI 10.17487/RFC9330, January 2023,
+              <https://www.rfc-editor.org/rfc/rfc9330>.
 
 Acknowledgments
 
