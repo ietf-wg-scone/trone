@@ -1055,7 +1055,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Thomson, et al.</td>
-<td class="center">Expires 30 October 2025</td>
+<td class="center">Expires 1 November 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1068,12 +1068,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-thoji-scone-protocol-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-04-28" class="published">28 April 2025</time>
+<time datetime="2025-04-30" class="published">30 April 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-10-30">30 October 2025</time></dd>
+<dd class="expires"><time datetime="2025-11-01">1 November 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1142,7 +1142,7 @@ endpoints that rate limiting policies are in force and  what that rate limit is.
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 30 October 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 1 November 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1226,19 +1226,10 @@ endpoints that rate limiting policies are in force and  what that rate limit is.
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-version-interaction" class="internal xref">Version Interaction</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
-                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-converting-between-versions" class="internal xref">Converting Between Versions</a></p>
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-providing-opportunities-to-" class="internal xref">Providing Opportunities to Apply Rate Limit Signals</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
-                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-handling-multiple-versions" class="internal xref">Handling Multiple Versions</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
-                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-example-conversions" class="internal xref">Example Conversions</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.4">
-                <p id="section-toc.1-1.8.2.4.1"><a href="#section-8.4" class="auto internal xref">8.4</a>.  <a href="#name-providing-opportunities-to-" class="internal xref">Providing Opportunities to Apply Rate Limit Signals</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.5">
-                <p id="section-toc.1-1.8.2.5.1"><a href="#section-8.5" class="auto internal xref">8.5</a>.  <a href="#name-feedback-to-sender-about-si" class="internal xref">Feedback To Sender About Signals</a></p>
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-feedback-to-sender-about-si" class="internal xref">Feedback To Sender About Signals</a></p>
 </li>
             </ul>
 </li>
@@ -1531,75 +1522,113 @@ header cannot precede any other packets.<a href="#section-5-8" class="pilcrow">�
 <p id="section-5.1-1">The Rate Signal field in SCONE uses the low 6 bits (0x3f) of the first byte.
 This field is encoded as a logarithmically spaced distribution over a range
 defined by the SCONE protocol version.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">The Rate Signal field is set to 0x3F (63) when sent by a QUIC endpoint,
-indicating no rate limit is in place or that the SCONE protocol is not supported
-by network elements on the path. Vales 0x00 through 0x3E (62) represent the ceiling
-of rate being advised by the network element(s) on the path.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
-<p id="section-5.1-3">For SCONE protocol version 0xSCONE1, the rate limits use a logarithmic scale with:
-* Base rate (b_min) = 100 Kbps
-* Maximum rate ≈ 125 Mbps
-* Bitrate at value n = b_min * 10^(n/20)<a href="#section-5.1-3" class="pilcrow">¶</a></p>
-<p id="section-5.1-4">For SCONE protocol version 0xSCONE2, the rate limits use a logarithmic scale with:
-* Base rate (b_min) = 10000 Kbps (10 Mbps)
-* Maximum rate ≈ 12.5 Gbps
-* Bitrate at value n = b_min * 10^(n/20)<a href="#section-5.1-4" class="pilcrow">¶</a></p>
-<p id="section-5.1-5">This creates two overlapping ranges:
-* Version 0xSCONE1: 100 Kbps to 125 Mbps
-* Version 0xSCONE2: 10 Mbps to 12.5 Gbps<a href="#section-5.1-5" class="pilcrow">¶</a></p>
-<p id="section-5.1-6">Some notable values in these ranges include:<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">When sent by a QUIC endpoint, the Version field of a SCONE packet is set to
+0xSCONE2 and the Rate Signal field is set to 0x3F (63), indicating no rate limit
+is in place or that the SCONE protocol is not supported by network elements on
+the path. All other values (0x00 through 0x3F for protocol version 0xSCONE1 and
+0x00 through 0x3E for protocol version 0xSCONE2) represent the ceiling of rates
+being advised by the network element(s) on the path.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-3">For SCONE protocol version 0xSCONE1, the rate limits use a logarithmic scale with:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-4.1">
+            <p id="section-5.1-4.1.1">Base rate (b_min) = 100 Kbps<a href="#section-5.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-4.2">
+            <p id="section-5.1-4.2.1">Bitrate at value n = b_min * 10^(n/20)<a href="#section-5.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.1-5">For SCONE protocol version 0xSCONE2, the rate limits use a logarithmic scale with:<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-6.1">
+            <p id="section-5.1-6.1.1">Bitrate at value n = b_min * 10^((n + 64)/20)<a href="#section-5.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.1-7">With two versions combined, bitrates between 100 Kbps and 199.5 Gbps can be
+expressed.<a href="#section-5.1-7" class="pilcrow">¶</a></p>
+<p id="section-5.1-8">Some notable values in these ranges include:<a href="#section-5.1-8" class="pilcrow">¶</a></p>
 <table class="center" id="table-1">
           <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
 <thead>
             <tr>
+              <th class="text-left" rowspan="1" colspan="1">Version</th>
               <th class="text-left" rowspan="1" colspan="1">Rate Signal</th>
-              <th class="text-left" rowspan="1" colspan="1">Version 0xSCONE1 Rate</th>
-              <th class="text-left" rowspan="1" colspan="1">Version 0xSCONE2 Rate</th>
+              <th class="text-left" rowspan="1" colspan="1">Bitrate</th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE1</td>
               <td class="text-left" rowspan="1" colspan="1">0</td>
               <td class="text-left" rowspan="1" colspan="1">100 Kbps</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE1</td>
+              <td class="text-left" rowspan="1" colspan="1">10</td>
+              <td class="text-left" rowspan="1" colspan="1">316 Kbps</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE1</td>
+              <td class="text-left" rowspan="1" colspan="1">20</td>
+              <td class="text-left" rowspan="1" colspan="1">1 Mbps</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE1</td>
+              <td class="text-left" rowspan="1" colspan="1">30</td>
+              <td class="text-left" rowspan="1" colspan="1">3.16 Mbps</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE1</td>
+              <td class="text-left" rowspan="1" colspan="1">40</td>
               <td class="text-left" rowspan="1" colspan="1">10 Mbps</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">10</td>
-              <td class="text-left" rowspan="1" colspan="1">316 Kbps</td>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE1</td>
+              <td class="text-left" rowspan="1" colspan="1">50</td>
               <td class="text-left" rowspan="1" colspan="1">31.6 Mbps</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">20</td>
-              <td class="text-left" rowspan="1" colspan="1">1 Mbps</td>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE1</td>
+              <td class="text-left" rowspan="1" colspan="1">60</td>
               <td class="text-left" rowspan="1" colspan="1">100 Mbps</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">30</td>
-              <td class="text-left" rowspan="1" colspan="1">3.16 Mbps</td>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
+              <td class="text-left" rowspan="1" colspan="1">6</td>
               <td class="text-left" rowspan="1" colspan="1">316 Mbps</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">40</td>
-              <td class="text-left" rowspan="1" colspan="1">10 Mbps</td>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
+              <td class="text-left" rowspan="1" colspan="1">16</td>
               <td class="text-left" rowspan="1" colspan="1">1 Gbps</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">50</td>
-              <td class="text-left" rowspan="1" colspan="1">31.6 Mbps</td>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
+              <td class="text-left" rowspan="1" colspan="1">26</td>
               <td class="text-left" rowspan="1" colspan="1">3.16 Gbps</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">60</td>
-              <td class="text-left" rowspan="1" colspan="1">100 Mbps</td>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
+              <td class="text-left" rowspan="1" colspan="1">36</td>
               <td class="text-left" rowspan="1" colspan="1">10 Gbps</td>
             </tr>
             <tr>
-              <td class="text-left" rowspan="1" colspan="1">62</td>
-              <td class="text-left" rowspan="1" colspan="1">126 Mbps</td>
-              <td class="text-left" rowspan="1" colspan="1">12.6 Gbps</td>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
+              <td class="text-left" rowspan="1" colspan="1">46</td>
+              <td class="text-left" rowspan="1" colspan="1">31.6 Gbps</td>
             </tr>
             <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
+              <td class="text-left" rowspan="1" colspan="1">56</td>
+              <td class="text-left" rowspan="1" colspan="1">100 Gbps</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
+              <td class="text-left" rowspan="1" colspan="1">62</td>
+              <td class="text-left" rowspan="1" colspan="1">199.5 Gbps</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">0xSCONE2</td>
               <td class="text-left" rowspan="1" colspan="1">63</td>
-              <td class="text-left" rowspan="1" colspan="1">No limit</td>
               <td class="text-left" rowspan="1" colspan="1">No limit</td>
             </tr>
           </tbody>
@@ -1653,8 +1682,8 @@ transport parameters, and frame types registries established in Sections <a href
         </h3>
 <p id="section-7.1-1">A network element detects a SCONE packet by observing that a packet has a QUIC
 long header and one of the SCONE protocol versions (0xSCONE1 or 0xSCONE2).<a href="#section-7.1-1" class="pilcrow">¶</a></p>
-<p id="section-7.1-2">A network element then conditionally replaces the Rate Signal field with
-values of its choosing.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">A network element then conditionally replaces the Version field and the Rate
+Signal field with values of its choosing.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
 <p id="section-7.1-3">A network element might receive a packet that already includes a rate signal.
 The network element replaces the rate signal if it wishes to signal a lower
 rate limit; otherwise, the original values are retained, preserving the signal
@@ -1666,19 +1695,13 @@ packet and replace an existing rate signal.<a href="#section-7.1-4" class="pilcr
 is_long = packet[0] &amp; 0x80 == 0x80
 packet_version = packet[1..5]
 if is_long and (packet_version == SCONE1_VERSION or packet_version == SCONE2_VERSION):
-  target_rate_value = convert_rate_to_signal(target_rate, packet_version)
   packet_rate_value = packet[0] &amp; 0x3f
-  if packet_rate_value == 0x3f or target_rate_value &lt; packet_rate_value:
+  (target_rate_version, target_rate_value) = convert_rate_to_signal(target_rate)
+  if target_rate_version &lt; packet_version or target_rate_value &lt; packet_rate_value
+    packet[1..5] = target_rate_version
     packet[0] = packet[0] &amp; 0xc0 | target_rate_value
 </pre><a href="#section-7.1-5" class="pilcrow">¶</a>
 </div>
-<p id="section-7.1-6">A network element applies the same rate policy to SCONE packets of both
-versions, accounting for the different scales of each version. When a
-network element signals a rate limit that falls within the range of both
-versions, it should signal appropriate values in each version. When the target
-rate limit is outside the range of a particular version, the network element
-should signal the minimum value (0) for rates below the range and preserve the
-original value for rates above the range.<a href="#section-7.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1689,136 +1712,60 @@ original value for rates above the range.<a href="#section-7.1-6" class="pilcrow
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-version-interaction" class="section-name selfRef">Version Interaction</a>
       </h2>
 <p id="section-8-1">The SCONE protocol defines two versions (0xSCONE1 and 0xSCONE2) that cover
-different but overlapping ranges of bitrates. This design allows for:<a href="#section-8-1" class="pilcrow">¶</a></p>
+different ranges of bitrates. This design allows for:<a href="#section-8-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-8-2.1">
           <p id="section-8-2.1.1">Support for both very low bitrates (down to 100 Kbps) and very high bitrates
-(up to 12.5 Gbps)<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
+(up to 199.5 Gbps)<a href="#section-8-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-8-2.2">
-          <p id="section-8-2.2.1">Graceful handling of network elements that might only recognize one version
-or some subset of future versions.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
+          <p id="section-8-2.2.1">Graceful handling of network elements that might only recognize one version.<a href="#section-8-2.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<div id="converting-between-versions">
-<section id="section-8.1">
-        <h3 id="name-converting-between-versions">
-<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-converting-between-versions" class="section-name selfRef">Converting Between Versions</a>
-        </h3>
-<p id="section-8.1-1">When network elements or endpoints need to compare rate signals from different
-versions, they must first convert the signals to their corresponding bitrates.
-The formulas for conversion are:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8.1-2.1">
-            <p id="section-8.1-2.1.1">For version 0xSCONE1: bitrate = 100 Kbps * 10^(signal/20)<a href="#section-8.1-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-8.1-2.2">
-            <p id="section-8.1-2.2.1">For version 0xSCONE2: bitrate = 10 Mbps * 10^(signal/20)<a href="#section-8.1-2.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-</section>
-</div>
-<div id="handling-multiple-versions">
-<section id="section-8.2">
-        <h3 id="name-handling-multiple-versions">
-<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-handling-multiple-versions" class="section-name selfRef">Handling Multiple Versions</a>
-        </h3>
-<p id="section-8.2-1">Endpoints should observe the following guidelines when sending and processing
-SCONE packets:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8.2-2.1">
-            <p id="section-8.2-2.1.1">When sending SCONE packets, endpoints <span class="bcp14">SHOULD</span> alternate between versions
-0xSCONE1 and 0xSCONE2 to ensure network elements can signal rate limits across
-the entire supported range.<a href="#section-8.2-2.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-8.2-2.2">
-            <p id="section-8.2-2.2.1">When receiving SCONE packets with different versions, endpoints <span class="bcp14">SHOULD</span>:<a href="#section-8.2-2.2.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-8.2-2.2.2.1">
-                <p id="section-8.2-2.2.2.1.1">Convert all signals to their corresponding bitrates<a href="#section-8.2-2.2.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-8.2-2.2.2.2">
-                <p id="section-8.2-2.2.2.2.1">Use the most restrictive (lowest) effective rate limit<a href="#section-8.2-2.2.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-8.2-2.2.2.3">
-                <p id="section-8.2-2.2.2.3.1">If one version's signal indicates "no limit" (value 63) but the other
-indicates a limit, use the specified limit<a href="#section-8.2-2.2.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li class="normal" id="section-8.2-2.3">
-            <p id="section-8.2-2.3.1">Network elements <span class="bcp14">SHOULD</span> apply appropriate rate signals to all packets that
-include a SCONE version they support.<a href="#section-8.2-2.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-</section>
-</div>
-<div id="example-conversions">
-<section id="section-8.3">
-        <h3 id="name-example-conversions">
-<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-example-conversions" class="section-name selfRef">Example Conversions</a>
-        </h3>
-<p id="section-8.3-1">For a target rate limit of 30 Mbps:
-* In version 0xSCONE1, this corresponds to a signal value of approximately 49
-* In version 0xSCONE2, this corresponds to a signal value of approximately 9<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<p id="section-8.3-2">For a target rate limit of 5 Gbps:
-* In version 0xSCONE1, this exceeds the range, so the signal would remain at 63
-  (no limit)
-* In version 0xSCONE2, this corresponds to a signal value of
-  approximately 57<a href="#section-8.3-2" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="extra-packets">
-<section id="section-8.4">
+<section id="section-8.1">
         <h3 id="name-providing-opportunities-to-">
-<a href="#section-8.4" class="section-number selfRef">8.4. </a><a href="#name-providing-opportunities-to-" class="section-name selfRef">Providing Opportunities to Apply Rate Limit Signals</a>
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-providing-opportunities-to-" class="section-name selfRef">Providing Opportunities to Apply Rate Limit Signals</a>
         </h3>
-<p id="section-8.4-1">Endpoints that wish to offer network elements the option to add rate limit
+<p id="section-8.1-1">Endpoints that wish to offer network elements the option to add rate limit
 signals can send SCONE packets at any time.  This is a decision that a sender
 makes when constructing datagrams. It is recommended that endpoints promptly
 send an initial SCONE packet once the peer confirms its willingness to receive
-them.<a href="#section-8.4-1" class="pilcrow">¶</a></p>
-<p id="section-8.4-2">To support the full range of possible rate limits, endpoints <span class="bcp14">SHOULD</span> alternate
-between sending SCONE packets with version 0xSCONE1 and version 0xSCONE2. This
-allows network elements to signal rate limits across the entire supported range
-with appropriate granularity.<a href="#section-8.4-2" class="pilcrow">¶</a></p>
-<p id="section-8.4-3">When a receiver receives SCONE packets with different versions and different
-rate signals, it <span class="bcp14">SHOULD</span> use the most restrictive (lowest) effective rate limit
-after converting the signal values to their corresponding bitrates.<a href="#section-8.4-3" class="pilcrow">¶</a></p>
-<p id="section-8.4-4">Endpoints <span class="bcp14">MUST</span> send any SCONE packet they send as the first packet in a
+them.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">Endpoints <span class="bcp14">MUST</span> send any SCONE packet they send as the first packet in a
 datagram, coalesced with additional packets. An endpoint that receives and
 discards a SCONE packet without also successfully processing another packet
 from the same datagram <span class="bcp14">SHOULD</span> ignore any rate limit signal. Such a datagram
-might be entirely spoofed.<a href="#section-8.4-4" class="pilcrow">¶</a></p>
-<p id="section-8.4-5">A network element that wishes to signal an updated rate limit waits for the
-next SCONE packet in the desired direction.<a href="#section-8.4-5" class="pilcrow">¶</a></p>
+might be entirely spoofed.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.1-3">A network element that wishes to signal an updated rate limit waits for the
+next SCONE packet in the desired direction.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="feedback">
-<section id="section-8.5">
+<section id="section-8.2">
         <h3 id="name-feedback-to-sender-about-si">
-<a href="#section-8.5" class="section-number selfRef">8.5. </a><a href="#name-feedback-to-sender-about-si" class="section-name selfRef">Feedback To Sender About Signals</a>
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-feedback-to-sender-about-si" class="section-name selfRef">Feedback To Sender About Signals</a>
         </h3>
-<p id="section-8.5-1">Information about rate limits is intended for the sending application.  Any
+<p id="section-8.2-1">Information about rate limits is intended for the sending application.  Any
 signal from network elements can be propagated to the receiving application
-using an implementation-defined mechanism.<a href="#section-8.5-1" class="pilcrow">¶</a></p>
-<p id="section-8.5-2">This document does not define a means for indicating what was received.
+using an implementation-defined mechanism.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">This document does not define a means for indicating what was received.
 That is, the expectation is that any signal is propagated to the application
 for handling, not handled automatically by the transport layer.
 How a receiving application communicates the rate limit signal to a
-sending application will depend on the application in use.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
-<p id="section-8.5-3">Different applications can choose different approaches. For example,
+sending application will depend on the application in use.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-3">Different applications can choose different approaches. For example,
 in an application where a receiver drives rate adaptation, it might
-not be necessary to define additional signaling.<a href="#section-8.5-3" class="pilcrow">¶</a></p>
-<p id="section-8.5-4">A sender can use any acknowledgment mechanism provided by the QUIC version in
+not be necessary to define additional signaling.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
+<p id="section-8.2-4">A sender can use any acknowledgment mechanism provided by the QUIC version in
 use to learn whether datagrams containing SCONE packets were likely received.
 This might help inform whether to send additional SCONE packets in the event
 that a datagram is lost. However, rather than relying on transport signals, an
 application might be better able to indicate what has been received and
-processed.<a href="#section-8.5-4" class="pilcrow">¶</a></p>
-<p id="section-8.5-5">SCONE packets could be stripped from datagrams in the network, which cannot be
+processed.<a href="#section-8.2-4" class="pilcrow">¶</a></p>
+<p id="section-8.2-5">SCONE packets could be stripped from datagrams in the network, which cannot be
 reliably detected.  This could result in a sender falsely believing that no
-network element applied a rate limit signal.<a href="#section-8.5-5" class="pilcrow">¶</a></p>
+network element applied a rate limit signal.<a href="#section-8.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1830,7 +1777,7 @@ network element applied a rate limit signal.<a href="#section-8.5-5" class="pilc
       </h2>
 <p id="section-9-1">The modification of packets provides endpoints proof that a network element is
 in a position to drop datagrams and thereby enforce the indicated rate limit.
-<a href="#extra-packets" class="auto internal xref">Section 8.4</a> states that endpoints only accept signals if the datagram
+<a href="#extra-packets" class="auto internal xref">Section 8.1</a> states that endpoints only accept signals if the datagram
 contains a packet that it accepts to prevent an off-path attacker from inserting
 spurious rate limit signals.<a href="#section-9-1" class="pilcrow">¶</a></p>
 <p id="section-9-2">Some off-path attackers may be able to both
@@ -2053,7 +2000,7 @@ from <span><a href="https://rfc-editor.org/rfc/rfc9000#section-22.2" class="relr
           <dd class="break"></dd>
 <dt id="section-11.1-2.11">Notes:</dt>
           <dd style="margin-left: 1.5em" id="section-11.1-2.12">
-            <p id="section-11.1-2.12.1">SCONE Protocol - Low Range (100 Kbps - 125 Mbps)<a href="#section-11.1-2.12.1" class="pilcrow">¶</a></p>
+            <p id="section-11.1-2.12.1">SCONE Protocol - Low Range<a href="#section-11.1-2.12.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -2085,7 +2032,7 @@ from <span><a href="https://rfc-editor.org/rfc/rfc9000#section-22.2" class="relr
           <dd class="break"></dd>
 <dt id="section-11.1-3.11">Notes:</dt>
           <dd style="margin-left: 1.5em" id="section-11.1-3.12">
-            <p id="section-11.1-3.12.1">SCONE Protocol - High Range (10 Mbps - 12.5 Gbps)<a href="#section-11.1-3.12.1" class="pilcrow">¶</a></p>
+            <p id="section-11.1-3.12.1">SCONE Protocol - High Range<a href="#section-11.1-3.12.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
