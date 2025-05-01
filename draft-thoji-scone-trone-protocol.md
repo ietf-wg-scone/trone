@@ -186,9 +186,16 @@ signaling occurs as this is specific to the application in use.
 A signal does not prove that a higher rate would not be successful.  Endpoints
 that receive this signal therefore need to treat the information as advisory.
 
-As an advisory signal, network elements cannot assume that endpoints will
-respect the signal.  Though this might reduce the need for more active rate
-limiting, how rate limit enforcement is applied is a matter for network policy.
+The fact that an endpoint requests bitrate signals does not necessarily mean
+that it will adhere to them; in some cases, the endpoint cannot. In certain
+situations, a flow may initially be used to serve video chunks, with the client
+selecting appropriate chunks based on bitrate signals, but later switch to a
+bulk download for which bitrate adaptation is not applicable. In other cases,
+the flow may be a tunnel carrying multiple connections, some of which may not be
+capable of handling SCONE signals. Therefore, when a network element detects a
+flow using more bandwidth than advertised via SCONE, it SHOULD fall back to rate
+limiting based on congestion control signals, as if the flow were not using
+SCONE at all.
 
 The time and scope over which a rate limit applies is not specified.  The
 effective rate limit might change without being signaled.  The signaled limit
