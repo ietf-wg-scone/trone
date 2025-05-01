@@ -193,10 +193,9 @@ selecting appropriate chunks based on bitrate signals, but later switch to a
 bulk download for which bitrate adaptation is not applicable. Composite flows
 from multiple applications, such as tunneled flows, might only have a subset of
 the involved applications that are capable of handling SCONE signals. Therefore,
-when a network element detects a
-flow using more bandwidth than advertised via SCONE, it SHOULD fall back to rate
-limiting based on congestion control signals, as if the flow were not using
-SCONE at all.
+when a network element detects a flow using more bandwidth than advertised via
+SCONE, it might switch to applying its policies for non-SCONE flows, using
+congestion control signals.
 
 The time and scope over which a rate limit applies is not specified.  The
 effective rate limit might change without being signaled.  The signaled limit
