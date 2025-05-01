@@ -187,8 +187,8 @@ A signal does not prove that a higher rate would not be successful.  Endpoints
 that receive this signal therefore need to treat the information as advisory.
 
 The fact that an endpoint requests bitrate signals does not necessarily mean
-that it will adhere to them; in some cases, the endpoint cannot. In certain
-situations, a flow may initially be used to serve video chunks, with the client
+that it will adhere to them; in some cases, the endpoint cannot. For
+example, a flow may initially be used to serve video chunks, with the client
 selecting appropriate chunks based on bitrate signals, but later switch to a
 bulk download for which bitrate adaptation is not applicable. In other cases,
 the flow may be a tunnel carrying multiple connections, some of which may not be
