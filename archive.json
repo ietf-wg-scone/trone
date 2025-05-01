@@ -1,7 +1,7 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-29T01:41:30.611525+00:00",
-  "repo": "ietf-wg-scone/trone",
+  "timestamp": "2025-05-01T01:49:05.410628+00:00",
+  "repo": "ietf-wg-scone/scone",
   "labels": [
     {
       "name": "bug",
@@ -59,7 +59,7 @@
       "number": 1,
       "id": "I_kwDON1dwo86qsnWm",
       "title": "Throughput advice format",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/1",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/1",
       "state": "CLOSED",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
@@ -72,7 +72,7 @@
       "comments": [
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "We are back to the composability argument. TRAIN is designed to pick \"the lowest of multiple assertions\". During the discussion, I heard the view that there is no need for that, because in practice there is only one bottleneck and one TRAIN rewriter. I am really not sure about that -- I can really imagine a cascade of NATs, each believing that they are the only one enforcing bandwidth. The rule that you propose implies that any \"rewriter\" must check a specific bit, and if it is set jump to the payload and analyze it. Which implies that all on path agents will need to support \"checking the payload\", in which case I am not sure I see the point of having the information in the top bits.",
           "createdAt": "2025-02-20T08:15:50Z",
           "updatedAt": "2025-02-20T08:15:50Z"
@@ -97,7 +97,7 @@
       "number": 2,
       "id": "I_kwDON1dwo86qspaJ",
       "title": "Name",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/2",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/2",
       "state": "OPEN",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
@@ -130,7 +130,7 @@
       "number": 4,
       "id": "I_kwDON1dwo86u3xiG",
       "title": "Adoption and Business implications of \"A single Rate Signal field\"",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/4",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/4",
       "state": "OPEN",
       "author": "atiwariphd",
       "authorAssociation": "NONE",
@@ -154,7 +154,7 @@
       "number": 5,
       "id": "I_kwDON1dwo86u5K3z",
       "title": "Client initiated TRONE signal (uplink direction) with implicit support for flow detection",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/5",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/5",
       "state": "OPEN",
       "author": "smishra1200",
       "authorAssociation": "NONE",
@@ -178,7 +178,7 @@
       "number": 6,
       "id": "I_kwDON1dwo86u5RKN",
       "title": "Network Element initiate TRONE packet for Dynamic update of Throughput advise based on changing RAT or subscription plan",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/6",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/6",
       "state": "OPEN",
       "author": "smishra1200",
       "authorAssociation": "NONE",
@@ -202,7 +202,7 @@
       "number": 7,
       "id": "I_kwDON1dwo86u5cxB",
       "title": "Client-side explicit ACK for receipt of TRONE packet",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/7",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/7",
       "state": "OPEN",
       "author": "smishra1200",
       "authorAssociation": "NONE",
@@ -210,7 +210,7 @@
       "labels": [],
       "body": "7.3.  Feedback To Sender About Signals \n\nSuggest that the TRONE draft consider a use case for client to send an explicit ACK to the \"network element\" upon receiving a TRONE packet. Without an explicit ACK, a NE may not know if the client has received the latest Throughput advisory bit-rate. This may help the scenario where a client may not self regulate due to loss of TRONE packet with the most recent Throughput advisory bit-rate.\n\nAdding a requirement that support the ACK from client to the network element. \n\nI-D mishra-scone-usecase-00 listed the following requirement: \n\nClient-application endpoint SHOULD send acknowledgement receipt of throughput advisory signal from the network element using the SCONE (TRONE) signal\n\nhttps://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.3.1",
       "createdAt": "2025-03-20T06:50:46Z",
-      "updatedAt": "2025-04-16T15:22:41Z",
+      "updatedAt": "2025-04-30T21:25:22Z",
       "closedAt": null,
       "comments": [
         {
@@ -229,7 +229,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "The clients use TRONE because they seek the advice. You have to assume that they will heed that advice, largely because of self interest. Nobody want application data thrown out randomly and causing terrible UI artefacts.\n\nAs @ihlar says, if the network wants to enforce something, it has to implement it using some kind of active queue management. Preferably signalling to the client using ECN/L4S. ",
           "createdAt": "2025-04-09T06:32:15Z",
           "updatedAt": "2025-04-09T06:32:15Z"
@@ -243,7 +243,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "The TRONE model is for the network to provide advice. The design assume that the TRONE packet does not change the state of the network. For example, a network may be already programmed to apply a rate limiter to packets with certain characteristics, or to all packets. The TRONE packets will inform endpoints about those characteristics, so they can make useful decisions such as picking a video codec that remains within those envelopes. For that usage, we do not need acknowledgement: it is the responsibility of the endpoints to repeat packets if they cannot get information.",
           "createdAt": "2025-04-16T15:01:07Z",
           "updatedAt": "2025-04-16T15:01:07Z"
@@ -261,6 +261,13 @@
           "body": "This doesn't seem necessary to me, unless the expectation is that packet loss is very high and the TRONE packets are relatively infrequent.",
           "createdAt": "2025-04-16T15:22:40Z",
           "updatedAt": "2025-04-16T15:22:40Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "My position here is that the closing of the feedback loop is something that belongs at the application layer.  We don't need this in the protocol.  As Sanjay's requirement says (eliding 2119 language and adding emphasis) \"**Client-application** endpoint [sends] acknowledgement receipt of throughput advisory signal [...]\".\n\nChanging QUIC to handle this might seem like a good idea.  It smooths the path for feedback and ensures consistent implementation.  However, this protocol operates outside of QUIC for the most part; you might equally ask why we aren't providing the feedback in HTTP/3.\n\nThe clincher for me is that it depends very much on application regarding the exact form that feedback takes.  HLS applications won't need to send any direct advice feedback, the client only needs to use the information to choose a different chunk at the next opportunity.",
+          "createdAt": "2025-04-30T21:25:20Z",
+          "updatedAt": "2025-04-30T21:25:20Z"
         }
       ]
     },
@@ -268,10 +275,10 @@
       "number": 8,
       "id": "I_kwDON1dwo86vExP6",
       "title": "Detail interaction with congestion control",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/8",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/8",
       "state": "OPEN",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [
         "huitema"
       ],
@@ -290,7 +297,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "During the 4/16/25 interim, we agreed to only merge part of PR #16, leaving aside a bunch of text:\n\n1. Speculative text about using congestion control signals to trigger TRONE packets when congestion eases: Consider then a condition in which congestion eases, either because the\ncompeting connections end or because the wireless transmission capacity\nimproves. The endpoints will notice that the rate of ECN marking rate has\nbecome low enough, and that the path is not congested anymore. However,\nthey don't know by how much they can increase their sending rate. Most\ncongestion control algorithms will proceed cautiously, allowing the\napplication to increase its sending rate step by step and verifying at each\nstep that they are not causing congestion. In these cases, a TRONE\nsignal can inform them about the changed capacity of the path and allow\nthem to increase capacity faster.\n\n2. Speculative text about using the TRONE signal to inform congestion control at the beginning of a connection: The TRONE signal can be particularly useful at the very beginning of a\nconnection. Congestion control algorithms typically start with a\nslow start process in which the application is allowed to double\nits sending rate after each RTT, until congestion is notified. This\nresults in a burst of excess transmission during the last RTT,\ncreating queues and possibly causing packet losses. Queues and\nlosses will affect not just the new connection that is testing the\ncapacity of the path, but also all established connections that\nshare the bottleneck. If the endpoints are using TRONE and learned the\nmaximum capacity of the path, they can exit the slow start process\nas soon as the maximum capacity has been tested, and avoid creating\nqueues or causing packet losses.\n\n3. Speculative text linking TRONE and \"careful resume\": The TRONE signal can also be useful if the applications remembers the\ncongestion control parameters of previous connections, and uses a\n\"careful resume\" process to quickly ramp up capacity as specified\nin  ({{?I-D.ietf-tsvwg-careful-resume}}). The endpoints could use\nTRONE to verify that the path characteristics have not changed\nsince the last connection before applying the careful resume\nprocess.\n\n4. General advice that if congestion uses the TRONE signal, it should be aware that if could be spoofed: In all cases, the endpoints should consider that the TRONE signal could\nhave been spoofed (see {{security}}). The congestion controller can use\nthe maximum capacity indicated by TRONE as a guide, but it\ncan also cautiously probe for available\ncapacity beyond the limit until receiving congestion signals.\n\nWe may want to use some of this text to specify whether and how congestion control use the TRONE signal. This is not obvious, because the general advice is that the two are independent, but it would be naive to believe that nobody would try plugging the capacity signaled by TRONE in their congestion controller. It might be better to explain the pitfalls of doing that, and perhaps signal the rare points where it makes sense.\n\nWe may also want to look at how \"easing of congestion\" could be used as a trigger for sending SCONE packets. This is somewhat experimental, because current congestion algorithms only detect easing of congestion if the application can push more data. An application working under the TRONE specified rate limit would not be able to do that. Updated congestion control algorithms might be able to detect easing of congestion by monitoring the rate of ECN marks, or the evolution of the RTT, but this is still a research area.",
           "createdAt": "2025-04-16T17:15:24Z",
           "updatedAt": "2025-04-16T17:15:24Z"
@@ -301,10 +308,10 @@
       "number": 9,
       "id": "I_kwDON1dwo86vE006",
       "title": "Consider a way to do greasing",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/9",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/9",
       "state": "OPEN",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "There is a bit of ambiguity in the specification of \"who uses TRONE\". The original Scone WG appears to have focused on adaptive bit rate video. If we strictly kept that focus, we have a privacy issue. Third parties could observe the presence of Trone headers, and infer that the end to end QUIC connection is engaged in video streaming.\n\nTo reduce the privacy issue, we could adopt a combined strategy, and ask more applications to support Trone, thus weakening the correlation between Trone and video.\n\nWe could also envisage greasing, with applications sending datagrams composed of a Trone packet, followed by a short header and random content. If the peer is not Trone capable, such greasing packets will be discarded because they do done decrypt correctly. But the third parties cannot check the encryption, so they will not be able to distinguish such packets from \"real\" Trone -- i.e., successful greasing.",
@@ -321,7 +328,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@atiwariphd the network element cannot distinguish between grease and real TRONE packet. I documented that as an attack in a separate PR #13 ",
           "createdAt": "2025-03-26T17:43:14Z",
           "updatedAt": "2025-03-26T17:43:14Z"
@@ -332,10 +339,10 @@
       "number": 10,
       "id": "I_kwDON1dwo86vE3Wm",
       "title": "Could network elements mangle innocent packets?",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/10",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/10",
       "state": "OPEN",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This is already discussed in the [TRAIN issue 32](https://github.com/martinthomson/train-protocol/issues/32). A Trone intermediary can mistake packets of some other applications for Trone packets. If it reqrite 6 bits, that will cause the packet to be eithre dropped or misinterpreted.\n\nAs explained by @ihlar during the IETF meeting in Bangkok, we need to distinguish:\n\n1. random collision: the end to end application issues some random first bytes that happen to mimic Trone. It will happen at low frequency.\n2. systematic collision: the end to end collision had negotiated some header that happens to Mimic Trone. All packets with that header will be mangled.\n\nThe proposed solution is for intermediaries to keep flow state and stop marking if too many packets of a flow match Trone. We need to develop that.\n",
@@ -356,36 +363,36 @@
       "number": 11,
       "id": "I_kwDON1dwo86vE_RE",
       "title": "Spoofing attacks against intermediaries",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/11",
-      "state": "OPEN",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/11",
+      "state": "CLOSED",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "In issue #9 we discuss the possibility of greasing TRONE. Greasing is cool for privacy, but the same mechanisms can be used as an attack. Suppose something like:\n\n~~~\n+------------+    +----------+       /---------------\\       +-------------+\n|end point A | -- | Trone NE | ---- ( Big bad Internet) ---- | end point B |\n+------------+    +----------+       \\---------------/       +-------------+\n                                          |\n                                          |\n                                    +-------------+\n                                    | wily hacker |\n                                    +-------------+\n~~~\n\nThe hacker creates Trone packets with:\n\n* IP / UDP header: set IP source to address of B, IP destination to address of A\n* SCONE packet: pick a destination CID and a destination CID\n* 1RTT header: same destination  CID as SCONE packet\n* 1 RTT content: enough random bytes to look plausible\n\nThe attacker needs to know at least a valid address for end point A, so the packets will be routed through the target NE, but after that there are many possibilities:\n\n* an off path attacker can pick random values for the source address of \"B\" and for the CID.\n* an on path attacker can pick pairs of addresses that match existing hosts \"A\" and \"B\" and either random CID or CID copied from observed traffic.\n\nThe possible effects would be:\n\n* trick the NE into \"remembering\" lots of TRONE context, thus consuming lots of memory\n* force the NE to process a vast quantity of TRONE packets, thus consuming lots of resource\n* trick the NE into detecting a \"systematic collision\" (see issue #10) and thus disable TRONE for that flow.\n ",
       "createdAt": "2025-03-21T05:38:19Z",
-      "updatedAt": "2025-03-21T05:38:19Z",
-      "closedAt": null,
+      "updatedAt": "2025-04-30T20:12:49Z",
+      "closedAt": "2025-04-30T20:12:49Z",
       "comments": []
     },
     {
       "number": 14,
       "id": "I_kwDON1dwo86vv_gA",
       "title": "Is the \"version=range\" paradigm appropriate?",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/14",
-      "state": "OPEN",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/14",
+      "state": "CLOSED",
       "author": "alvestrand",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "As presented at IETF 122, we define a \"version\" field that is used to choose between possible ranges.\nThis seems strange both from a cleanliness standpoint and from a greasing standpoint.\n\nWhen there are only two versions, the version field amounts to an extra bit in the range specifier - by including it directly in the range specifier (making it 0-127 rather than 0-63), we gain an unified range with a larger span (or a finer resolution, if we choose to reduce the multiplier in the exponential spacing).\n\nIf we desire to ensure that we can introduce more versions of the TRONE signal later, two versions with near-identical semantics are not enough.\n",
       "createdAt": "2025-03-26T07:03:56Z",
-      "updatedAt": "2025-04-17T18:12:29Z",
-      "closedAt": null,
+      "updatedAt": "2025-04-30T08:17:09Z",
+      "closedAt": "2025-04-30T08:17:09Z",
       "comments": [
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Yeah, I think there could be discussions regarding how endpoints / network elements act and how the bit rates are encoded.\n\nRegarding the former, at the moment, the draft defines two versions of TRONE covering different ranges. Senders send both. Network elements modify both independently. Receivers calculate the minimum of the two. There is indeed some complexity, when the goal is to signal just one value (i.e., the bit rate).\n\nAn alternative design will be to allow network elements rewrite TRONE2 packets (carrying larger bit rates) to TRONE1 packets (carrying smaller rates).\n\nIf we adopt such a design, senders just need to send one TRONE packet (i.e., TRONE2). Receivers will no longer be required to calculate the minimum.\n\nNetwork elements would still be required to observe two versions and rewrite them as necessary (possibly to a different version), but considering that we only have 6 spare bits in the QUIC invariants before variable length fields, I think we have to either squeeze all bit rates into 6 bits or live with having multiple versions indicating different bit rates.",
           "createdAt": "2025-04-16T10:16:13Z",
           "updatedAt": "2025-04-16T10:16:13Z"
@@ -399,7 +406,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "The idea of version rewriting is in line with the general design of using 2 version numbers to get an extra bit for the range of values.",
           "createdAt": "2025-04-17T18:12:28Z",
           "updatedAt": "2025-04-17T18:12:28Z"
@@ -410,7 +417,7 @@
       "number": 15,
       "id": "I_kwDON1dwo86v0U91",
       "title": "TRONE with other protocols - ICE in particular?",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/15",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/15",
       "state": "OPEN",
       "author": "alvestrand",
       "authorAssociation": "NONE",
@@ -437,7 +444,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "See issue #9 about greasing. The intermediaries do not know that a TRONE packet is in fact a QUIC packet. They merely see a TRONE packet followed by a QUIC like byte, a repeat of the connection identifier bytes, and a bunch of random looking bytes. If you want to add more complexity to ICE, your ICE implementation could certainly send UDP packets that match that format. QUIC enpoints use the \"random bytes\" for verifying that the packet is legit; you could use this random bytes to carry some kind of verifier in your ICE/TRONE packets.",
           "createdAt": "2025-03-26T17:54:06Z",
           "updatedAt": "2025-03-26T17:54:06Z"
@@ -451,7 +458,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@alvestrand that's why I suggested sending two messages, the ICE message proper, and a separate \"TRONE\" message on the same 4-tuple.",
           "createdAt": "2025-03-26T23:29:28Z",
           "updatedAt": "2025-03-26T23:29:28Z"
@@ -469,10 +476,10 @@
       "number": 17,
       "id": "I_kwDON1dwo86wCKw4",
       "title": "Clarify rounding behavior for bitrate-to-signal value conversion",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/17",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/17",
       "state": "OPEN",
       "author": "mjoras",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See discussion on #12 \n\nThe draft needs clear guidance on rounding when converting between bitrates and signal values.\n\n- Should implementers round up or down when converting from bitrates to signal values?\n- What are the practical implications of each choice? (rounding down ensures staying under capacity limits; rounding up maximizes bandwidth utilization when rate adaptation algorithms rarely use full capacity)\n- Recommend specific approach with rationale, noting the logarithmic scale means adjacent steps differ by at most ~11%\n- Include example calculations demonstrating the recommended approach\n\n\n\n",
@@ -485,7 +492,7 @@
       "number": 18,
       "id": "I_kwDON1dwo86wCPkw",
       "title": "Confusion between \"No limit\" and \"TRONE not supported on path\"",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/18",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/18",
       "state": "OPEN",
       "author": "mjoras",
       "authorAssociation": "CONTRIBUTOR",
@@ -516,16 +523,16 @@
       "number": 19,
       "id": "I_kwDON1dwo86wDn_2",
       "title": "Privacy considerations when sending different TRONE protocol versions",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/19",
-      "state": "OPEN",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/19",
+      "state": "CLOSED",
       "author": "mjoras",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "See discussion on #12 \n\nThe draft currently recommends alternating between TRONE1 and TRONE2 versions without addressing the privacy implications. We should think about this more and at least add some considerations to the text.\n\nTo ensure network elements know TRONE is supported while minimizing information disclosure, one idea would be:\n\n- Send at least one packet of each version initially even if the application only operates in one range.\n- Subsequently prioritize sending the version most relevant to current bandwidth usage\n",
       "createdAt": "2025-03-27T16:50:15Z",
-      "updatedAt": "2025-04-16T15:44:14Z",
-      "closedAt": null,
+      "updatedAt": "2025-04-30T09:27:10Z",
+      "closedAt": "2025-04-30T09:27:09Z",
       "comments": [
         {
           "author": "ihlar",
@@ -536,7 +543,7 @@
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "To be precise, will it be:\r\na) for the first burst send TRONE1 and for the next burst send TRONE 2, or\r\nb) for each burst send both TRONE 1 and TRONE2?\r\n\r\nI assume it'd be _b\", but trying to confirm.\r\n\r\nRegarding the overhead, I agree that it'd be negligible. The lowest bitrate being proposed is 100Kbps which is ~10pps assuming 1200 byte packets. That'd mean that, if endpoints are to receive updated TRONE signals one per every 10 seconds (see #20), the difference is sending one or two QUIC packets with TRONE headers for every 100 UDP datagrams.",
           "createdAt": "2025-04-09T04:50:22Z",
           "updatedAt": "2025-04-09T04:50:22Z"
@@ -550,10 +557,24 @@
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "As stated in https://github.com/ietf-wg-scone/trone/issues/14#issuecomment-2809099526, we could allow network elements rewrite TRONE2 packets (carrying higher bit rates) to TRONE1.",
           "createdAt": "2025-04-16T15:44:13Z",
           "updatedAt": "2025-04-16T15:44:13Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Now that #25 has been merged, I think we can close this issue too.",
+          "createdAt": "2025-04-30T09:06:08Z",
+          "updatedAt": "2025-04-30T09:06:08Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Closed by #25 ",
+          "createdAt": "2025-04-30T09:27:09Z",
+          "updatedAt": "2025-04-30T09:27:09Z"
         }
       ]
     },
@@ -561,7 +582,7 @@
       "number": 20,
       "id": "I_kwDON1dwo86xr5d8",
       "title": "Time window for suggested bitrate",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/20",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/20",
       "state": "OPEN",
       "author": "rjt-ietf",
       "authorAssociation": "NONE",
@@ -574,7 +595,7 @@
       "comments": [
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "> This means we should probably specify a longer window to accommodate different applications, but not too long that exceeds the average duration of a video connection.\r\n\r\nAgreed.\r\n\r\nSince network devices cannot identify the actual application protocol being used (e.g., HLS, WebRTC, MOQ), the responsiveness to TRONE signals they can expect corresponds to that of the least responsive application protocol.\r\n\r\nAssuming that HLS would use chunks as large as 10 seconds, and assuming that each chunk would be sent at full speed, window of 20 seconds is a good ball-park figure, IMO.",
           "createdAt": "2025-04-09T04:42:48Z",
           "updatedAt": "2025-04-09T04:42:48Z"
@@ -588,7 +609,7 @@
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I think there are two separate questions:\n* time window of the signals being emitted by network elements (which would be the window that they would use for detecting abuse)\n* how frequent endpoints request / receive updates\n\nFor the first question, unless endpoints agree to expose what type of application they are, the time window has to be that of the application that takes the longest time to adopt to the SCONE signal. My guess is that that application would be HLS, and that therefore the time window should be in the order of 10 seconds.\n\nFor the second question, I think there is no need to forbid endpoints requesting SCONE signals more frequently, e.g., by sending TRONE packets.",
           "createdAt": "2025-04-09T23:47:54Z",
           "updatedAt": "2025-04-09T23:48:34Z"
@@ -613,7 +634,7 @@
       "number": 21,
       "id": "I_kwDON1dwo86yoU-z",
       "title": "Network inserted TRONE packets",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/21",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/21",
       "state": "OPEN",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
@@ -644,7 +665,7 @@
       "number": 24,
       "id": "I_kwDON1dwo86y0OE3",
       "title": "How frequently should endpoints send TRONE packets?",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/24",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/24",
       "state": "OPEN",
       "author": "mjoras",
       "authorAssociation": "CONTRIBUTOR",
@@ -657,7 +678,7 @@
       "comments": [
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "If I were to propose an answer, I think the frequency should reflect how fast the application can adopt.\n\nTo give an example, in the case of HLS, it'd make sense to obtain one TRONE signal for each chunk but no more, because clients can switch between different bandwidths only once per chunk.\n\nIn case of applications that can adopt more rapidly, I think there is no need to constrain them from asking for an update every RTT.\n\nThe remaining question would be if sending one TRONE packet is sufficient for obtaining one signal, considering packet loss. I think the strategy can be different between the applications; some can send two packets, others can send one but use an ACK to see if the datagram that has the TRONE packet attached reached the peer. Absent ACKs, such endpoints can resend a TRONE packet.",
           "createdAt": "2025-04-22T03:54:40Z",
           "updatedAt": "2025-04-22T03:54:40Z"
@@ -674,16 +695,16 @@
     {
       "number": 26,
       "id": "I_kwDON1dwo86zZ_iG",
-      "title": "Multipath and Trone",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/26",
+      "title": "Multipath",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/26",
       "state": "OPEN",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "The multipath extension allows sending data on multiple paths, including multiple paths bound to the same 4 tuple. I think that a QUIC application could split its traffic along multiple paths, all identified by different connection IDs. Applications could request some of these paths to announce Trone support, other not, and maybe others still to advertise the Non-Queue-Building type.\n\nDo we fill the need to say anything about that?",
       "createdAt": "2025-04-22T05:40:54Z",
-      "updatedAt": "2025-04-23T09:54:58Z",
+      "updatedAt": "2025-05-01T01:34:11Z",
       "closedAt": null,
       "comments": [
         {
@@ -695,7 +716,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Maybe. Mostly, I am worried that network elements will combine Trone signalling and per-flow enforcement. This begs the question: what is the unit of enforcement? Four tuple? Four tuple plus CID? Address pair? Network subscription? ",
           "createdAt": "2025-04-22T18:06:02Z",
           "updatedAt": "2025-04-22T18:06:02Z"
@@ -720,10 +741,10 @@
       "number": 27,
       "id": "I_kwDON1dwo86zaAay",
       "title": "CID rotation and Trone",
-      "url": "https://github.com/ietf-wg-scone/trone/issues/27",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/27",
       "state": "OPEN",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "QUIC stacks will commonly \"rotate\" the connection identifiers used on a given path. Assume a connection obtained Trone information with the old connection ID. Is it still valid with the new one?",
@@ -740,7 +761,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "That's again really a question about expectation and enforcement. Per 4-tuple, or per combination of 4-tuple and CID? What about DS marks? ",
           "createdAt": "2025-04-22T18:08:24Z",
           "updatedAt": "2025-04-22T18:08:24Z"
@@ -753,6 +774,72 @@
           "updatedAt": "2025-04-23T01:44:54Z"
         }
       ]
+    },
+    {
+      "number": 29,
+      "id": "I_kwDON1dwo860w1A_",
+      "title": "How hard can network elements throttle connections that seemingly abuse SCONE?",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/29",
+      "state": "OPEN",
+      "author": "kazuho",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Some of the interesting comments last meeting I've heard are:\n* Network elements can track usage per user and punish users or connections of such users that seemingly abuse SCONE, more so than users / connections that do not use SCONE at all.\n* Web browsers might expose SCONE rate signals to JavaScript so that JavaScript can make the decision regarding what to fetch next.\n\nI am concerned if we can allow both at the same time. I doubt that, if web browsers are going to expose SCONE rate signals to JavaScript, then there'd be a non-negligible probability of misuse (either intentional or accidental), and that we'd not want to punish web browsers for such mistakes.",
+      "createdAt": "2025-04-30T22:35:36Z",
+      "updatedAt": "2025-05-01T01:23:00Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "FWIW, my preference would be to acknowledge that such misuse can happen ~~by accident~~, and RECOMMEND network elements just fall back to CC-based throttling as if the flow was not using SCONE at all.",
+          "createdAt": "2025-04-30T22:42:53Z",
+          "updatedAt": "2025-04-30T22:48:07Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "Yeah, there is no way in which we can guarantee that an application will treat the *advice* as a limit.  Not only because they don't know about it, even if the stack they use has the necessary hooks.  There's no way to guarantee compliance other than via enforcement.  It's almost nonsensical that we're contemplating writing that down, but if there is any doubt, and some words might lay that to rest, sure.",
+          "createdAt": "2025-04-30T22:54:04Z",
+          "updatedAt": "2025-04-30T22:54:04Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The point I was trying to make in the meeting was that there is no clear way to define what abuse of a SCONE signal means because there are different reasons for sending throughput advice and each operator will ultimately define its own enforcement policies.\n\nThe video throttling case is the one where we might see operators turning off policers while monitoring bitrates over some period; detecting non-conformance here should likely just result in fallback to the original throttling policy. Networks should expect to see this happen and I wouldn't necessarily call it abuse or misuse. That short flows might avoid getting throttled in this case is a feature imo.\n\nFor enforcement of subscriber-level data rate caps I don't think operators will turn off policers at all. SCONE advice could still be very useful in those cases, but there is no room for any kind abuse.",
+          "createdAt": "2025-05-01T00:16:27Z",
+          "updatedAt": "2025-05-01T00:30:40Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> there is no way in which we can guarantee that an application will treat the _advice_ as a limit\n\n+1\nThis is the most important point, as long as this is clear enough I don't think we should spend much time on discussing potential abuses and mitigations. \n",
+          "createdAt": "2025-05-01T00:20:54Z",
+          "updatedAt": "2025-05-01T00:21:03Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> For enforcement of subscriber-level data rate caps I don't think operators will turn of policers at all. SCONE advice could still be very useful in those cases, but there is no room for any kind abuse.\n\nThey already do. My ISP does throttle the uplink connection to 20Mbps, even if the hardware would allow 50. That is prevalent enough that BBRv1 had special code to recognize these throttlers and avoid tripping them.\n\n",
+          "createdAt": "2025-05-01T00:27:13Z",
+          "updatedAt": "2025-05-01T00:27:13Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> > For enforcement of subscriber-level data rate caps I don't think operators will turn of policers at all. SCONE advice could still be very useful in those cases, but there is no room for any kind abuse.\n> \n> They already do. My ISP does throttle the uplink connection to 20Mbps, even if the hardware would allow 50. That is prevalent enough that BBRv1 had special code to recognize these throttlers and avoid tripping them.\n\nThat's what I meant: they use policers now, and even with SCONE in place, I think they'll continue to enforce bitrates using policers.",
+          "createdAt": "2025-05-01T00:32:49Z",
+          "updatedAt": "2025-05-01T00:32:49Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Thank you folks, I think we are more or less on the same page?\n\n>> there is no way in which we can guarantee that an application will treat the advice as a limit\n>\n> +1\n> This is the most important point, as long as this is clear enough I don't think we should spend much time on discussing potential abuses and mitigations.\n\n+1 that this is the most important point. But I continue to think that we should be more clear what it means to network operators; i.e., that if you handle flows that exchange SCONE signals but do not adhere to them differently than non-SCONE flows, that might lead to unexpected behaviors.\n\nPlease see #30.",
+          "createdAt": "2025-05-01T01:22:58Z",
+          "updatedAt": "2025-05-01T01:22:58Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -760,7 +847,7 @@
       "number": 3,
       "id": "PR_kwDON1dwo86MqU5p",
       "title": "Transparent Rate Optimization for Network Endpoints (TRONE)",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/3",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/3",
       "state": "MERGED",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
@@ -769,10 +856,10 @@
       "body": "An attempt at TRONE.\r\nWe can bikeshed the name in #2.\r\n\r\nThe PR uses TRAIN as a baseline so that it's easier to review the changes from TRAIN.\r\nNote that this version changes the rate signal field to a field with explicit values, located after the CIDs.\r\nIf we're very unsure about the design tradeoffs we could consider doing both the TRAIN and TRONE ways as discussed in #1.\r\n\r\nThere's also a discussion on how network elements are capable of crafting TRONE packets. ",
       "createdAt": "2025-02-26T15:03:17Z",
       "updatedAt": "2025-03-05T13:18:41Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "b568f3314171b26d5bc38891e21c4f5f714a4c55",
-      "headRepository": "ietf-wg-scone/trone",
+      "headRepository": "ietf-wg-scone/scone",
       "headRefName": "advice-format",
       "headRefOid": "946f94dac013f33e4c29520a5bdcb13f877e212c",
       "closedAt": "2025-03-03T17:42:04Z",
@@ -829,7 +916,7 @@
             "abbreviatedOid": "bbf0242"
           },
           "author": "billwuqin",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-01T04:40:27Z",
@@ -869,7 +956,7 @@
             "abbreviatedOid": "2b0ef2f"
           },
           "author": "mjoras",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "",
           "createdAt": "2025-03-03T15:35:01Z",
@@ -902,7 +989,7 @@
       "number": 12,
       "id": "PR_kwDON1dwo86P8JWx",
       "title": "Initial attempt at adding version-dependent logarithmic rates",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/12",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/12",
       "state": "MERGED",
       "author": "mjoras",
       "authorAssociation": "CONTRIBUTOR",
@@ -911,7 +998,7 @@
       "body": "First pass, expecting there will be further changes needed. There seemed to be general consensus around this approach, which we believe we need to take before an adoption call.",
       "createdAt": "2025-03-24T22:03:34Z",
       "updatedAt": "2025-04-09T05:30:13Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
       "headRepository": "mjoras/trone",
@@ -960,7 +1047,7 @@
             "abbreviatedOid": "1b73bf9"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "Thank you for the PR. Looks good overall.",
           "createdAt": "2025-03-24T22:45:22Z",
@@ -1166,7 +1253,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-25T09:38:15Z",
@@ -1186,7 +1273,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "I think this is fine, except for the confusion between \"no TRONE on this path\" and \"no limit\".",
           "createdAt": "2025-03-25T22:21:17Z",
@@ -1258,7 +1345,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-26T04:47:48Z",
@@ -1318,7 +1405,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-26T05:51:58Z",
@@ -1338,7 +1425,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-03-26T05:58:46Z",
@@ -1418,7 +1505,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-04-03T22:21:54Z",
@@ -1438,7 +1525,7 @@
             "abbreviatedOid": "ad1f597"
           },
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "Let's merge this. We can iterate later.",
           "createdAt": "2025-04-03T22:22:55Z",
@@ -1471,7 +1558,7 @@
             "abbreviatedOid": "5764ba5"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "+1 to merging.",
           "createdAt": "2025-04-09T04:34:16Z",
@@ -1484,25 +1571,27 @@
       "number": 13,
       "id": "PR_kwDON1dwo86QF6Tw",
       "title": "Description of DOS attack against intermediaries",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/13",
-      "state": "OPEN",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/13",
+      "state": "MERGED",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Adding a description of the attack listed in #11.\r\n\r\nClose #11",
       "createdAt": "2025-03-25T18:25:44Z",
-      "updatedAt": "2025-04-17T10:04:02Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "updatedAt": "2025-04-30T20:12:48Z",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
-      "headRepository": "ietf-wg-scone/trone",
+      "headRepository": "ietf-wg-scone/scone",
       "headRefName": "sec-rec-inter",
       "headRefOid": "2ab4aaf3a97e170832d069c6898bc362d1141b43",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-04-30T20:12:48Z",
+      "mergedAt": "2025-04-30T20:12:48Z",
+      "mergedBy": "ihlar",
+      "mergeCommit": {
+        "oid": "1489b93c4da78eb247271e6aa9116589adfdd96f"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1561,7 +1650,7 @@
             "abbreviatedOid": "2ab4aaf"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "Thank you for writing this!",
           "createdAt": "2025-04-16T15:52:45Z",
@@ -1587,25 +1676,27 @@
       "number": 16,
       "id": "PR_kwDON1dwo86QQjgP",
       "title": "First cut for congestion and TRONE interaction",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/16",
-      "state": "OPEN",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/16",
+      "state": "MERGED",
       "author": "huitema",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "I think that we need to explicitly describe the interaction between congestion control and TRONE, if only to dispel any notion that TRONE replaces congestion control, as stated in issue #8. This is a first cut for describing such interactions. ",
       "createdAt": "2025-03-26T18:51:48Z",
-      "updatedAt": "2025-04-17T10:02:40Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "updatedAt": "2025-04-30T10:02:35Z",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "681b12c446391332da002b4b3cf33a0d51ab3f64",
-      "headRepository": "ietf-wg-scone/trone",
+      "headRepository": "ietf-wg-scone/scone",
       "headRefName": "first-congestion",
       "headRefOid": "37699bd37d10f56e306d78e055f3a13c884d3e6f",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-04-30T10:02:35Z",
+      "mergedAt": "2025-04-30T10:02:35Z",
+      "mergedBy": "ihlar",
+      "mergeCommit": {
+        "oid": "649c6c08c4dd166071fd4bd23e33acf2d0ca67fa"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1614,7 +1705,7 @@
             "abbreviatedOid": "05c4968"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-04-16T04:08:16Z",
@@ -1634,7 +1725,7 @@
             "abbreviatedOid": "05c4968"
           },
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-04-16T17:28:03Z",
@@ -1654,7 +1745,7 @@
             "abbreviatedOid": "37699bd"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "Thank you for the updates! LG",
           "createdAt": "2025-04-17T03:08:54Z",
@@ -1680,7 +1771,7 @@
       "number": 22,
       "id": "PR_kwDON1dwo86SskzI",
       "title": "Remove text on expanding datagrams.",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/22",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/22",
       "state": "MERGED",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
@@ -1689,10 +1780,10 @@
       "body": "How to handle network generated TRONE packets is a topic that requires WG discussion. \r\nI recommend that we remove any text on this topic for now and add something back based on the conclusion of #21.",
       "createdAt": "2025-04-15T16:05:26Z",
       "updatedAt": "2025-04-16T12:39:54Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "a4f79332ca9e716f7c255932d800191385ef33f4",
-      "headRepository": "ietf-wg-scone/trone",
+      "headRepository": "ietf-wg-scone/scone",
       "headRefName": "ihlar-patch-1",
       "headRefOid": "8e0cd81a46e403c12e5e28b63109e6ebc3ec1f63",
       "closedAt": "2025-04-16T12:39:54Z",
@@ -1722,7 +1813,7 @@
             "abbreviatedOid": "8e0cd81"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "",
           "createdAt": "2025-04-16T04:11:23Z",
@@ -1735,7 +1826,7 @@
       "number": 23,
       "id": "PR_kwDON1dwo86SsueK",
       "title": "Add \"TRONE Indication\" strawman.",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/23",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/23",
       "state": "OPEN",
       "author": "mjoras",
       "authorAssociation": "CONTRIBUTOR",
@@ -1743,8 +1834,8 @@
       "labels": [],
       "body": "As discussed in the meeting, and mentioned in #5, it is useful for an endpoint to signal its potential usage of TRONE to a network element. This initial pass uses a \"TRONE Indication\" packet which is probably excessive but is a fully reversed TRONE packet that's meant to go at the end of a datagram. This allows for the network element to first detect a QUIC initial, and then check the end of the packet for TRONE.\r\n\r\nAn alternative would be a more bespoke indicating like a concatenation of versions, or something like that.",
       "createdAt": "2025-04-15T16:23:30Z",
-      "updatedAt": "2025-04-28T14:48:05Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "updatedAt": "2025-04-29T23:00:29Z",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "a4f79332ca9e716f7c255932d800191385ef33f4",
       "headRepository": "mjoras/trone",
@@ -1764,7 +1855,7 @@
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I think we can merge this pull request (it'd be good to have all features being written down before the adoption call, but we can fix issues after adoption).\r\n\r\nHowever, I realize that indications cannot be designed based solely on Invariants, because packet coalescing is a version-specific concept defined in RFC 9000. So the text has to reflect that at some point at least, and the fact might have an affect on what we append.\r\n\r\nPS. Please see \u2193 for what I mean exactly.",
           "createdAt": "2025-04-18T00:45:20Z",
           "updatedAt": "2025-04-18T04:41:26Z"
@@ -1778,7 +1869,7 @@
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Whatever we decide, we have to document what the concatenation of multiple Trone packets means, and whether it should be allowed. The draft assumes that a trone packet will be composed as:\r\n~~~\r\nTronePacket [*LongHeaderPacket] { LongHeaderPacket | ShortHeaderPacket }\r\n~~~\r\nThis PR proposes to assign a meaning to:\r\n~~~\r\nLongHeaderPacket *LongHeaderPacket TronePacket \r\n~~~\r\nI am not a great fan of that, and in particular not a great fan of encoding something at the tail of initial packets that must be padded to a fixed length. Implementation is a bit more complicated than it appears, and I am not really convince of the utility. But in any case, if we do that, we need to say something about potential combinations like:\r\n~~~\r\nTronePacket  InitialPacket TronePacket  \r\nInitialPacket TronePacket_Vx TronePacket_Vy\r\nInitialPacket TronePacket  0RTTPacket\r\nInitialPacket TronePacket  HandshakePacket\r\nTronePacket_Vx TronePacket_Vy ShortHeaderPacket \r\netc.\r\n~~~",
           "createdAt": "2025-04-22T05:32:01Z",
           "updatedAt": "2025-04-22T05:34:08Z"
@@ -1792,21 +1883,21 @@
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@huitema Based on my understanding that we want to build SCONE (TRONE) on top of QUIC Invariants, I do not think think we should be considering how coalescing affects TRONE.\r\n\r\nInvariants does not have the concept of coalesced packets.\r\n\r\nIf the version is TRONE, it is a TRONE packet. If it is not, then it is not.\r\n\r\nIf we are to have an indication, I think it has to be some junk being attached at the end of the datagram; please see https://github.com/mjoras/trone/pull/1. Regardless, it is not a coalesced packet.",
           "createdAt": "2025-04-22T06:22:58Z",
           "updatedAt": "2025-04-22T06:22:58Z"
         },
         {
           "author": "huitema",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@kazuho I think that your [PR 1](https://github.com/mjoras/trone/pull/1) has the advantage of not muddying the concept of Trone packet, i.e., that they can only be found at the beginning of a datagram. We should say so.",
           "createdAt": "2025-04-22T06:33:03Z",
           "updatedAt": "2025-04-22T06:33:03Z"
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Quoting MT from https://github.com/mjoras/trone/pull/1#discussion_r2053501602:\r\n> (Indication at the end of the datagram) only works if all packets are understood enough to ignore them AND know their length. We have an existence proof of that not working in QUIC v1 (the short header packets) and there is no guarantee that other QUIC versions will retain a usable length.\r\n\r\nI agree that this is the concern.\r\n\r\nIf some feel strongly about having the indication, we could look for an alternative design.\r\n\r\nOne way forward would be to prepend TRONE Indication packets before QUIC v1 Initials (or any other version of QUIC that works end-to-end), and use SvcParamKey to advertise support of TRONE. If we take this path, the only case in which we would see an additional delay would be when the client does not have out-of-band knowledge and the name resolution uses A/AAAA records. How much do we need to care about such deployments?",
           "createdAt": "2025-04-22T08:25:30Z",
           "updatedAt": "2025-04-22T08:25:30Z"
@@ -1827,7 +1918,7 @@
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@ihlar \r\n> How much of a concern is this?\r\n> Sending a TRONE indication packet is optional, a sender will know whether it is possible or not to append an indication.\r\n\r\nI think the concern is that protocols other than QUIC v1 might not support TRONE, or that TRONE would become a constraint to the protocol designers, as it requires having a packet format that allows ignoring junk at the end. The strawman has issues even with QUIC v1 itself, QUIC v1 does not allow indications to be appended to packets sent on new paths after the handshake (as they would be short header packets).",
           "createdAt": "2025-04-22T23:33:27Z",
           "updatedAt": "2025-04-23T00:15:34Z"
@@ -1845,6 +1936,13 @@
           "body": "> I think the concern is that protocols other than QUIC v1 might not support TRONE, or that TRONE would become a constraint to the protocol designers, as it requires having a packet format that allows ignoring junk at the end. \r\n\r\nMakes sense, thanks.\r\n\r\n> The strawman has issues even with QUIC v1 itself, QUIC v1 does not allow indications to be appended to packets sent on new paths after the handshake (as they would be short header packets).\r\n\r\noth we should be able to send \"real\" SCONE packets at that point though?\r\n",
           "createdAt": "2025-04-28T14:48:04Z",
           "updatedAt": "2025-04-28T14:48:04Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": ">> The strawman has issues even with QUIC v1 itself, QUIC v1 does not allow indications to be appended to packets sent on new paths after the handshake (as they would be short header packets).\r\n> \r\n> oth we should be able to send \"real\" SCONE packets at that point though?\r\n\r\nNot really, because SCONE packets and Indication are sent in different directions. The Indication as defined by this PR has only one form: appended at the end of the datagram, which is incompatible with short header packets of QUIC v1.\r\n\r\nBut separately, I think @martinthomson is raising an interesting question.\r\n\r\nNo matter how we design indications, they will not work when the client migrates involuntarily. Therefore, we will have to consider how we handle SCONE-compatible flows that do not send indications.\r\n\r\nConsidering that, I think it's worth discussing if network elements could handle all flows as potentially being SCONE-compatible, rather than relying on indications that might or might not work.",
+          "createdAt": "2025-04-29T22:55:59Z",
+          "updatedAt": "2025-04-29T23:00:28Z"
         }
       ],
       "reviews": [
@@ -1867,7 +1965,7 @@
             "abbreviatedOid": "7647de5"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "Thank you for the PR.",
           "createdAt": "2025-04-16T04:15:03Z",
@@ -1919,25 +2017,27 @@
       "number": 25,
       "id": "PR_kwDON1dwo86S8gIt",
       "title": "allow network elements rewrite the version field",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/25",
-      "state": "OPEN",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/25",
+      "state": "MERGED",
       "author": "kazuho",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "As discussed in https://github.com/ietf-wg-scone/trone/issues/14#issuecomment-2809099526 and during yesterday's interim, we can simplify the design by allowing network elements rewrite the version field.\r\n\r\nNow, senders need to send only one packet (0xTRONE2 with rate=0x3f) instead of sending one for each of the two versions, and receivers no longer need to calculate the minimum of two values.\r\n\r\nMaybe closes #14 and #19.",
       "createdAt": "2025-04-17T07:09:13Z",
-      "updatedAt": "2025-04-28T14:44:55Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "updatedAt": "2025-04-30T08:17:08Z",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "d3cb3cd31bfcb6f51783734d7b552bec5de09663",
       "headRepository": "kazuho/i-d-trone",
       "headRefName": "kazuho/changing-versions",
       "headRefOid": "6cd6dac6489a78922f2b3b2b653c47a2b8bc014c",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-04-30T08:17:08Z",
+      "mergedAt": "2025-04-30T08:17:08Z",
+      "mergedBy": "ihlar",
+      "mergeCommit": {
+        "oid": "ee3f5886f37fedc26d0ff01dd926dc2e26ec6e51"
+      },
       "comments": [
         {
           "author": "mjoras",
@@ -1948,7 +2048,7 @@
         },
         {
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Thank you for checking!\r\n\r\n> Do we think we need any language stipulating that network elements should explicitly ignore any version that is not 0xTRONE1/2? It is sort of implied by QUIC long header semantics, but it might be worth noting explicitly that an element shouldn't stomp on a potential protocol it doesn't understand.\r\n\r\nMaybe raise as a different issue?\r\n\r\nBut FWIW, I do not think we want to neither allow or prohibit endpoints from mangling other versions of QUIC. It is not our business, and in the future, we might see another version of QUIC that recommends endpoints doing such a thing (example: a super-ECN signal that changes the bits in UDP payload). I think what we might need to add is a pointer to RFC 8999 regarding the topic.",
           "createdAt": "2025-04-18T01:57:46Z",
           "updatedAt": "2025-04-18T01:57:46Z"
@@ -1959,6 +2059,20 @@
           "body": "> > Do we think we need any language stipulating that network elements should explicitly ignore any version that is not 0xTRONE1/2? It is sort of implied by QUIC long header semantics, but it might be worth noting explicitly that an element shouldn't stomp on a potential protocol it doesn't understand.\r\n> \r\n> Maybe raise as a different issue?\r\n\r\nAgree to handling this in a separate issue. The way the design is described is good enough for a document to get adopted. We can decide on additional guidance later on. \r\n",
           "createdAt": "2025-04-22T09:34:10Z",
           "updatedAt": "2025-04-22T09:34:10Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I think we should merge this prior to an adoption call. Any concerns with that?",
+          "createdAt": "2025-04-29T07:53:15Z",
+          "updatedAt": "2025-04-29T07:53:15Z"
+        },
+        {
+          "author": "mjoras",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Merge it!",
+          "createdAt": "2025-04-29T21:12:33Z",
+          "updatedAt": "2025-04-29T21:12:33Z"
         }
       ],
       "reviews": [
@@ -2000,7 +2114,7 @@
             "abbreviatedOid": "d40d68e"
           },
           "author": "kazuho",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2025-04-17T11:34:12Z",
@@ -2033,7 +2147,7 @@
       "number": 28,
       "id": "PR_kwDON1dwo86ULi6t",
       "title": "trone -> scone",
-      "url": "https://github.com/ietf-wg-scone/trone/pull/28",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/28",
       "state": "OPEN",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
@@ -2041,19 +2155,155 @@
       "labels": [],
       "body": "As agreed at interim and confirmed with authors, let's use SCONE as the protocol name. ",
       "createdAt": "2025-04-28T14:43:02Z",
-      "updatedAt": "2025-04-28T14:43:02Z",
-      "baseRepository": "ietf-wg-scone/trone",
+      "updatedAt": "2025-04-30T20:16:35Z",
+      "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
-      "baseRefOid": "be442cb19397df85f2d0bf6a4fae608e5d053aab",
-      "headRepository": "ietf-wg-scone/trone",
+      "baseRefOid": "1489b93c4da78eb247271e6aa9116589adfdd96f",
+      "headRepository": "ietf-wg-scone/scone",
       "headRefName": "trone-to-scone",
-      "headRefOid": "8e97da6cac6aece0de4df2add5a06a56dbc62827",
+      "headRefOid": "6600999bc5121a831d01b36da11471caecfe2ad2",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "huitema",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "+1 @martinthomson. It would be natural to make that PR post adoption as a WG item, move from `draft-thoji-scone-trone-protocol-nn` to `draft-ietf-scone-protocol-00`, and have the new draft replace the old one.",
+          "createdAt": "2025-04-29T07:25:18Z",
+          "updatedAt": "2025-04-29T07:25:18Z"
+        },
+        {
+          "author": "billwuqin",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "To move repo, we have two options:\r\n1. rename repo\r\n2. create a new repo and delete old \"trone\" repo\r\nI would suggest to take option 1, since option 1 leaves freedom to change draft name by yourselves. If we take option 2, all PRs and open issues might be lost. \r\nMake sense?",
+          "createdAt": "2025-04-30T08:09:46Z",
+          "updatedAt": "2025-04-30T08:09:46Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> To move repo, we have two options:\r\n> \r\n> 1. rename repo\r\n> 2. create a new repo and delete old \"trone\" repo\r\n>    I would suggest to take option 1, since option 1 leaves freedom to change draft name by yourselves. If we take option 2, all PRs and open issues might be lost.\r\n>    Make sense?\r\n\r\nAgree, option 1 sounds best.",
+          "createdAt": "2025-04-30T09:35:14Z",
+          "updatedAt": "2025-04-30T09:35:14Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "I agree with Marcus.  Also, when you rename a repo, all the current links to this name will redirect for a decent amount of time; there's no risk that someone will hit a broken link.",
+          "createdAt": "2025-04-30T10:32:54Z",
+          "updatedAt": "2025-04-30T10:32:54Z"
+        },
+        {
+          "author": "billwuqin",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Okay, I have renamed repo as 'scone' repo. Hope everything works well.",
+          "createdAt": "2025-04-30T10:36:52Z",
+          "updatedAt": "2025-04-30T10:36:52Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "body": "Given where things stand, I'm OK with merging this now.  @huitema suggested that our (prospective) WG-00 not include any text changes, but I don't think we need to worry about a simple s/trone/scone/i for that; we have to rename other things when submitting a -00 anyway.",
+          "createdAt": "2025-04-30T10:42:55Z",
+          "updatedAt": "2025-04-30T10:42:55Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDON1dwo86m_yfG",
+          "commit": {
+            "abbreviatedOid": "8e97da6"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Should we ask the chairs to move the repo first, then we can ensure that the links don't need to update twice.",
+          "createdAt": "2025-04-29T03:02:48Z",
+          "updatedAt": "2025-04-29T03:02:48Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "id": "PR_kwDON1dwo86Ul5t7",
+      "title": "When detecting flows not adhering to SCONE signals, RECOMMEND acting as if SCONE was not used",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/30",
+      "state": "OPEN",
+      "author": "kazuho",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This pull request expands what SCONE being advisory means to network elements (i.e., that they should handle non-adhering SCONE flows as if it was not a SCONE flow).\r\n\r\nCloses #29.",
+      "createdAt": "2025-05-01T01:18:50Z",
+      "updatedAt": "2025-05-01T01:36:01Z",
+      "baseRepository": "ietf-wg-scone/scone",
+      "baseRefName": "main",
+      "baseRefOid": "1489b93c4da78eb247271e6aa9116589adfdd96f",
+      "headRepository": "kazuho/i-d-trone",
+      "headRefName": "kazuho/endpoints-that-do-not-adhere",
+      "headRefOid": "8f5f5bcdb596e596a197e60ac0ac9030daae2753",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDON1dwo86nbS7v",
+          "commit": {
+            "abbreviatedOid": "96d2b30"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Some suggestions, but thanks for doing the work here.",
+          "createdAt": "2025-05-01T01:24:16Z",
+          "updatedAt": "2025-05-01T01:27:38Z",
+          "comments": [
+            {
+              "originalPosition": 9,
+              "body": "```suggestion\r\nthat it will adhere to them; in some cases, the endpoint cannot. For\r\nexample, a flow may initially be used to serve video chunks, with the client\r\n```",
+              "createdAt": "2025-05-01T01:24:16Z",
+              "updatedAt": "2025-05-01T01:27:38Z"
+            },
+            {
+              "originalPosition": 13,
+              "body": "```suggestion\r\nbulk download for which bitrate adaptation is not applicable. Composite flows\r\nfrom multiple applications, such as tunneled flows, might only have a subset of\r\nthe involved applications that are capable of handling SCONE signals. Therefore,\r\nwhen a network element detects a\r\n```",
+              "createdAt": "2025-05-01T01:25:40Z",
+              "updatedAt": "2025-05-01T01:27:38Z"
+            },
+            {
+              "originalPosition": 16,
+              "body": "```suggestion\r\nflow using more bandwidth than advertised via SCONE, congestion control\r\nsignals might be necessary to ensure that the flow does not exceed the\r\nlimits that are set in policy.\r\n```",
+              "createdAt": "2025-05-01T01:27:28Z",
+              "updatedAt": "2025-05-01T01:27:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86nbWwY",
+          "commit": {
+            "abbreviatedOid": "96d2b30"
+          },
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-01T01:36:01Z",
+          "updatedAt": "2025-05-01T01:36:01Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "Thank you for the review. Other changes made total sense, but I'm not fully certain about this one.\r\n\r\nWhile it is true that CC might be necessary to force flows to be in policy, the proposed change does not address the original issue; i.e., that network elements should not punish non-adhering flows more so than non-SCONE flows. If network elements start behaving as such, endpoint developers would have no choice but to disable SCONE.\r\n\r\nWhat about something like: \"congestion control signals can be used to ensure that the flow performs on par with non-SCONE flows.\"?",
+              "createdAt": "2025-05-01T01:36:01Z",
+              "updatedAt": "2025-05-01T01:36:01Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
