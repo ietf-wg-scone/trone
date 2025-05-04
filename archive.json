@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-01T01:49:05.410628+00:00",
+  "timestamp": "2025-05-04T01:49:35.842936+00:00",
   "repo": "ietf-wg-scone/scone",
   "labels": [
     {
@@ -162,7 +162,7 @@
       "labels": [],
       "body": "1. Section 2 of the draft shows \"QUIC Sender\", ie, the server initiates the TRONE signal toward the client. This implies that TRONE signal is going to be server initiated. This will result in having the \"network element\" listens to all IP flows in the downlink direction. This is CPU intensive\n2. The authors should consider a design that is independent of SNI-based flow detection\n3. The authors should reconsider this design and allow for CLIENT initiated TRONE signaling (uplink direction) with implicit support for  flow detection\n\nAs a point of reference, section 6 of draft mishra-scone-usercase-00, added following requirement:\nSCONE (aka TRONE) signal MUST be a client-application endpoint initiated to assist the network element (UPF/5G or PGW/4G) with the implicit flow detection\nplease see https://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.1.1",
       "createdAt": "2025-03-20T06:13:47Z",
-      "updatedAt": "2025-03-20T06:45:36Z",
+      "updatedAt": "2025-05-02T16:49:03Z",
       "closedAt": null,
       "comments": [
         {
@@ -171,6 +171,20 @@
           "body": "TRONE packets are sent by each endpoint individually, so there is opportunity for the client to send an early TRONE packet such that a network element that keeps some flow state can use the presence of a TRONE packet as an indication to not do further DPI and SNI parsing etc. \nThe problem in the current draft version is that endpoints need to indicate support using transport parameters before  sending TRONE packets. The authors have discussed an approach where an opportunistic TRONE \"indication\" can be appended to a QUIC initial packet. The network element can use this information as an indication that the client is willing to receive rate signals. \nAs opposed to \"regular\" TRONE packets, this indication would have to be appended to the end of a QUIC Initial packet.",
           "createdAt": "2025-03-20T06:43:56Z",
           "updatedAt": "2025-03-20T06:45:35Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "We have a lot of good discussion going on in #23, but maybe an issue is better to explain how people view the problem. So here are my thoughts:\n\nAs I understand, there are two types of flows with different characteristics:\n\n1. flows rate-limited using CC\n2. flows for which short bursts are allowed, with the assumption that the long-term bitrate is below the policy\n\nBecause SCONE signals are purely advisory that endpoints often cannot adhere to (see #29), network elements have to monitor the long-term bitrate of type 2 connections, and if they are exceeding the limit, demote them to type 1. This would be the ordinary business for any SCONE-compatible network elements with the capability to enforce bitrates.\n\nIf network elements want to demote flows without paying the cost of monitoring the long-term bitrate, they can consult the QUIC Version field of the first few packets sent by the server. As stated, there will be false positives; hence this is an optimization.\n\nThe question regarding client-driven indication is, IMO, if we want to have another knob for optimization, providing the capability to demote flows just by looking at the first packet from the client. Note we would have even more false positives than the first knob, because clients might be sending Indications to servers that do not support SCONE.\n\nWhile I\u2019m not necessarily opposed to having Indications, I am still wondering why some think it is insufficient to only have the first optimization knob (i.e., see if the server sends SCONE packets early).\n\nThe heavyweight task that the network elements cannot avoid is actually measuring the long-term flow rate and demoting the connections. Compared to that the benefit for having the 2nd knob (Indications) seems marginal if any, even though it makes things much more complex.",
+          "createdAt": "2025-05-01T06:30:03Z",
+          "updatedAt": "2025-05-01T06:30:03Z"
+        },
+        {
+          "author": "smishra1200",
+          "authorAssociation": "NONE",
+          "body": "Hi @kazuho \n\nThanks for your thoughts on this. Following up on the discussion, here's my perspective:\n\nFrom a network element standpoint that uses deep packet inspection (DPI) for rate limiting, the process involves identifying potential video sessions and then applying rate limits based on the subscriber's data plan (e.g., 2 Mbps, 4 Mbps). This results in traffic being passed to the radio network at the specified bit rate, and any excess traffic arriving at a faster rate is discarded.\n\nConsidering this within the SCONE working group, it seems beneficial if a client application on the user equipment (UE) initiating adaptive bitrate (ABR) video playback could signal to the rate-limiting network element: \"I can send packets at a rate you can handle, so you don't need to drop them.\" This uplink indication would provide the network element with information to consider.\n\nUpon receiving such a signal, the network element might forgo DPI and potentially wait for a corresponding signal on the downlink for the same 4-tuple (within a reasonable timeout period) before applying the allowable rate limit. While inspecting downlink traffic can be resource-intensive, minimizing this inspection could be a desirable optimization.\n\nConversely, without this client-side notification, a network element relying on DPI will likely start enforcing rate limits immediately at the beginning of a video session, as it has no initial way of knowing if the client application is SCONE-capable.\n\nFor SCONE deployment, this early signaling mechanism distinguishes SCONE flows from non-SCONE flows. It's also important to note that SCONE usage is separate from the congestion control mechanisms within the mobile packet core and the RAN, and therefore outside the scope of our SCONE discussions.\n\nThanks,\nSanjay",
+          "createdAt": "2025-05-02T16:49:03Z",
+          "updatedAt": "2025-05-02T16:49:03Z"
         }
       ]
     },
@@ -2238,13 +2252,13 @@
       "labels": [],
       "body": "This pull request expands what SCONE being advisory means to network elements (i.e., that they should handle non-adhering SCONE flows as if it was not a SCONE flow).\r\n\r\nCloses #29.",
       "createdAt": "2025-05-01T01:18:50Z",
-      "updatedAt": "2025-05-01T01:36:01Z",
+      "updatedAt": "2025-05-01T04:40:50Z",
       "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "1489b93c4da78eb247271e6aa9116589adfdd96f",
       "headRepository": "kazuho/i-d-trone",
       "headRefName": "kazuho/endpoints-that-do-not-adhere",
-      "headRefOid": "8f5f5bcdb596e596a197e60ac0ac9030daae2753",
+      "headRefOid": "387b0287d682c480e19af2ee65782dd0e3245293",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2302,6 +2316,52 @@
               "updatedAt": "2025-05-01T01:36:01Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86nbwu7",
+          "commit": {
+            "abbreviatedOid": "96d2b30"
+          },
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-01T03:03:19Z",
+          "updatedAt": "2025-05-01T03:03:20Z",
+          "comments": [
+            {
+              "originalPosition": 16,
+              "body": "@martinthomson Went ahead with 387b028, please let me know what you think.",
+              "createdAt": "2025-05-01T03:03:20Z",
+              "updatedAt": "2025-05-01T03:03:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86nb2hK",
+          "commit": {
+            "abbreviatedOid": "387b028"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "That's better than what I suggested, thanks @kazuho.",
+          "createdAt": "2025-05-01T03:44:54Z",
+          "updatedAt": "2025-05-01T03:44:54Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDON1dwo86ncE6G",
+          "commit": {
+            "abbreviatedOid": "387b028"
+          },
+          "author": "huitema",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "No objection. ",
+          "createdAt": "2025-05-01T04:40:50Z",
+          "updatedAt": "2025-05-01T04:40:50Z",
+          "comments": []
         }
       ]
     }
