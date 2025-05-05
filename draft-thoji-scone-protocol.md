@@ -19,8 +19,8 @@ venue:
   type: "Working Group"
   mail: "scone@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/scone/"
-  github: "ietf-wg-scone/trone"
-  latest: "https://ietf-wg-scone.github.io/trone/draft-thoji-scone-protocol.html"
+  github: "ietf-wg-scone/scone"
+  latest: "https://ietf-wg-scone.github.io/scone/draft-thoji-scone-protocol.html"
 
 author:
  -
