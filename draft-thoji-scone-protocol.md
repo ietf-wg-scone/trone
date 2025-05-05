@@ -1,9 +1,9 @@
 ---
-title: "Transparent Rate Optimization for Network Endpoints (TRONE) Protocol"
-abbrev: "TRONE Protocol"
+title: "Standard Communication with Network Elements (SCONE) Protocol"
+abbrev: "SCONE Protocol"
 category: info
 
-docname: draft-thoji-scone-trone-protocol-latest
+docname: draft-thoji-scone-protocol-latest
 submissiontype: IETF
 number:
 date:
@@ -19,8 +19,8 @@ venue:
   type: "Working Group"
   mail: "scone@ietf.org"
   arch: "https://mailarchive.ietf.org/arch/browse/scone/"
-  github: "ietf-wg-scone/trone"
-  latest: "https://ietf-wg-scone.github.io/trone/draft-thoji-scone-trone-protocol.html"
+  github: "ietf-wg-scone/scone"
+  latest: "https://ietf-wg-scone.github.io/scone/draft-thoji-scone-protocol.html"
 
 author:
  -
@@ -75,7 +75,7 @@ Having the network indicate what its rate limiting policy is, in a way that is
 accessible to endpoints, might allow applications to use this information when
 adapting their send rate.
 
-The Transparent Rate Optimization for Network Endpoints (TRONE) protocol is
+The Standard Communication with Network Elements (SCONE) protocol is
 negotiated by QUIC endpoints.  This protocol provides a means for network
 elements to signal the maximum available sustained throughput, or rate limits,
 for flows of UDP datagrams that transit that network element to a QUIC endpoint.
@@ -83,13 +83,13 @@ for flows of UDP datagrams that transit that network element to a QUIC endpoint.
 
 # Overview
 
-QUIC endpoints can negotiate the use of TRONE by including a transport parameter
-({{tp}}) in the QUIC handshake.  Endpoints then occasionally coalesce a TRONE
+QUIC endpoints can negotiate the use of SCONE by including a transport parameter
+({{tp}}) in the QUIC handshake.  Endpoints then occasionally coalesce a SCONE
 packet with ordinary QUIC packets that they send.
 
 Network elements that have rate limiting policies can detect flows that include
-TRONE packets.  The network element can indicate a maximum sustained throughput
-by modifying the TRONE packet as it transits the network element.
+SCONE packets.  The network element can indicate a maximum sustained throughput
+by modifying the SCONE packet as it transits the network element.
 
 ~~~ aasvg
 +--------+    +---------+     +----------+
@@ -97,14 +97,14 @@ by modifying the TRONE packet as it transits the network element.
 | Sender |    | Element |     | Receiver |
 +---+----+    +----+----+     +----+-----+
     |              |               |
-    +--- TRONE --->|   TRONE+rate  |
+    +--- SCONE --->|   SCONE+rate  |
     |    +QUIC     +---- +QUIC --->|
     |              |               |  Validate QUIC packet
     |              |               |  and record rate
     |              |               |
 ~~~
 
-QUIC endpoints that receive modified TRONE packets observe the indicated
+QUIC endpoints that receive modified SCONE packets observe the indicated
 version, process the QUIC packet, and then record the indicated rate.
 
 Indicated rate limits apply only in a single direction.  Separate indications
@@ -118,7 +118,7 @@ cannot assume that rate limit indications from one path apply to new paths.
 
 # Applicability
 
-This protocol only works for flows that use the TRONE packet ({{packet}}).
+This protocol only works for flows that use the SCONE packet ({{packet}}).
 
 The protocol requires that packets are modified as they transit a
 network element, which provides endpoints strong evidence that the network
@@ -210,27 +210,27 @@ separate signal can be sent for each flow.
 {::boilerplate bcp14-tagged-bcp}
 
 
-# TRONE Packet {#packet}
+# SCONE Packet {#packet}
 
-A TRONE packet is a QUIC long header packet that follows the QUIC invariants;
+A SCONE packet is a QUIC long header packet that follows the QUIC invariants;
 see {{Section 5.1 of INVARIANTS}}.
 
-{{fig-trone-packet}} shows the format of the TRONE packet using the conventions
+{{fig-scone-packet}} shows the format of the SCONE packet using the conventions
 from {{Section 4 of INVARIANTS}}.
 
 ~~~ artwork
-TRONE Packet {
+SCONE Packet {
   Header Form (1) = 1,
   Reserved (1),
   Rate Signal (6),
-  Version (32) = 0xTRONE1 or 0xTRONE2,
+  Version (32) = 0xSCONE1 or 0xSCONE2,
   Destination Connection ID Length (8),
   Destination Connection ID (0..2040),
   Source Connection ID Length (8),
   Source Connection ID (0..2040),
 }
 ~~~
-{: #fig-trone-packet title="TRONE Packet Format"}
+{: #fig-scone-packet title="SCONE Packet Format"}
 
 The most significant bit (0x80) of the packet indicates that this is a QUIC long
 header packet.  The next bit (0x40) is reserved and can be set according to
@@ -247,29 +247,29 @@ any packet that follows.  If the next packet in the datagram does not have a
 Source Connection ID field, which is the case for packets with a short header
 ({{Section 5.2 of INVARIANTS}}), the Source Connection ID field is empty.
 
-TRONE packets SHOULD be included as the first packet in a datagram.  This is
+SCONE packets SHOULD be included as the first packet in a datagram.  This is
 necessary in many cases for QUIC versions 1 and 2 because packets with a short
 header cannot precede any other packets.
 
 ## Rate Signals {#rate-signal}
 
-The Rate Signal field in TRONE uses the low 6 bits (0x3f) of the first byte.
+The Rate Signal field in SCONE uses the low 6 bits (0x3f) of the first byte.
 This field is encoded as a logarithmically spaced distribution over a range
-defined by the TRONE protocol version.
+defined by the SCONE protocol version.
 
-When sent by a QUIC endpoint, the Version field of a TRONE packet is set to
-0xTRONE2 and the Rate Signal field is set to 0x3F (63), indicating no rate limit
-is in place or that the TRONE protocol is not supported by network elements on
-the path. All other values (0x00 through 0x3F for protocol version 0xTRONE1 and
-0x00 through 0x3E for protocol version 0xTRONE2) represent the ceiling of rates
+When sent by a QUIC endpoint, the Version field of a SCONE packet is set to
+0xSCONE2 and the Rate Signal field is set to 0x3F (63), indicating no rate limit
+is in place or that the SCONE protocol is not supported by network elements on
+the path. All other values (0x00 through 0x3F for protocol version 0xSCONE1 and
+0x00 through 0x3E for protocol version 0xSCONE2) represent the ceiling of rates
 being advised by the network element(s) on the path.
 
-For TRONE protocol version 0xTRONE1, the rate limits use a logarithmic scale with:
+For SCONE protocol version 0xSCONE1, the rate limits use a logarithmic scale with:
 
 * Base rate (b_min) = 100 Kbps
 * Bitrate at value n = b_min * 10^(n/20)
 
-For TRONE protocol version 0xTRONE2, the rate limits use a logarithmic scale with:
+For SCONE protocol version 0xSCONE2, the rate limits use a logarithmic scale with:
 
 * Bitrate at value n = b_min * 10^((n + 64)/20)
 
@@ -280,43 +280,43 @@ Some notable values in these ranges include:
 
 | Version  | Rate Signal |  Bitrate  |
 |:---------|:------------|:----------|
-| 0xTRONE1 | 0           | 100 Kbps  |
-| 0xTRONE1 | 10          | 316 Kbps  |
-| 0xTRONE1 | 20          | 1 Mbps    |
-| 0xTRONE1 | 30          | 3.16 Mbps |
-| 0xTRONE1 | 40          | 10 Mbps   |
-| 0xTRONE1 | 50          | 31.6 Mbps |
-| 0xTRONE1 | 60          | 100 Mbps  |
-| 0xTRONE2 | 6           | 316 Mbps  |
-| 0xTRONE2 | 16          | 1 Gbps    |
-| 0xTRONE2 | 26          | 3.16 Gbps |
-| 0xTRONE2 | 36          | 10 Gbps   |
-| 0xTRONE2 | 46          | 31.6 Gbps |
-| 0xTRONE2 | 56          | 100 Gbps  |
-| 0xTRONE2 | 62          | 199.5 Gbps  |
-| 0xTRONE2 | 63          | No limit  |
+| 0xSCONE1 | 0           | 100 Kbps  |
+| 0xSCONE1 | 10          | 316 Kbps  |
+| 0xSCONE1 | 20          | 1 Mbps    |
+| 0xSCONE1 | 30          | 3.16 Mbps |
+| 0xSCONE1 | 40          | 10 Mbps   |
+| 0xSCONE1 | 50          | 31.6 Mbps |
+| 0xSCONE1 | 60          | 100 Mbps  |
+| 0xSCONE2 | 6           | 316 Mbps  |
+| 0xSCONE2 | 16          | 1 Gbps    |
+| 0xSCONE2 | 26          | 3.16 Gbps |
+| 0xSCONE2 | 36          | 10 Gbps   |
+| 0xSCONE2 | 46          | 31.6 Gbps |
+| 0xSCONE2 | 56          | 100 Gbps  |
+| 0xSCONE2 | 62          | 199.5 Gbps  |
+| 0xSCONE2 | 63          | No limit  |
 
-## Endpoint Processing of TRONE Packets
+## Endpoint Processing of SCONE Packets
 
-Processing a TRONE packet involves reading the value from the Rate Signal field.
+Processing a SCONE packet involves reading the value from the Rate Signal field.
 However, this value MUST NOT be used unless another packet from the same
-datagram is successfully processed.  Therefore, a TRONE packet always needs to
+datagram is successfully processed.  Therefore, a SCONE packet always needs to
 be coalesced with other QUIC packets.
 
-A TRONE packet is defined by the use of the longer header bit (0x80 in the first
-byte) and the TRONE protocol version (0xTBD in the next four bytes).  A TRONE
+A SCONE packet is defined by the use of the longer header bit (0x80 in the first
+byte) and the SCONE protocol version (0xTBD in the next four bytes).  A SCONE
 packet MAY be discarded, along with any packets that come after it in the same
 datagram, if the Source Connection ID is not consistent with those coalesced
 packets, as specified in {{packet}}.
 
-A TRONE packet MUST be discarded if the Destination Connection ID does not match
+A SCONE packet MUST be discarded if the Destination Connection ID does not match
 one recognized by the receiving endpoint.
 
 
-# Negotiating TRONE {#tp}
+# Negotiating SCONE {#tp}
 
-A QUIC endpoint indicates that it is willing to receive TRONE packets by
-including the trone_supported transport parameter (0xTBD).
+A QUIC endpoint indicates that it is willing to receive SCONE packets by
+including the scone_supported transport parameter (0xTBD).
 
 This transport parameter is valid for QUIC versions 1 {{QUIC}} and 2
 {{!QUICv2=RFC9369}} and any other version that recognizes the versions,
@@ -326,15 +326,15 @@ transport parameters, and frame types registries established in {{Sections 22.2,
 
 # Deployment
 
-QUIC endpoints can enable the use of the TRONE protocol by sending TRONE packets
+QUIC endpoints can enable the use of the SCONE protocol by sending SCONE packets
 {{packet}}.  Network elements then apply or replace the Rate Signal field
 ({{apply}}) according to their policies.
 
 
 ## Applying Rate Limit Signals {#apply}
 
-A network element detects a TRONE packet by observing that a packet has a QUIC
-long header and one of the TRONE protocol versions (0xTRONE1 or 0xTRONE2).
+A network element detects a SCONE packet by observing that a packet has a QUIC
+long header and one of the SCONE protocol versions (0xSCONE1 or 0xSCONE2).
 
 A network element then conditionally replaces the Version field and the Rate
 Signal field with values of its choosing.
@@ -344,13 +344,13 @@ The network element replaces the rate signal if it wishes to signal a lower
 rate limit; otherwise, the original values are retained, preserving the signal
 from the network element with the lower policy.
 
-The following pseudocode indicates how a network element might detect a TRONE
+The following pseudocode indicates how a network element might detect a SCONE
 packet and replace an existing rate signal.
 
 ~~~ pseudocode
 is_long = packet[0] & 0x80 == 0x80
 packet_version = packet[1..5]
-if is_long and (packet_version == TRONE1_VERSION or packet_version == TRONE2_VERSION):
+if is_long and (packet_version == SCONE1_VERSION or packet_version == SCONE2_VERSION):
   packet_rate_value = packet[0] & 0x3f
   (target_rate_version, target_rate_value) = convert_rate_to_signal(target_rate)
   if target_rate_version < packet_version or target_rate_value < packet_rate_value
@@ -361,7 +361,7 @@ if is_long and (packet_version == TRONE1_VERSION or packet_version == TRONE2_VER
 
 # Version Interaction {#version-interaction}
 
-The TRONE protocol defines two versions (0xTRONE1 and 0xTRONE2) that cover
+The SCONE protocol defines two versions (0xSCONE1 and 0xSCONE2) that cover
 different ranges of bitrates. This design allows for:
 
 *  Support for both very low bitrates (down to 100 Kbps) and very high bitrates
@@ -372,19 +372,19 @@ different ranges of bitrates. This design allows for:
 ## Providing Opportunities to Apply Rate Limit Signals {#extra-packets}
 
 Endpoints that wish to offer network elements the option to add rate limit
-signals can send TRONE packets at any time.  This is a decision that a sender
+signals can send SCONE packets at any time.  This is a decision that a sender
 makes when constructing datagrams. It is recommended that endpoints promptly
-send an initial TRONE packet once the peer confirms its willingness to receive
+send an initial SCONE packet once the peer confirms its willingness to receive
 them.
 
-Endpoints MUST send any TRONE packet they send as the first packet in a
+Endpoints MUST send any SCONE packet they send as the first packet in a
 datagram, coalesced with additional packets. An endpoint that receives and
-discards a TRONE packet without also successfully processing another packet
+discards a SCONE packet without also successfully processing another packet
 from the same datagram SHOULD ignore any rate limit signal. Such a datagram
 might be entirely spoofed.
 
 A network element that wishes to signal an updated rate limit waits for the
-next TRONE packet in the desired direction.
+next SCONE packet in the desired direction.
 
 ## Feedback To Sender About Signals {#feedback}
 
@@ -403,22 +403,22 @@ in an application where a receiver drives rate adaptation, it might
 not be necessary to define additional signaling.
 
 A sender can use any acknowledgment mechanism provided by the QUIC version in
-use to learn whether datagrams containing TRONE packets were likely received.
-This might help inform whether to send additional TRONE packets in the event
+use to learn whether datagrams containing SCONE packets were likely received.
+This might help inform whether to send additional SCONE packets in the event
 that a datagram is lost. However, rather than relying on transport signals, an
 application might be better able to indicate what has been received and
 processed.
 
-TRONE packets could be stripped from datagrams in the network, which cannot be
+SCONE packets could be stripped from datagrams in the network, which cannot be
 reliably detected.  This could result in a sender falsely believing that no
 network element applied a rate limit signal.
 
 ## Interactions with congestion control
 
-TRONE and congestion control both provide the application with estimates
+SCONE and congestion control both provide the application with estimates
 of a path capacity. They are complementary. Congestion control algorithms
 are typically designed to quickly detect and react to congestion, i.e., to
-the "minimum" capacity of a path. TRONE informs the endpoint
+the "minimum" capacity of a path. SCONE informs the endpoint
 of the maximum capacity of a path.
 
 Consider for example a path in which the bottleneck router implements Early
@@ -443,11 +443,11 @@ spurious rate limit signals.
 Some off-path attackers may be able to both
 observe traffic and inject packets. Attackers with such capabilities could
 observe packets sent by an endpoint, create datagrams coalescing an
-arbitrary TRONE packet and the observed packet, and send these datagrams
+arbitrary SCONE packet and the observed packet, and send these datagrams
 such that they arrive at the peer endpoint before the original
 packet. Spoofed packets that seek to advertise a higher limit
 than might otherwise be permitted also need to bypass any
-rate limiters. The attacker will thus get arbitrary TRONE packets accepted by
+rate limiters. The attacker will thus get arbitrary SCONE packets accepted by
 the peer, with the result being that the endpoint receives a false
 or misleading rate limit.
 
@@ -469,10 +469,10 @@ endpoints.
 
 ## Flooding intermediaries with fake packets
 
-Attackers that can inject packets may compose arbitrary "TRONE-like" packets
+Attackers that can inject packets may compose arbitrary "SCONE-like" packets
 by selecting a pair of IP addresses and ports, an arbitrary rate signal, a
-valid TRONE version number, an arbitrary "destination
-connection ID", and an arbitrary "source connection ID". The TRONE packet
+valid SCONE version number, an arbitrary "destination
+connection ID", and an arbitrary "source connection ID". The SCONE packet
 will carry these information. A coalesced "1RTT" packet will start with
 a plausible first octet, and continue with the selected destination connection
 ID followed by a sufficiently long series of random bytes, mimicking the
@@ -484,17 +484,17 @@ is invalid or because decryption fail, but network elements cannot do these chec
 and will have to process the packets. All the network elements between the injection
 point and the destination will have to process these packets.
 
-Attackers could send a high volume of these "fake" TRONE packets in
+Attackers could send a high volume of these "fake" SCONE packets in
 a denial of service (DOS) attempt against network elements. The attack will
 force the intermediaries to process the fake packets. If network elements
-are keeping state for ongoing TRONE flows, the attack can cause the
+are keeping state for ongoing SCONE flows, the attack can cause the
 excessive allocation of memory resource. The mitigation there
 will be the same as mitigation of other distributed DOS attacks: limit
-the rate of TRONE packets that a network element is willing to process;
-possibly, implement logic to distinguish valid TRONE packets from
+the rate of SCONE packets that a network element is willing to process;
+possibly, implement logic to distinguish valid SCONE packets from
 fake packets; or, use generic protection against Distributed DOS attacks.
 
-Attackers could also try to craft the fake TRONE packets in ways that trigger
+Attackers could also try to craft the fake SCONE packets in ways that trigger
 a processing error at network elements. For example, they might pick connection
 identifiers of arbitrary length. Network elements can mitigate these attacks
 with implementations that fully conform to the specification of {{packet}}.
@@ -502,7 +502,7 @@ with implementations that fully conform to the specification of {{packet}}.
 
 # Privacy Considerations {#privacy}
 
-The focus of this analysis is the extent to which observing TRONE
+The focus of this analysis is the extent to which observing SCONE
 packets could be used to gain information about endpoints.
 This might be leaking details of how applications using QUIC
 operate or leaks of endpoint identity when using additional
@@ -511,46 +511,46 @@ privacy protection, such as a VPN.
 Any network element that can observe the content of that packet can read the
 rate limit that was applied.  Any signal is visible on the path, from the point
 at which it is applied to the point at which it is consumed at an endpoint.
-On path elements can also alter the TRONE signal to try trigger specific
+On path elements can also alter the SCONE signal to try trigger specific
 reactions and gain further knowledge.
 
 In the general case of a client connected to a server through the
-Internet, we believe that TRONE does not provide much advantage to attackers.
+Internet, we believe that SCONE does not provide much advantage to attackers.
 The identities of the clients and servers are already visible through their
 IP addresses. Traffic analysis tools already provide more information than
-the data rate limits set by TRONE.
+the data rate limits set by SCONE.
 
 There are two avenues of attack that require more analysis:
 
-* that the passive observation of TRONE packets might help identify or
+* that the passive observation of SCONE packets might help identify or
   distinguish endpoints; and
-* that active manipulation of TRONE signals might help reveal the
+* that active manipulation of SCONE signals might help reveal the
   identity of endpoints that are otherwise hidden behind VPNs or proxies.
 
 ## Passive Attacks
 
-If only few clients and server pairs negotiate the usage of TRONE, the
-occasional observation of TRONE packets will "stick out". That observation,
+If only few clients and server pairs negotiate the usage of SCONE, the
+occasional observation of SCONE packets will "stick out". That observation,
 could be combined with observation of timing and volume of traffic to
 help identify the endpoint or categorize the application that they
 are using.
 
-A variation of this issue occurs if TRONE is widely implemented, but
+A variation of this issue occurs if SCONE is widely implemented, but
 only used in some specific circumstances. In that case, observation of
-TRONE packets reveals information about the state of the endpoint.
+SCONE packets reveals information about the state of the endpoint.
 
 If multiple servers are accessed through the same front facing server,
 Encrypted Client Hello (ECH) may be used to prevent outside parties to
 identify which specific server a client is using. However, if only
-a few of these servers use TRONE, any TRONE packets
+a few of these servers use SCONE, any SCONE packets
 will help identify which specific server a client is using.
 
-This issue will be mitigated if TRONE becomes widely implemented, and
-if the usage of TRONE is not limited to the type of applications
+This issue will be mitigated if SCONE becomes widely implemented, and
+if the usage of SCONE is not limited to the type of applications
 that make active use of the signal.
 
 QUIC implementations are therefore encouraged to make the feature available
-unconditionally.  Endpoints might send TRONE packets whenever a peer can accept
+unconditionally.  Endpoints might send SCONE packets whenever a peer can accept
 them.
 
 ## Active Attacks
@@ -561,7 +561,7 @@ in the packets behind VPN and proxy and also between the users and the VPN,
 but it does not know which VPN address corresponds to what user address.
 
 Suppose now that the attacker selects a flow on the link between the
-VPN/proxy and server. The attacker applies rate limit signals to TRONE packets
+VPN/proxy and server. The attacker applies rate limit signals to SCONE packets
 in that flow. The attacker chooses a bandwidth that is
 lower than the "natural" bandwidth of the connection. A reduction
 in the rate of flows between client and VPN/proxy might allow
@@ -584,12 +584,12 @@ the attacker to link the altered flow to the client.
                Observe change
 ~~~
 
-An attacker that can manipulate TRONE headers can also simulate
+An attacker that can manipulate SCONE headers can also simulate
 congestion signals by dropping packets or by setting the ECN CE bit.
 That will also likely result in changes in the congestion response by
 the affected client.
 
-A VPN or proxy could defend against this style of attack by removing TRONE (and
+A VPN or proxy could defend against this style of attack by removing SCONE (and
 ECN) signals. There are few reasons to provide per-flow rate limit signals in
 that situation.  Endpoints might also either disable this feature or ignore any
 signals when they are aware of the use of a VPN or proxy.
@@ -600,14 +600,14 @@ This document registers a new QUIC version ({{iana-version}}) and a QUIC
 transport parameter ({{iana-tp}}).
 
 
-## TRONE Versions {#iana-version}
+## SCONE Versions {#iana-version}
 
 This document registers the following entries to the "QUIC Versions" registry
 maintained at <https://www.iana.org/assignments/quic>, following the guidance
 from {{Section 22.2 of QUIC}}.
 
 Value:
-: 0xTRONE1
+: 0xSCONE1
 
 Status:
 : permanent
@@ -622,11 +622,11 @@ Contact:
 : QUIC Working Group (quic@ietf.org)
 
 Notes:
-: TRONE Protocol - Low Range
+: SCONE Protocol - Low Range
 {: spacing="compact"}
 
 Value:
-: 0xTRONE2
+: 0xSCONE2
 
 Status:
 : permanent
@@ -641,13 +641,13 @@ Contact:
 : QUIC Working Group (quic@ietf.org)
 
 Notes:
-: TRONE Protocol - High Range
+: SCONE Protocol - High Range
 {: spacing="compact"}
 
 
-## trone_supported Transport Parameter {#iana-tp}
+## scone_supported Transport Parameter {#iana-tp}
 
-This document registers the trone_supported transport parameter in the "QUIC
+This document registers the scone_supported transport parameter in the "QUIC
 Transport Parameters" registry maintained at
 <https://www.iana.org/assignments/quic>, following the guidance from {{Section
 22.3 of QUIC}}.
@@ -656,7 +656,7 @@ Value:
 : 0xTBD
 
 Parameter Name:
-: trone_supported
+: scone_supported
 
 Status:
 : Permanent
