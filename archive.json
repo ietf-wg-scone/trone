@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-04T01:49:35.842936+00:00",
+  "timestamp": "2025-05-06T01:42:09.629828+00:00",
   "repo": "ietf-wg-scone/scone",
   "labels": [
     {
@@ -98,7 +98,7 @@
       "id": "I_kwDON1dwo86qspaJ",
       "title": "Name",
       "url": "https://github.com/ietf-wg-scone/scone/issues/2",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
@@ -107,8 +107,8 @@
       ],
       "body": "We have a few options:\n\n1. Keep TRAIN\n2. Find something that fits TRONE\n3. Completely new name, e.g., Throughput Advice Signaling Protocol (TASP)\n\nI'd be fine with any of the above. ",
       "createdAt": "2025-02-19T16:24:24Z",
-      "updatedAt": "2025-04-23T07:00:08Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-05T14:46:37Z",
+      "closedAt": "2025-05-05T14:46:37Z",
       "comments": [
         {
           "author": "ihlar",
@@ -153,7 +153,7 @@
     {
       "number": 5,
       "id": "I_kwDON1dwo86u5K3z",
-      "title": "Client initiated TRONE signal (uplink direction) with implicit support for flow detection",
+      "title": "Client-initiated signal",
       "url": "https://github.com/ietf-wg-scone/scone/issues/5",
       "state": "OPEN",
       "author": "smishra1200",
@@ -162,7 +162,7 @@
       "labels": [],
       "body": "1. Section 2 of the draft shows \"QUIC Sender\", ie, the server initiates the TRONE signal toward the client. This implies that TRONE signal is going to be server initiated. This will result in having the \"network element\" listens to all IP flows in the downlink direction. This is CPU intensive\n2. The authors should consider a design that is independent of SNI-based flow detection\n3. The authors should reconsider this design and allow for CLIENT initiated TRONE signaling (uplink direction) with implicit support for  flow detection\n\nAs a point of reference, section 6 of draft mishra-scone-usercase-00, added following requirement:\nSCONE (aka TRONE) signal MUST be a client-application endpoint initiated to assist the network element (UPF/5G or PGW/4G) with the implicit flow detection\nplease see https://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.1.1",
       "createdAt": "2025-03-20T06:13:47Z",
-      "updatedAt": "2025-05-02T16:49:03Z",
+      "updatedAt": "2025-05-05T18:22:16Z",
       "closedAt": null,
       "comments": [
         {
@@ -185,6 +185,20 @@
           "body": "Hi @kazuho \n\nThanks for your thoughts on this. Following up on the discussion, here's my perspective:\n\nFrom a network element standpoint that uses deep packet inspection (DPI) for rate limiting, the process involves identifying potential video sessions and then applying rate limits based on the subscriber's data plan (e.g., 2 Mbps, 4 Mbps). This results in traffic being passed to the radio network at the specified bit rate, and any excess traffic arriving at a faster rate is discarded.\n\nConsidering this within the SCONE working group, it seems beneficial if a client application on the user equipment (UE) initiating adaptive bitrate (ABR) video playback could signal to the rate-limiting network element: \"I can send packets at a rate you can handle, so you don't need to drop them.\" This uplink indication would provide the network element with information to consider.\n\nUpon receiving such a signal, the network element might forgo DPI and potentially wait for a corresponding signal on the downlink for the same 4-tuple (within a reasonable timeout period) before applying the allowable rate limit. While inspecting downlink traffic can be resource-intensive, minimizing this inspection could be a desirable optimization.\n\nConversely, without this client-side notification, a network element relying on DPI will likely start enforcing rate limits immediately at the beginning of a video session, as it has no initial way of knowing if the client application is SCONE-capable.\n\nFor SCONE deployment, this early signaling mechanism distinguishes SCONE flows from non-SCONE flows. It's also important to note that SCONE usage is separate from the congestion control mechanisms within the mobile packet core and the RAN, and therefore outside the scope of our SCONE discussions.\n\nThanks,\nSanjay",
           "createdAt": "2025-05-02T16:49:03Z",
           "updatedAt": "2025-05-02T16:49:03Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> From a network element standpoint that uses deep packet inspection (DPI) for rate limiting, the process involves identifying potential video sessions and then applying rate limits based on the subscriber's data plan (e.g., 2 Mbps, 4 Mbps). This results in traffic being passed to the radio network at the specified bit rate, and any excess traffic arriving at a faster rate is discarded.\n\nObviously, if your condition is that you do DPI, then you do DPI.  But if your goal is to ensure that video does not exceed a given limit, is DPI really necessary?\n\nMy understanding is that the main concern is high network consumption over long periods of time, something that video is uniquely \"good\" at.  Right now, you use DPI to ensure that you do not limit non-video flows.  But in a world where you have the potential for SCONE to be used on those flows that you are interested in, isn't there a different approach?\n\nAt the start of a flow, you do not limit it, but set a timer.  If that timer pops without seeing SCONE, you switch the rate limit on with a relatively small window.  However, if you see a SCONE signal before then, you switch the timer on with a looser timer.  The rate limit would be the same in both cases, but the SCONE flow would have a deeper token bucket, so would be able to perform better.  There's no DPI involved.  The cost being that video flows will potentially observe huge throughput for the path and might get overenthusiastic in their choice of quality, which can degrade the overall experience.\n\nNow, with an indication, you are in much the same situation.  A signal might cause the DPI to be skipped, but then you still have two eventual end states: one where the signal never manifests and one where you see a SCONE signal.  I can't imagine that the outcome is any different.\n\nI say that because when you say:\n\n> Upon receiving such a signal, the network element might forgo DPI and potentially wait for a corresponding signal on the downlink for the same 4-tuple (within a reasonable timeout period) before applying the allowable rate limit. \n\nThat implies that you are exposing yourself to flows opting out of DPI.  And you can't go back in time and do DPI for that flow if you do that.  So if the signal never arrives -- something that seems likely -- you have lost the opportunity to \"classify\" the flow according to your DPI-based logic.\n\nFor me, the only thing that is potentially relevant here is this transitionary period where only some clients and servers support SCONE.  There, having an indication might be useful, but I don't see the game theory of this working out.  I can't see a network that currently uses DPI for classification giving that up; so unless you want to promise that on behalf of your employer and find other network operators willing to make similar commitments, this all seems pretty speculative to me.",
+          "createdAt": "2025-05-05T00:38:10Z",
+          "updatedAt": "2025-05-05T00:38:10Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> For me, the only thing that is potentially relevant here is this transitionary period where only some clients and servers support SCONE. There, having an indication might be useful, but I don't see the game theory of this working out. I can't see a network that currently uses DPI for classification giving that up; so unless you want to promise that on behalf of your employer and find other network operators willing to make similar commitments, this all seems pretty speculative to me.\n\nI am not in a position to make any promises or name individual companies for that matter. But what I can say is that, in several conversations with CSPs, the potential for reducing the load caused by DPI in the user plane functions is one of the most attractive aspects of SCONE-like solutions. Initially, they would not disable DPI; rather, they would introduce SCONE into their DPI signatures. Packet filters matching \"_the SCONE application_\" would have higher priority than the more complex ones targeting individual applications based on SNI and similar. \nThis approach allows a gradual shift to SCONE-like policies (longer enforcement windows) for traffic that adopts SCONE early, while retaining existing throttling policies (shorter enforcement windows) for other traffic.\n\nThis, of course, only matters if you're not using your DPI for other purposes as well. However, there aren't many use cases beyond this type of policy enforcement where DPI must run in real-time on all flows (unless you're in the business of censorship or similar). Often, DPI is used primarily for collecting statistics or business intelligence; in these scenarios, performing DPI on a statistically significant subset of flows is possibly sufficient.\n\n> At the start of a flow, you do not limit it, but set a timer. If that timer pops without seeing SCONE, you switch the rate limit on with a relatively small window. However, if you see a SCONE signal before then, you switch the timer on with a looser timer. The rate limit would be the same in both cases, but the SCONE flow would have a deeper token bucket, so would be able to perform better. There's no DPI involved. The cost being that video flows will potentially observe huge throughput for the path and might get overenthusiastic in their choice of quality, which can degrade the overall experience.\n\nI would hope that we end up with something like this. \nMy worry is that the leap from the current situation to something like this approach, without an intermediate step, will be too significant for many CSPs, since it involves rethinking policy enforcement to some extent, which is more than a technical problem. The options would then be to either keep relying on DPI for classification, which reduces the incentive to deploy SCONE, or to apply some phased approach e.g., as described above, and gradually assess the benefits.\n\nAllowing for, _optional_, early SCONE indications is a way to help adoption of the technology, and is imo a small price to pay in terms of both protocol and specification complexity.\n",
+          "createdAt": "2025-05-05T18:22:15Z",
+          "updatedAt": "2025-05-05T18:22:15Z"
         }
       ]
     },
@@ -794,15 +808,15 @@
       "id": "I_kwDON1dwo860w1A_",
       "title": "How hard can network elements throttle connections that seemingly abuse SCONE?",
       "url": "https://github.com/ietf-wg-scone/scone/issues/29",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "kazuho",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Some of the interesting comments last meeting I've heard are:\n* Network elements can track usage per user and punish users or connections of such users that seemingly abuse SCONE, more so than users / connections that do not use SCONE at all.\n* Web browsers might expose SCONE rate signals to JavaScript so that JavaScript can make the decision regarding what to fetch next.\n\nI am concerned if we can allow both at the same time. I doubt that, if web browsers are going to expose SCONE rate signals to JavaScript, then there'd be a non-negligible probability of misuse (either intentional or accidental), and that we'd not want to punish web browsers for such mistakes.",
       "createdAt": "2025-04-30T22:35:36Z",
-      "updatedAt": "2025-05-01T01:23:00Z",
-      "closedAt": null,
+      "updatedAt": "2025-05-05T14:40:12Z",
+      "closedAt": "2025-05-05T14:40:12Z",
       "comments": [
         {
           "author": "kazuho",
@@ -813,7 +827,7 @@
         },
         {
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Yeah, there is no way in which we can guarantee that an application will treat the *advice* as a limit.  Not only because they don't know about it, even if the stack they use has the necessary hooks.  There's no way to guarantee compliance other than via enforcement.  It's almost nonsensical that we're contemplating writing that down, but if there is any doubt, and some words might lay that to rest, sure.",
           "createdAt": "2025-04-30T22:54:04Z",
           "updatedAt": "2025-04-30T22:54:04Z"
@@ -2162,24 +2176,26 @@
       "id": "PR_kwDON1dwo86ULi6t",
       "title": "trone -> scone",
       "url": "https://github.com/ietf-wg-scone/scone/pull/28",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ihlar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "As agreed at interim and confirmed with authors, let's use SCONE as the protocol name. ",
       "createdAt": "2025-04-28T14:43:02Z",
-      "updatedAt": "2025-04-30T20:16:35Z",
+      "updatedAt": "2025-05-05T14:46:37Z",
       "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
-      "baseRefOid": "1489b93c4da78eb247271e6aa9116589adfdd96f",
+      "baseRefOid": "f6cf9f1ad983298eea9027d8a5bc2f4d49dbe68b",
       "headRepository": "ietf-wg-scone/scone",
       "headRefName": "trone-to-scone",
-      "headRefOid": "6600999bc5121a831d01b36da11471caecfe2ad2",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "0cb881f4da13308f620972813e20e4dad81644c0",
+      "closedAt": "2025-05-05T14:46:37Z",
+      "mergedAt": "2025-05-05T14:46:36Z",
+      "mergedBy": "ihlar",
+      "mergeCommit": {
+        "oid": "3f18ab7745e0e0b158f298a3cd507a178d28d0db"
+      },
       "comments": [
         {
           "author": "huitema",
@@ -2204,7 +2220,7 @@
         },
         {
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I agree with Marcus.  Also, when you rename a repo, all the current links to this name will redirect for a decent amount of time; there's no risk that someone will hit a broken link.",
           "createdAt": "2025-04-30T10:32:54Z",
           "updatedAt": "2025-04-30T10:32:54Z"
@@ -2218,7 +2234,7 @@
         },
         {
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Given where things stand, I'm OK with merging this now.  @huitema suggested that our (prospective) WG-00 not include any text changes, but I don't think we need to worry about a simple s/trone/scone/i for that; we have to rename other things when submitting a -00 anyway.",
           "createdAt": "2025-04-30T10:42:55Z",
           "updatedAt": "2025-04-30T10:42:55Z"
@@ -2231,7 +2247,7 @@
             "abbreviatedOid": "8e97da6"
           },
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "Should we ask the chairs to move the repo first, then we can ensure that the links don't need to update twice.",
           "createdAt": "2025-04-29T03:02:48Z",
@@ -2245,24 +2261,26 @@
       "id": "PR_kwDON1dwo86Ul5t7",
       "title": "When detecting flows not adhering to SCONE signals, RECOMMEND acting as if SCONE was not used",
       "url": "https://github.com/ietf-wg-scone/scone/pull/30",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "kazuho",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "This pull request expands what SCONE being advisory means to network elements (i.e., that they should handle non-adhering SCONE flows as if it was not a SCONE flow).\r\n\r\nCloses #29.",
       "createdAt": "2025-05-01T01:18:50Z",
-      "updatedAt": "2025-05-01T04:40:50Z",
+      "updatedAt": "2025-05-05T14:40:11Z",
       "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "1489b93c4da78eb247271e6aa9116589adfdd96f",
       "headRepository": "kazuho/i-d-trone",
       "headRefName": "kazuho/endpoints-that-do-not-adhere",
       "headRefOid": "387b0287d682c480e19af2ee65782dd0e3245293",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-05-05T14:40:11Z",
+      "mergedAt": "2025-05-05T14:40:10Z",
+      "mergedBy": "ihlar",
+      "mergeCommit": {
+        "oid": "f6cf9f1ad983298eea9027d8a5bc2f4d49dbe68b"
+      },
       "comments": [],
       "reviews": [
         {
@@ -2271,7 +2289,7 @@
             "abbreviatedOid": "96d2b30"
           },
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "Some suggestions, but thanks for doing the work here.",
           "createdAt": "2025-05-01T01:24:16Z",
@@ -2343,7 +2361,7 @@
             "abbreviatedOid": "387b028"
           },
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "APPROVED",
           "body": "That's better than what I suggested, thanks @kazuho.",
           "createdAt": "2025-05-01T03:44:54Z",
@@ -2361,6 +2379,19 @@
           "body": "No objection. ",
           "createdAt": "2025-05-01T04:40:50Z",
           "updatedAt": "2025-05-01T04:40:50Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDON1dwo86nuhZ3",
+          "commit": {
+            "abbreviatedOid": "387b028"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Looks good, thanks.",
+          "createdAt": "2025-05-05T07:22:52Z",
+          "updatedAt": "2025-05-05T07:22:52Z",
           "comments": []
         }
       ]
