@@ -2,16 +2,16 @@
 
 This is the working area for the IETF SCONE Internet-Draft, "Standard Communication with Network Elements (SCONE) Protocol".
 
-* [Editor's Copy](https://ietf-wg-scone.github.io/trone/#go.draft-thoji-scone-protocol.html)
+* [Editor's Copy](https://ietf-wg-scone.github.io/scone/#go.draft-thoji-scone-protocol.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-thoji-scone-protocol)
 * [Individual Draft](https://datatracker.ietf.org/doc/html/draft-thoji-scone-protocol)
-* [Compare Editor's Copy to Individual Draft](https://ietf-wg-scone.github.io/trone/#go.draft-thoji-scone-protocol.diff)
+* [Compare Editor's Copy to Individual Draft](https://ietf-wg-scone.github.io/scone/#go.draft-thoji-scone-protocol.diff)
 
 
 ## Contributing
 
 See the
-[guidelines for contributions](https://github.com/ietf-wg-scone/trone/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/ietf-wg-scone/scone/blob/main/CONTRIBUTING.md).
 
 Contributions can be made by creating pull requests.
 The GitHub interface supports creating pull requests using the Edit (✏) button.
