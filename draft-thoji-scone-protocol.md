@@ -14,7 +14,6 @@ workgroup: SCONE
 keyword:
  - locomotive
  - pastry
- - clotted cream THEN jam
 venue:
   group: "SCONE"
   type: "Working Group"
