@@ -56,7 +56,9 @@ informative:
 
 --- abstract
 
-On-path network elements can sometimes be configured to apply rate limits to
+This document describes a protocol where on-path network elements
+can give endpoints their perspective on what the maximum achievable
+throughput might be for QUIC flows.
 flows that pass them. Access networks and their attached devices may also
 experience volatile conditions that affect the sustainable network throughput. 
 
