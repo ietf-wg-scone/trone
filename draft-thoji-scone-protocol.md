@@ -337,7 +337,7 @@ QUIC endpoints can enable the use of the SCONE protocol by sending SCONE packets
 ({{apply}}) according to their policies.
 
 
-## Applying throughput advice signals {#apply}
+## Applying Throughput Advice Signals {#apply}
 
 A network element detects a SCONE packet by observing that a packet has a QUIC
 long header and one of the SCONE protocol versions (0xSCONE1 or 0xSCONE2).
