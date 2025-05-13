@@ -142,7 +142,7 @@ strictly advisory.
 Throughput advice signals are not a substitute for congestion feedback.  Congestion
 signals, such as acknowledgments, provide information on loss, delay, or ECN
 markings {{?ECN=RFC3168}} that indicate the real-time condition of a network
-path.  Congestion signals might suggest a throughput that is different from the
+path.  Congestion signals might indicate a throughput that is different from the
 signaled rate limit.
 
 Endpoints cannot assume that a signaled rate limit is achievable if congestion
