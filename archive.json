@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-11T01:47:50.260158+00:00",
+  "timestamp": "2025-05-13T01:44:00.575371+00:00",
   "repo": "ietf-wg-scone/scone",
   "labels": [
     {
@@ -931,6 +931,22 @@
           "updatedAt": "2025-05-01T01:22:58Z"
         }
       ]
+    },
+    {
+      "number": 32,
+      "id": "I_kwDON1dwo862PkrX",
+      "title": "Scope is restricted to 'rate limiting' networks only",
+      "url": "https://github.com/ietf-wg-scone/scone/issues/32",
+      "state": "OPEN",
+      "author": "Kevsy",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "draft-00 does not include the use of SCONE by networks that do not apply rate limit policies. For example, a cellular network that provides throughput advice based on its view of network congestion and channel conditions.  I've drafted PR which adds that as a use of SCONE, and hence changes 'rate limit signal' to throughput advice' throughout:  #31",
+      "createdAt": "2025-05-12T16:38:30Z",
+      "updatedAt": "2025-05-12T16:38:30Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -2458,6 +2474,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDON1dwo86V3kpP",
+      "title": "Add usage of SCONE for throughput advice outside of rate-limiting",
+      "url": "https://github.com/ietf-wg-scone/scone/pull/31",
+      "state": "OPEN",
+      "author": "Kevsy",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This PR explicitly includes in scope networks that do not rate limit, but wish to advise on network conditions to help achieve the optimal sender rate. \r\n\r\nNotes on changes:\r\nThroughout: replaced 'rate limit signal' with 'throughput advice signal' to account for both uses of SCONE (to signal rate limits/to signal throughput advice based on current network conditions)\r\n\r\nLine 68: Changed 'Many access networks limit the maximum data rate that attached devices are able to attain'  (because all shared access networks do this due to finite bandwidth) to 'Many access networks apply rate limits to constrain the data rate of attached devices.' (to more explicitly indicate active rate limiting).\r\n\r\nLine 164: Removed \"In that case, capacity is less likely to be split between multiple active flows.\" because capacity will always be divided between multiple active flows (otherwise they would not be active)\r\n\r\nLine 165: Added that a SCONE signal based on the network's calculation of throughput advice would take into account congestion, whereas (as stated in the original) one simply stating a rate limit would not.\r\n\r\n(Other suggested changes are editorial)",
+      "createdAt": "2025-05-12T16:37:48Z",
+      "updatedAt": "2025-05-12T16:37:48Z",
+      "baseRepository": "ietf-wg-scone/scone",
+      "baseRefName": "main",
+      "baseRefOid": "0e00e6531e8e68bcd034e22c6edeede4c999acc3",
+      "headRepository": "Kevsy/scone",
+      "headRefName": "patch-1",
+      "headRefOid": "90ec4ed1ffe8df54c60f955ef14d02d678c72e3c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
