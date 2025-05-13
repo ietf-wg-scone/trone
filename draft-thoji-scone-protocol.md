@@ -59,13 +59,6 @@ informative:
 This document describes a protocol where on-path network elements
 can give endpoints their perspective on what the maximum achievable
 throughput might be for QUIC flows.
-flows that pass them. Access networks and their attached devices may also
-experience volatile conditions that affect the sustainable network throughput. 
-
-This document describes a method for signaling to
-endpoints that rate limiting policies are in force and what that rate limit is,
-and for non-rate limiting networks to signal throughput advice based on network
-conditions.
 
 
 --- middle
