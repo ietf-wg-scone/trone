@@ -162,11 +162,9 @@ that multiple flows receive the same signal.
 
 Endpoints can therefore be more confident in the throughput signal as an
 indication of the maximum achievable throughput than as any indication of
-expected throughput.  Where the throughput signal simply represents a rate
-limit, then the advised throughput will only be achievable on an uncongested network.
-Whereas a throughput signal calculated by a non rate-limiting network should be 
-based on current network and attached device signal conditions, and hence account for
-any network congestion.
+expected throughput.  That throughput will only be achievable when there is no
+significant data flowing in the same scope.  In the presence of other flows,
+congestion limits are likely to determine actual throughput.
 
 
 
