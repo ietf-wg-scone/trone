@@ -136,7 +136,7 @@ strictly advisory.
 
 ## Independent of Congestion Signals
 
-throughput advice signals are not a substitute for congestion feedback.  Congestion
+Throughput advice signals are not a substitute for congestion feedback.  Congestion
 signals, such as acknowledgments, provide information on loss, delay, or ECN
 markings {{?ECN=RFC3168}} that suggest the real-time condition of a network
 path.  Congestion signals might suggest a throughput that is different from the
