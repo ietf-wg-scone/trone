@@ -75,10 +75,13 @@ Having the network indicate what its rate limiting policy is, in a way that is
 accessible to endpoints, allows applications to use this information when
 adapting their send rate.
 
-In addition, access networks without rate limiting policies may also provide 
-information to endpoints that can help account for connection state, such as 
-network congestion, volatile signal strength, or radio bearers with constrained
-bandwidth.
+Network elements are not limited to communicating information
+about rate limiting policies.
+Network elements in access networks could provide information
+to endpoints that can help account for changes in network capacity
+that are not suited to congestion control feedback. This might include
+reduced capacity due to overuse, equipment faults, or other transient issues; 
+conversely, networks might choose to signal increased availability of capacity.
 
 The Standard Communication with Network Elements (SCONE) protocol is
 negotiated by QUIC endpoints.  This protocol provides a means for network
