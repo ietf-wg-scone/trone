@@ -375,7 +375,7 @@ different ranges of bitrates. This design allows for:
 *  Graceful handling of network elements that might only recognize one version.
 
 
-## Providing Opportunities to Apply throughput advice signals {#extra-packets}
+## Providing Opportunities to Apply Throughput Advice Signals {#extra-packets}
 
 Endpoints that wish to offer network elements the option to add throughout advice
 signals can send SCONE packets at any time.  This is a decision that a sender
@@ -426,7 +426,7 @@ of a path capacity. They are complementary. Congestion control algorithms
 are typically designed to quickly detect and react to congestion, i.e., to
 the "minimum" capacity of a path. SCONE informs the endpoint
 of the maximum capacity of a path based on network rate limit policy,
-network conditions, or a comination of the two.
+network conditions, or a combination of the two.
 
 Consider for example a path in which the bottleneck router implements Early
 Congestion Notification as specified in the L4S architecture {{?RFC9330}}.
@@ -442,7 +442,7 @@ channel.
 # Security Considerations {#security}
 
 The modification of packets provides endpoints proof that a network element is
-in a position to drop datagrams and may be applying a rate limit policy.
+in a position to drop datagrams and could apply a rate limit policy.
 {{extra-packets}} states that endpoints only accept signals if the datagram
 contains a packet that it accepts to prevent an off-path attacker from inserting
 spurious throughput advice signals.
