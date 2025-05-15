@@ -166,7 +166,9 @@ expected throughput.  That throughput will only be achievable when there is no
 significant data flowing in the same scope.  In the presence of other flows,
 congestion limits are likely to determine actual throughput.
 
-
+This makes the application of signals most usefully applied to a downlink flow
+in access networks, close to an endpoint. In that case, capacity is less likely
+to be split between multiple active flows.
 
 ## Per-Flow Signal
 
