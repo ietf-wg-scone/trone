@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-15T01:41:04.324134+00:00",
+  "timestamp": "2025-05-18T01:49:12.481292+00:00",
   "repo": "ietf-wg-scone/scone",
   "labels": [
     {
@@ -951,7 +951,7 @@
       "labels": [],
       "body": "draft-00 does not include the use of SCONE by networks that do not apply rate limit policies. For example, a cellular network that provides throughput advice based on its view of network congestion and channel conditions.  I've drafted PR which adds that as a use of SCONE, and hence changes 'rate limit signal' to throughput advice' throughout:  #31",
       "createdAt": "2025-05-12T16:38:30Z",
-      "updatedAt": "2025-05-13T10:53:24Z",
+      "updatedAt": "2025-05-15T09:00:31Z",
       "closedAt": null,
       "comments": [
         {
@@ -974,6 +974,20 @@
           "body": "Thanks @martinthomson and @huitema for the review and suggestions: limiting the PR to (1) changing 'rate limit signals' to 'throughput advice signals', and (2) including your amended text that allows cases beyond conveying rate limiting policy, is fine by me. \n\nI've applied the suggested commits accordingly to make that clearer, reverting the contentious parts.",
           "createdAt": "2025-05-13T10:53:23Z",
           "updatedAt": "2025-05-13T10:53:23Z"
+        },
+        {
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "body": "It would seem to me that a perfectly legitimate use of SCONE is to signal that \"you are connected via a 10 Mbit/sec Ethernet-over-copper connection, no matter what else happens, your throughput won't get higher than 10 Mbit/sec\".\n\nCongestion (the normal kind) changes too fast to be worth signalling.",
+          "createdAt": "2025-05-15T08:44:41Z",
+          "updatedAt": "2025-05-15T08:44:41Z"
+        },
+        {
+          "author": "Kevsy",
+          "authorAssociation": "NONE",
+          "body": "(answering from a cellular perspective)\n\n> It would seem to me that a perfectly legitimate use of SCONE is to signal that \"you are connected via a 10 Mbit/sec Ethernet-over-copper connection, no matter what else happens, your throughput won't get higher than 10 Mbit/sec\".\n\nYeah, I was also thinking indoor cellular (constrained 800Mhz) and cell edge, i.e. conditions unlikely to change for the duration of a video session. \n\n> Congestion (the normal kind) changes too fast to be worth signaling.\n\n+1, at least for now. Radio channel conditions are signaled constantly to the radio access network, but they are ephemeral and not shared to the core in real time. So 'rapidly changing urban environment' signal strength is not worth attempting to convey at this stage, but as mentioned above, there could be a way to determine when a signal strength (and hence throughput constraints) are likely to last for the session.   ",
+          "createdAt": "2025-05-15T09:00:30Z",
+          "updatedAt": "2025-05-15T09:00:30Z"
         }
       ]
     }
@@ -2516,18 +2530,26 @@
       "labels": [],
       "body": "This PR explicitly includes in scope networks that do not rate limit, but wish to advise on network conditions to help achieve the optimal sender rate. \r\n\r\nNotes on changes:\r\nThroughout: replaced 'rate limit signal' with 'throughput advice signal' to account for both uses of SCONE (to signal rate limits/to signal throughput advice based on current network conditions)\r\n\r\nLine 68: Changed 'Many access networks limit the maximum data rate that attached devices are able to attain'  (because all shared access networks do this due to finite bandwidth) to 'Many access networks apply rate limits to constrain the data rate of attached devices.' (to more explicitly indicate active rate limiting).\r\n\r\nLine 164: Removed \"In that case, capacity is less likely to be split between multiple active flows.\" because capacity will always be divided between multiple active flows (otherwise they would not be active)\r\n\r\nLine 165: Added that a SCONE signal based on the network's calculation of throughput advice would take into account congestion, whereas (as stated in the original) one simply stating a rate limit would not.\r\n\r\n(Other suggested changes are editorial)",
       "createdAt": "2025-05-12T16:37:48Z",
-      "updatedAt": "2025-05-14T06:56:46Z",
+      "updatedAt": "2025-05-15T11:27:46Z",
       "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "0e00e6531e8e68bcd034e22c6edeede4c999acc3",
       "headRepository": "Kevsy/scone",
       "headRefName": "patch-1",
-      "headRefOid": "6fed991bd9be0c9838b9f76bdb901c093e82488f",
+      "headRefOid": "e9f071c9060bb55572369f810a75c0357e46cfab",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "Kevsy",
+          "authorAssociation": "NONE",
+          "body": "Thanks @kazuho : https://github.com/ietf-wg-scone/scone/pull/31#discussion_r2090372600 explains it so I have put the text back for now, but I'll suggest a rewording in another PR to avoid bloating this PR.",
+          "createdAt": "2025-05-15T08:37:48Z",
+          "updatedAt": "2025-05-15T08:37:48Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDON1dwo86o_lXd",
@@ -2884,6 +2906,132 @@
               "body": "I'm OK with this generally now.  However, this no longer makes sense as a statement:\r\n\r\n> The effective throughput advice might change without being signaled.\r\n\r\nShould we drop that line?  Or is there a different statement for this?  I'm leaning toward cutting it.",
               "createdAt": "2025-05-14T06:56:46Z",
               "updatedAt": "2025-05-14T06:56:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86pa6dL",
+          "commit": {
+            "abbreviatedOid": "6fed991"
+          },
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Thank you for the efforts. Have minor comments but looks good overall.",
+          "createdAt": "2025-05-15T06:23:10Z",
+          "updatedAt": "2025-05-15T06:26:55Z",
+          "comments": [
+            {
+              "originalPosition": 124,
+              "body": "Isn't it still the case that when the advice changes while the endpoints is in quiescence, the endpoints would end up sending data without being signaled?",
+              "createdAt": "2025-05-15T06:23:10Z",
+              "updatedAt": "2025-05-15T06:26:55Z"
+            },
+            {
+              "originalPosition": 94,
+              "body": "I think the statement is suggesting that at the very last mile, it is likely that there is only one active connection at a time. I think that is true and relevant here.",
+              "createdAt": "2025-05-15T06:26:21Z",
+              "updatedAt": "2025-05-15T06:26:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86pcUWJ",
+          "commit": {
+            "abbreviatedOid": "6fed991"
+          },
+          "author": "Kevsy",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-15T08:31:04Z",
+          "updatedAt": "2025-05-15T08:31:05Z",
+          "comments": [
+            {
+              "originalPosition": 83,
+              "body": "```suggestion\r\nThis makes the application of signals most usefully applied to a downlink flow\r\nin access networks, close to an endpoint. In that case, capacity is less likely\r\nto be split between multiple active flows.\r\n```",
+              "createdAt": "2025-05-15T08:31:05Z",
+              "updatedAt": "2025-05-15T08:31:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86pcbBt",
+          "commit": {
+            "abbreviatedOid": "e9f071c"
+          },
+          "author": "alvestrand",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-15T08:40:27Z",
+          "updatedAt": "2025-05-15T08:40:28Z",
+          "comments": [
+            {
+              "originalPosition": 94,
+              "body": "The typical case that causes swearing at throughput is the adult watching TV and the teenager turning on his video game; the adult complains that the news is showing a spinner mid-stream; the teenager complains that his controller is sluggish. Multiple flows at the last mile are normal, expected, and should be engineered for.",
+              "createdAt": "2025-05-15T08:40:27Z",
+              "updatedAt": "2025-05-15T08:40:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86pcbin",
+          "commit": {
+            "abbreviatedOid": "90ec4ed"
+          },
+          "author": "Kevsy",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-15T08:41:06Z",
+          "updatedAt": "2025-05-15T08:41:06Z",
+          "comments": [
+            {
+              "originalPosition": 94,
+              "body": "Reverted, but I will raise another PR with suggested rewording",
+              "createdAt": "2025-05-15T08:41:06Z",
+              "updatedAt": "2025-05-15T08:41:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86pcf0O",
+          "commit": {
+            "abbreviatedOid": "90ec4ed"
+          },
+          "author": "Kevsy",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-15T08:46:37Z",
+          "updatedAt": "2025-05-15T08:46:37Z",
+          "comments": [
+            {
+              "originalPosition": 124,
+              "body": "would removing 'advice' here cover it, i.e.  'The effective throughput might change without being signaled'?",
+              "createdAt": "2025-05-15T08:46:37Z",
+              "updatedAt": "2025-05-15T08:46:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86peeC_",
+          "commit": {
+            "abbreviatedOid": "90ec4ed"
+          },
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-15T11:27:46Z",
+          "updatedAt": "2025-05-15T11:27:46Z",
+          "comments": [
+            {
+              "originalPosition": 94,
+              "body": "@alvestrand, that's what a congestion controller ultimately has to be used for.  The design here doesn't address that case, except to the extent that the sluggish game might fit between the rate limit cap and the capacity that the video uses.\r\n\r\nLooking forward to what @Kevsy suggests here.",
+              "createdAt": "2025-05-15T11:27:46Z",
+              "updatedAt": "2025-05-15T11:27:46Z"
             }
           ]
         }
