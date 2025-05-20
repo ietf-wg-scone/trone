@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-18T01:49:12.481292+00:00",
+  "timestamp": "2025-05-20T01:44:47.160196+00:00",
   "repo": "ietf-wg-scone/scone",
   "labels": [
     {
@@ -162,7 +162,7 @@
       "labels": [],
       "body": "1. Section 2 of the draft shows \"QUIC Sender\", ie, the server initiates the TRONE signal toward the client. This implies that TRONE signal is going to be server initiated. This will result in having the \"network element\" listens to all IP flows in the downlink direction. This is CPU intensive\n2. The authors should consider a design that is independent of SNI-based flow detection\n3. The authors should reconsider this design and allow for CLIENT initiated TRONE signaling (uplink direction) with implicit support for  flow detection\n\nAs a point of reference, section 6 of draft mishra-scone-usercase-00, added following requirement:\nSCONE (aka TRONE) signal MUST be a client-application endpoint initiated to assist the network element (UPF/5G or PGW/4G) with the implicit flow detection\nplease see https://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.1.1",
       "createdAt": "2025-03-20T06:13:47Z",
-      "updatedAt": "2025-05-13T05:46:38Z",
+      "updatedAt": "2025-05-19T23:58:14Z",
       "closedAt": null,
       "comments": [
         {
@@ -269,6 +269,34 @@
           "body": "@mjoras \u201cSignificance\u201d is a subjective word.\n\nLet me explain how I understand the incentives of different types of network elements, how they might use Indications, and what outcomes may result.\n\nConsider three types of network elements capable of applying different policies to flows:\n\n* A. Elements that inspect the first packet from the client and enforce different bitrates using congestion control (CC).\n* B. Elements that can observe the throughput of a small number of SCONE flows and apply CC based on long-term flow rates.\n* C. Elements that can observe the throughput of all SCONE flows and apply CC based on long-term flow rates.\n\nFor type A elements, Indications could become a new tool to identify the type of flow and apply CC accordingly. This behavior wouldn\u2019t negatively affect flows already throttled by SNI inspection. However, it would hinder SCONE adoption among applications that currently aren't throttled\u2014being (mis)classified as video flows would lead to lower throughput.\n\nFor type B elements, Indications might be beneficial during SCONE\u2019s early adoption phase. These elements can distinguish between potentially SCONE flows and definitely non-SCONE flows just by inspecting the first client packet. They could treat the small number of SCONE flows differently while continuing to apply DPI + CC-based throttling to the non-SCONE majority.\n\nBut as SCONE adoption grows and the number of SCONE flows approaches or exceeds the capacity of these network elements, what happens then? As far as I can tell, their only practical option is to revert to applying CC-based throttling to SCONE flows. That\u2019s the only viable path forward.\n\nFor such elements, it's possible they would behave similarly even without Indications. While inspecting the first packet is easier, they can still analyze later packets if needed.\n\nHowever, the key point is this: network elements that behave in this manner\u2014like type A\u2014would deter SCONE adoption at the endpoint, or cause users to disable SCONE, because using SCONE would result in degraded performance.\n\nFor type C elements, Indications are unnecessary. These elements can assume all flows are SCONE by default and only apply CC-based throttling if no SCONE packets are observed for a certain duration, or if long-term throughput exceeds a threshold.\n\nIn summary:\n* Indications are likely to be misused by type A elements, leading to reduced SCONE adoption.\n* Indications might help type B elements early on, but as SCONE scales, such elements may become harmful.\n* Indications are meaningless for type C elements.\n\nPeople may have different visions for SCONE, but in my view, the best-case scenario is:\n* most, if not all, internet traffic becomes SCONE;\n* network elements can recommend appropriate video bitrates to *any* flow, rather than relying on a static list of SNIs (win for network operators);\n* and bursts are allowed, enabling non-video data to transfer quickly\u2014regardless of whether the flow is application-specific or mixed (win for applications).\n\nFrom this perspective, misuse by type A elements is purely detrimental. Moreover, type A elements are the most commonly deployed today. If they begin applying CC-based limiting based on Indications, there would be little incentive for new applications to adopt SCONE. This, in turn, would remove any reason for future network elements to properly support SCONE, stalling its adoption altogether.\n\nType B elements are landmines best avoided, and we should refrain from providing incentives that would facilitate their development.",
           "createdAt": "2025-05-13T05:20:51Z",
           "updatedAt": "2025-05-13T05:46:37Z"
+        },
+        {
+          "author": "smishra1200",
+          "authorAssociation": "NONE",
+          "body": "@kazuho \nScope of SCONE (if I understand it correctly) is for the UE to signal to the mobile network that it can \"self-regulate its bit rate\" provided the mobile network tells it, \"what the 'self regulate bit-rate' can be\". This is completely outside of the scope of how mobile networks manage congestion in the network (mobile packet core, the radio network and the access network). SCONE is meant for adaptive bit-rate applications such as video.\n\nSCONE signal, if adopted by content publishers + mobile operators, would only apply to QUIC flows, so even if SCONE adoption grows, in its current charter, excludes apps that do not use QUIC, for example, TCP/IP flows.\n\nLastly, mobile networks do not regulate non-video flows, so any non-video application does not gain any advantage (or disadvantage) for wanting to use SCONE signal. \n\n",
+          "createdAt": "2025-05-18T02:32:35Z",
+          "updatedAt": "2025-05-18T02:37:42Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@smishra1200 \n> Scope of SCONE (if I understand it correctly) is for the UE to signal to the mobile network that it can \"self-regulate its bit rate\"\n\nI\u2019m not sure. As the draft is currently written, [Section 3.5](https://ietf-wg-scone.github.io/scone/draft-thoji-scone-protocol.html#name-advisory-signal) notes that \u201cthe fact that an endpoint requests bitrate signals does not necessarily mean that it will adhere to them; in some cases, the endpoint cannot\u201d (see also issue #29).  In other words, SCONE does **not** promise self-regulation; it merely conveys rate-limit advice.\n\nMoreover, even if SCONE packets *did* reliably indicate self-regulation, an **Indication** in the client's very first packet cannot be trusted to mean the same thing: few clients have out-of-band knowledge that the server supports SCONE.\n\nHence an Indication is, at best, a weak hint, with, by looking so similar to SNI, carrying the risk of being misused as a replacement for congestion-control-based throttling via existing mechanisms.\n\n> SCONE signal \u2026 would only apply to QUIC flows \u2026\n\nThat is correct. Sorry if I have confused you by stating \u201call internet traffic becomes SCONE\u201d; of course I meant \u201call internet traffic using QUIC.\u201d With that clarification, the concerns above about reliability and potential misuse remain unchanged.",
+          "createdAt": "2025-05-19T00:57:31Z",
+          "updatedAt": "2025-05-19T01:05:33Z"
+        },
+        {
+          "author": "huitema",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I agree with @kazuho. SCONE is defined as a way for the network to provide information to the host -- not the other way around. It only provide limited information about the host, i.e., that the host is capable to format and parse the SCONE packets.\n\nTake the example of a network that really want to provide a different service to a subset of the connections. It will probably determine some kind of pacing rate based on the information in the UDP header, possibly augmented by inspection of the\ninitial packet. The network element could document that rate in the SCONE packets, so the application can be parameterized accordingly.\n\nBut that DPI-and-pacing network is just an example. A home router may simply document the maximum data rate of the local connection, without any kind of DPI or per-connection state.\n\nIf SCONE is successful, yes, pretty much every QUIC connection will be using it, because they find the information provided by the network useful. That's the definition of success.",
+          "createdAt": "2025-05-19T04:39:06Z",
+          "updatedAt": "2025-05-19T04:39:06Z"
+        },
+        {
+          "author": "smishra1200",
+          "authorAssociation": "NONE",
+          "body": "@kazuho, agree on [section 3.5](url) you point to above, my main point is,  _intent_ of SCONE is to not have the NE [capable of rate-limiting adaptive bit-rate video applications] throttle ABR video-traffic. Instead, send an advisory throughput signal to the endpoints video application. The expectation is that this change can result in  better \"end-user\" experience and reduce packet retransmission. Of course, if the endpoint chooses to not use the throughput advisory signal then SCONE wont be applied to that QUIC 4-tuple. \n\nSo, the question is, does any indication to the NE here helpful? Does the indicator tells NE that there is a willing app interested in self regulating traffic and therefore look to send throughput advisory signal on both direction of end-points on the first opportunity.\n\n",
+          "createdAt": "2025-05-19T23:58:14Z",
+          "updatedAt": "2025-05-19T23:58:14Z"
         }
       ]
     },
@@ -2530,7 +2558,7 @@
       "labels": [],
       "body": "This PR explicitly includes in scope networks that do not rate limit, but wish to advise on network conditions to help achieve the optimal sender rate. \r\n\r\nNotes on changes:\r\nThroughout: replaced 'rate limit signal' with 'throughput advice signal' to account for both uses of SCONE (to signal rate limits/to signal throughput advice based on current network conditions)\r\n\r\nLine 68: Changed 'Many access networks limit the maximum data rate that attached devices are able to attain'  (because all shared access networks do this due to finite bandwidth) to 'Many access networks apply rate limits to constrain the data rate of attached devices.' (to more explicitly indicate active rate limiting).\r\n\r\nLine 164: Removed \"In that case, capacity is less likely to be split between multiple active flows.\" because capacity will always be divided between multiple active flows (otherwise they would not be active)\r\n\r\nLine 165: Added that a SCONE signal based on the network's calculation of throughput advice would take into account congestion, whereas (as stated in the original) one simply stating a rate limit would not.\r\n\r\n(Other suggested changes are editorial)",
       "createdAt": "2025-05-12T16:37:48Z",
-      "updatedAt": "2025-05-15T11:27:46Z",
+      "updatedAt": "2025-05-19T15:24:37Z",
       "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "0e00e6531e8e68bcd034e22c6edeede4c999acc3",
@@ -3032,6 +3060,26 @@
               "body": "@alvestrand, that's what a congestion controller ultimately has to be used for.  The design here doesn't address that case, except to the extent that the sluggish game might fit between the rate limit cap and the capacity that the video uses.\r\n\r\nLooking forward to what @Kevsy suggests here.",
               "createdAt": "2025-05-15T11:27:46Z",
               "updatedAt": "2025-05-15T11:27:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDON1dwo86p8aMY",
+          "commit": {
+            "abbreviatedOid": "e9f071c"
+          },
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-05-19T15:24:37Z",
+          "updatedAt": "2025-05-19T15:24:37Z",
+          "comments": [
+            {
+              "originalPosition": 124,
+              "body": "> would removing 'advice' here cover it, i.e. 'The effective throughput might change without being signaled'?\r\n\r\nTo me that misses the quiescence point that @kazuho makes, since \"effective throughput\" sounds like something active that you measure.\r\n\r\nPerhaps rephrasing it to something like:\r\n\r\n\u201cNetwork conditions and rate-limit policies can change in ways that make previously signaled advice obsolete, and there are no guarantees that updated advice will be sent.\u201d\r\n\r\n\r\n\r\n",
+              "createdAt": "2025-05-19T15:24:37Z",
+              "updatedAt": "2025-05-19T15:24:55Z"
             }
           ]
         }
