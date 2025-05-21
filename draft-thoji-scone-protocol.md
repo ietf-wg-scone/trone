@@ -80,7 +80,7 @@ about rate limiting policies.
 Network elements in access networks could provide information
 to endpoints that can help account for changes in network capacity
 that are not suited to congestion control feedback. This might include
-reduced capacity due to overuse, equipment faults, or other transient issues; 
+reduced capacity due to overuse, equipment faults, or other transient issues;
 conversely, networks might choose to signal increased availability of capacity.
 
 The Standard Communication with Network Elements (SCONE) protocol is
@@ -207,7 +207,7 @@ congestion control signals.
 
 The time and scope over which throughput advice applies is not specified.  The
 effective throughput advice might change without being signaled.  The signaled
-advice can be assumed to apply to the flow of packets on the same UDP address 
+advice can be assumed to apply to the flow of packets on the same UDP address
 tuple for the duration of that flow.  For rate limiting networks, rate limiting
 policies often apply on the level of a device or subscription, but endpoints
 cannot assume that this is the case.  A separate signal can be sent for each flow.
