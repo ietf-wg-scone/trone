@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-20T01:44:47.160196+00:00",
+  "timestamp": "2025-05-22T01:43:26.903368+00:00",
   "repo": "ietf-wg-scone/scone",
   "labels": [
     {
@@ -162,7 +162,7 @@
       "labels": [],
       "body": "1. Section 2 of the draft shows \"QUIC Sender\", ie, the server initiates the TRONE signal toward the client. This implies that TRONE signal is going to be server initiated. This will result in having the \"network element\" listens to all IP flows in the downlink direction. This is CPU intensive\n2. The authors should consider a design that is independent of SNI-based flow detection\n3. The authors should reconsider this design and allow for CLIENT initiated TRONE signaling (uplink direction) with implicit support for  flow detection\n\nAs a point of reference, section 6 of draft mishra-scone-usercase-00, added following requirement:\nSCONE (aka TRONE) signal MUST be a client-application endpoint initiated to assist the network element (UPF/5G or PGW/4G) with the implicit flow detection\nplease see https://www.ietf.org/archive/id/draft-mishra-scone-usecase-00.html#section-6-1.1.1",
       "createdAt": "2025-03-20T06:13:47Z",
-      "updatedAt": "2025-05-19T23:58:14Z",
+      "updatedAt": "2025-05-21T17:25:00Z",
       "closedAt": null,
       "comments": [
         {
@@ -297,6 +297,48 @@
           "body": "@kazuho, agree on [section 3.5](url) you point to above, my main point is,  _intent_ of SCONE is to not have the NE [capable of rate-limiting adaptive bit-rate video applications] throttle ABR video-traffic. Instead, send an advisory throughput signal to the endpoints video application. The expectation is that this change can result in  better \"end-user\" experience and reduce packet retransmission. Of course, if the endpoint chooses to not use the throughput advisory signal then SCONE wont be applied to that QUIC 4-tuple. \n\nSo, the question is, does any indication to the NE here helpful? Does the indicator tells NE that there is a willing app interested in self regulating traffic and therefore look to send throughput advisory signal on both direction of end-points on the first opportunity.\n\n",
           "createdAt": "2025-05-19T23:58:14Z",
           "updatedAt": "2025-05-19T23:58:14Z"
+        },
+        {
+          "author": "smishra1200",
+          "authorAssociation": "NONE",
+          "body": "@huitema \nI'm trying to understand the incentive for networks to adopt SCONE. You mentioned that SCONE is designed for the network to provide information to the host, offering limited information about the host's capability to handle SCONE packets.\n\nGiven that networks already rate-limit ABR video applications without using SCONE, what would be the key reason for these networks to prefer SCONE as their tool of choice in the future? What specific advantages does SCONE offer to the networks to make the switch in this context?\n\n\n",
+          "createdAt": "2025-05-20T02:28:49Z",
+          "updatedAt": "2025-05-20T02:28:49Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@smishra1200 \n> So, the question is, does any indication to the NE here helpful?\n\nMy view is that the answer is no, assuming we measure success using the criteria stated concisely by @huitema, with which I fully agree. In a world where pretty much all QUIC connections use SCONE, there is little benefit\u2014if any\u2014in identifying at an early moment the few connections that do not.\n\n> Does the indicator tells NE that there is a willing app interested in self regulating traffic ...\n\nSCONE, as currently drafted, does not provide such a signal. Privacy concerns aside, the practical problem is that endpoints often do not know how a connection will be used at establishment time. Video-only clients talking to a dedicated server might be able to assert that, but they represent only a fraction of all Internet traffic.\n\n> Given that networks already rate-limit ABR video applications without using SCONE, what would be the key reason for these networks to prefer SCONE as their tool of choice in the future? What specific advantages does SCONE offer to the networks to make the switch in this context?\n\nFor networks, the issues with the status quo is that they do not have the capability to rate-limit *all* long-term traffic, and that CC-based rate-limiting is sub-optimal.\n\nStatus quo = lose-lose:\n\n* Networks: can rate-limit only the flows they identify as video (via DPI). Radio-resource usage is sub-optimal because data cannot be sent in bursts.  \n* Endpoints: CC-based throttling worsens user experience, and misclassification of non-video flows as video remains a persistent problem.\n\nSCONE = win-win:\n\n* Networks: can expect endpoints to self-regulate every long-term flow. Unlike DPI, SCONE still works when endpoints adopt ECH. Radio-resource usage becomes more efficient because long-term flows that follow throughput advice can transmit in bursts.  \n* Endpoints: see better user experience thanks to fewer packet losses.",
+          "createdAt": "2025-05-20T04:30:29Z",
+          "updatedAt": "2025-05-20T04:30:29Z"
+        },
+        {
+          "author": "martinthomson",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I agree with @kazuho.  \n\nThere's also a leap of faith involved. Networks might be trusting clients more when they disengage or loosen policers and shapers in favour of SCONE.  Similarly, clients are trusting networks more when they engage rate limits in applications, rather than pushing usage up to the limits the network tolerates.  If neither is willing to extend that trust, then this whole thing fails.  But we're seeing that it can deliver that win-win outcome, so it's worth a shot.",
+          "createdAt": "2025-05-20T04:37:27Z",
+          "updatedAt": "2025-05-20T04:37:27Z"
+        },
+        {
+          "author": "mjoras",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@kazuho I am trying to understand your different classification of network elements. The network elements that exist today which are relevant to the indication discussion basically do the following:\n\n1. Observe all new flows through them, with state being created per flow as they are initiated from the client direction.\n2. They try to classify these flows. They do this by applying what we are calling \"DPI\" but more concretely is being able to parse the entire packet.\n3. The classification as ABR video is often done by trying to find the SNI of known ABR video hostnames.\n4. If they classify as ABR video they apply what we're calling \"CC throttling\" or similar in this thread, by applying a token bucket queueing that either buffers or drops packets or some combination thereof.\n\nThe indication basically exists to make obviate the need for doing 2-4 while we work to make SCONE ubiquitous. This is the \"trust\" on the part of the network, and in exchange they get improved video performance for the humans and lower cost for the network elements per flow.\n\nHow exactly that \"trust but verify\" plays out will probably vary (is it active and online or is it aggregates and offline, etc.). But that's not what the indication is trying to solve. \n\nI honestly think we are spending far too much time on hypotheticals here when the systems we are trying to change are extant. We are also getting side tracked debating the \"philosophy of SCONE\" which is largely irrelevant to whether we spend time trying to develop a reasonable indication optimization for the scenario described above. ",
+          "createdAt": "2025-05-20T05:04:15Z",
+          "updatedAt": "2025-05-20T05:05:59Z"
+        },
+        {
+          "author": "kazuho",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@mjoras\n> I am trying to understand your different classification of network elements\u2026.\n\nLet\u2019s focus on one type of network element for the moment.\n\n> The indication basically exists to make obviate the need for doing 2-4 while we work to make SCONE ubiquitous.\n\nI think the word \u201cwhile\u201d might be the crux of the problem.\n\nIf I understand correctly, the premise behind Indication is that\u2014during the initial deployment phase\u2014operators might want to deploy network elements that can handle only a limited number of SCONE-enabled QUIC flows. If they could handle QUIC flows all with SCONE attached, there would be no need for Indications at all.\n\nBut what would these network elements start doing once SCONE does become ubiquitous?  \n\nThe most pragmatic option for them will be to keep classifying flows by the presence of Indication _and apply CC-based throttling_, as they do not have the capacity to handle 100% SCONE flows.\n\nIn other words, the network elements meant to smooth the path for early deployment would end up backfiring once SCONE is widespread, turning Indication into nothing more than another \u201cthrottle flag.\u201d\n\nI don\u2019t think we should encourage deployment of network elements that would undermine SCONE\u2019s objectives the moment the protocol becomes a success.\n\nInstead, we should focus on encouraging the development of network elements that can handle 100% SCONE flows.",
+          "createdAt": "2025-05-20T09:07:20Z",
+          "updatedAt": "2025-05-20T09:07:20Z"
+        },
+        {
+          "author": "ihlar",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> If they could handle QUIC flows all with SCONE attached, there would be no need for Indications at all.\n\nThis depends. An indication can be interpreted as an endpoint opting in to the strictest possible ceiling. Flows that do not include the indication might still benefit form SCONE signals, even if the communicated ceiling is less strict.\n\n> Instead, we should focus on encouraging the development of network elements that can handle 100% SCONE flows.\n\nThese network elements can work with 100% SCONE flows. As an example, a 5G UPF can apply multiple sets of policies at different scopes:\n\n-  Flow- or application-based policies that apply to packets that match some packet filter (e.g., through the use of DPI).\n-  Session-based policies that govern the session Aggregate Maximum Bitrate (AMBR) for a subscriber session.\n\nOften, the flow/application-based policy is more strict than the session AMBR. A flow that opts in to the strictest ceiling using an indication will get the lowest of the two policies. Flows that do not explicitly opt-in to the strictest ceiling will get the AMBR value. \n\nIt would be great if a fully SCONE capable world changes policy enforcement such that there is no need for differentiation on application type or use of indications (and I do understand that the indication and its meaning as a policy toggle is not pretty). But I think there is a long way to get that world, and if we design a solution for an idealized world we run the risk of getting little to no deployment at all. \n\nTherefore, given the current reality, a _strictly optional_ indication with clear guidance text that endpoints SHOULD only send it for flows they control (e.g., don't use this if you're a browser) and that networks MUST NOT penalize its absence, seems to me as a pragmatic way to increase SCONE deployment incentives.\n\nAnd fwiw I'd be totally ok to define an optional MUFFIN packet as @ianswett suggests further up in the thread, but perhaps not copying the SNI, but simply being an indication of opt-in to the strictest ceiling regardless if it's enforced by SCONE or CC-based throttling.",
+          "createdAt": "2025-05-21T17:24:59Z",
+          "updatedAt": "2025-05-21T17:24:59Z"
         }
       ]
     },
@@ -830,12 +872,12 @@
       "labels": [],
       "body": "The multipath extension allows sending data on multiple paths, including multiple paths bound to the same 4 tuple. I think that a QUIC application could split its traffic along multiple paths, all identified by different connection IDs. Applications could request some of these paths to announce Trone support, other not, and maybe others still to advertise the Non-Queue-Building type.\n\nDo we fill the need to say anything about that?",
       "createdAt": "2025-04-22T05:40:54Z",
-      "updatedAt": "2025-05-01T01:34:11Z",
+      "updatedAt": "2025-05-21T22:15:37Z",
       "closedAt": null,
       "comments": [
         {
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Not that much.  We can point out that this is information that applies to a single path, not the entire connection.",
           "createdAt": "2025-04-22T07:19:55Z",
           "updatedAt": "2025-04-22T07:19:55Z"
@@ -849,7 +891,7 @@
         },
         {
           "author": "martinthomson",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "The unit of enforcement is unclear.  All that the network is saying is that **at some scope that includes this flow** (and it might only be this flow, but probably not) there is a policy in place to limit throughput.  It's pretty useless, except when you only have one flow that is consuming most of that limit.  The reason it works is that there is often just one active flow from a home or mobile subscription.",
           "createdAt": "2025-04-23T01:42:53Z",
           "updatedAt": "2025-04-23T01:42:53Z"
@@ -860,6 +902,13 @@
           "body": "Unit of enforcement seems like a different issue; my impression from initial discussions was that the incremental improvement desired was to handle the situation of one dominant flow and one policer that enforced per \"customer\" (typically 6G handset or cable subscriber), and that choosing how to guide the end system to distribute the available bandwidth between multiple flows was left \"for further study\".\n",
           "createdAt": "2025-04-23T09:54:56Z",
           "updatedAt": "2025-04-23T09:54:56Z"
+        },
+        {
+          "author": "ianswett",
+          "authorAssociation": "NONE",
+          "body": "I'm unsure how frequently multipath will be used, but path changes are somewhat common today and may become more common.  There are some deployments of Server Preferred Address, which substantially changes the 5-tuple after the handshake, for example.",
+          "createdAt": "2025-05-21T22:15:36Z",
+          "updatedAt": "2025-05-21T22:15:36Z"
         }
       ]
     },
@@ -2558,13 +2607,13 @@
       "labels": [],
       "body": "This PR explicitly includes in scope networks that do not rate limit, but wish to advise on network conditions to help achieve the optimal sender rate. \r\n\r\nNotes on changes:\r\nThroughout: replaced 'rate limit signal' with 'throughput advice signal' to account for both uses of SCONE (to signal rate limits/to signal throughput advice based on current network conditions)\r\n\r\nLine 68: Changed 'Many access networks limit the maximum data rate that attached devices are able to attain'  (because all shared access networks do this due to finite bandwidth) to 'Many access networks apply rate limits to constrain the data rate of attached devices.' (to more explicitly indicate active rate limiting).\r\n\r\nLine 164: Removed \"In that case, capacity is less likely to be split between multiple active flows.\" because capacity will always be divided between multiple active flows (otherwise they would not be active)\r\n\r\nLine 165: Added that a SCONE signal based on the network's calculation of throughput advice would take into account congestion, whereas (as stated in the original) one simply stating a rate limit would not.\r\n\r\n(Other suggested changes are editorial)",
       "createdAt": "2025-05-12T16:37:48Z",
-      "updatedAt": "2025-05-19T15:24:37Z",
+      "updatedAt": "2025-05-21T21:09:36Z",
       "baseRepository": "ietf-wg-scone/scone",
       "baseRefName": "main",
       "baseRefOid": "0e00e6531e8e68bcd034e22c6edeede4c999acc3",
       "headRepository": "Kevsy/scone",
       "headRefName": "patch-1",
-      "headRefOid": "e9f071c9060bb55572369f810a75c0357e46cfab",
+      "headRefOid": "7b70509808574d0176b613e911cc70c3623263bd",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2586,10 +2635,10 @@
           },
           "author": "martinthomson",
           "authorAssociation": "CONTRIBUTOR",
-          "state": "CHANGES_REQUESTED",
+          "state": "DISMISSED",
           "body": "The global search and replace didn't account for capitalization properly.  The substance of other changes is also against some of the established agreements around the divide between this work and congestion control.",
           "createdAt": "2025-05-13T04:33:23Z",
-          "updatedAt": "2025-05-13T04:41:48Z",
+          "updatedAt": "2025-05-21T21:08:43Z",
           "comments": [
             {
               "originalPosition": 3,
